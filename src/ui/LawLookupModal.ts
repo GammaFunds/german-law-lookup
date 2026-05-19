@@ -1,12 +1,15 @@
-import { App, Modal } from "obsidian";
+import { App, MarkdownView, Modal, Notice } from "obsidian";
 import { formatLawSectionAsMarkdown } from "../law/CitationFormatter";
 import { ProviderRegistry } from "../law/ProviderRegistry";
 import { parseLawReference } from "../parser";
 import { LookupSequence } from "./LookupSequence";
+import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
 
 export class LawLookupModal extends Modal {
   private inputEl!: HTMLInputElement;
   private resultEl!: HTMLElement;
+  private actionsEl!: HTMLElement;
+  private currentMarkdown = "";
   private readonly lookupSequence = new LookupSequence();
 
   constructor(
@@ -39,6 +42,7 @@ export class LawLookupModal extends Modal {
 
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
     this.resultEl.setText("Noch keine Suche ausgeführt.");
+    this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
   }
 
   onClose() {
@@ -48,6 +52,8 @@ export class LawLookupModal extends Modal {
   private async renderParsedReference() {
     const lookupId = this.lookupSequence.next();
     const parsed = parseLawReference(this.inputEl.value);
+    this.currentMarkdown = "";
+    this.actionsEl.empty();
 
     if (!parsed) {
       this.resultEl.setText("Keine erkannte Fundstelle.");
@@ -62,7 +68,9 @@ export class LawLookupModal extends Modal {
         return;
       }
 
-      this.resultEl.setText(formatLawSectionAsMarkdown(section));
+      this.currentMarkdown = formatLawSectionAsMarkdown(section);
+      this.resultEl.setText(this.currentMarkdown);
+      this.renderInsertButton();
     } catch (error) {
       if (!this.lookupSequence.isCurrent(lookupId)) {
         return;
@@ -72,5 +80,21 @@ export class LawLookupModal extends Modal {
         error instanceof Error ? error.message : "Keine Fundstelle gefunden.",
       );
     }
+  }
+
+  private renderInsertButton() {
+    const button = this.actionsEl.createEl("button", {
+      text: "In aktuelle Note einfügen",
+    });
+
+    button.addEventListener("click", () => {
+      const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!view) {
+        new Notice("Kein aktiver Markdown-Editor gefunden.");
+        return;
+      }
+
+      insertMarkdownIntoMarkdownView(view, this.currentMarkdown);
+    });
   }
 }
