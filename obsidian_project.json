@@ -141,7 +141,8 @@
       "id": "T-017",
       "title": "Disable MockLawProvider outside development/test mode",
       "component": "LawProvider",
-      "status": "open"
+      "status": "completed",
+      "notes": "Default provider order is now: 1. neuris, 2. gesetze-im-internet, 3. no mock. MockLawProvider can only be enabled explicitly with enableMockLawProvider: true. ProviderRegistry behavior remains unchanged: null falls through and LawProviderUnavailableError remains terminal. Plugin startup still performs no law-provider network calls."
     },
     {
       "id": "T-018",
@@ -208,6 +209,13 @@
       "date": "2026-05-19",
       "status": "accepted",
       "notes": "NeuRIS coverage gaps may fall through to Gesetze im Internet when the first provider returns null, but provider failures must remain terminal."
+    },
+    {
+      "id": "D-006",
+      "title": "MockLawProvider requires explicit development/demo opt-in",
+      "date": "2026-05-19",
+      "status": "accepted",
+      "notes": "MockLawProvider must not be registered in normal runtime. It is development/demo only and requires explicit opt-in."
     }
   ]
 }
