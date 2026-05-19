@@ -1,0 +1,18 @@
+.de-law-lookup-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.de-law-lookup-form input {
+  flex: 1;
+}
+
+.de-law-lookup-result {
+  min-height: 72px;
+  padding: 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  white-space: pre-wrap;
+}
+
