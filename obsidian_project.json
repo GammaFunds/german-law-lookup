@@ -55,7 +55,7 @@
       "id": "T-003",
       "title": "Implement mock law source",
       "component": "LawSource",
-      "status": "open"
+      "status": "completed"
     },
     {
       "id": "T-004",
@@ -67,13 +67,13 @@
       "id": "T-005",
       "title": "Implement provider registry",
       "component": "LawProvider",
-      "status": "open"
+      "status": "completed"
     },
     {
       "id": "T-006",
       "title": "Implement mock API provider before real network providers",
       "component": "LawProvider",
-      "status": "open"
+      "status": "completed"
     },
     {
       "id": "T-007",
@@ -85,6 +85,67 @@
       "id": "T-008",
       "title": "Validate Gesetze im Internet XML fallback access",
       "component": "GesetzeImInternetProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-009",
+      "title": "Implement GesetzeImInternetProvider fixture fallback for BGB § 823",
+      "component": "GesetzeImInternetProvider",
+      "status": "completed",
+      "notes": "Added fixture-tested HTML fallback for BGB § 823 with official-source/non-authoritative metadata."
+    },
+    {
+      "id": "T-010",
+      "title": "Update provider order to NeuRIS, Gesetze im Internet, Mock",
+      "component": "LawProvider",
+      "status": "completed"
+    },
+    {
+      "id": "T-011",
+      "title": "Handle Gesetze im Internet 404 as unresolved null",
+      "component": "GesetzeImInternetProvider",
+      "status": "completed"
+    },
+    {
+      "id": "T-012",
+      "title": "Handle non-404 Gesetze im Internet failures as LawProviderUnavailableError",
+      "component": "GesetzeImInternetProvider",
+      "status": "completed"
+    },
+    {
+      "id": "T-013",
+      "title": "Normalize Gesetze im Internet letter suffix URLs to lowercase",
+      "component": "GesetzeImInternetProvider",
+      "status": "completed"
+    },
+    {
+      "id": "T-014",
+      "title": "Live-validate full provider chain for BGB § 823",
+      "component": "LawProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-015",
+      "title": "Expand Gesetze im Internet law-code support beyond BGB",
+      "component": "GesetzeImInternetProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-016",
+      "title": "Implement cache layer for retrieved law sections",
+      "component": "Local Cache",
+      "status": "open"
+    },
+    {
+      "id": "T-017",
+      "title": "Disable MockLawProvider outside development/test mode",
+      "component": "LawProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-018",
+      "title": "Implement note insertion UX for formatted law text",
+      "component": "ObsidianIntegration",
       "status": "open"
     }
   ],
@@ -132,6 +193,13 @@
       "date": "2026-05-19",
       "status": "accepted",
       "notes": "The plugin should retrieve German law texts via APIs where possible. Provider abstraction is required to support NeuRIS, Gesetze im Internet fallback, and optional Open Legal Data."
+    },
+    {
+      "id": "D-004",
+      "title": "Use Gesetze im Internet as fallback for confirmed NeuRIS coverage gaps",
+      "date": "2026-05-19",
+      "status": "accepted",
+      "notes": "Gesetze im Internet is used as the official/public consolidated-law fallback for confirmed NeuRIS coverage gaps, starting with BGB § 823."
     }
   ]
 }
