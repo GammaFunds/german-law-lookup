@@ -122,7 +122,8 @@
       "id": "T-014",
       "title": "Live-validate full provider chain for BGB § 823",
       "component": "LawProvider",
-      "status": "open"
+      "status": "completed",
+      "notes": "Reference: BGB § 823. Provider call order: neuris -> gesetze-im-internet. Final providerId: gesetze-im-internet. MockLawProvider called: false. LawProviderUnavailableError thrown: false. sourceUrl: https://www.gesetze-im-internet.de/bgb/__823.html. Result: resolved via Gesetze im Internet fallback."
     },
     {
       "id": "T-015",
@@ -200,6 +201,13 @@
       "date": "2026-05-19",
       "status": "accepted",
       "notes": "Gesetze im Internet is used as the official/public consolidated-law fallback for confirmed NeuRIS coverage gaps, starting with BGB § 823."
+    },
+    {
+      "id": "D-005",
+      "title": "Provider fallback lifecycle live-validated for BGB § 823",
+      "date": "2026-05-19",
+      "status": "accepted",
+      "notes": "NeuRIS coverage gaps may fall through to Gesetze im Internet when the first provider returns null, but provider failures must remain terminal."
     }
   ]
 }
