@@ -1,0 +1,11 @@
+{
+  "id": "obsidian-de-law",
+  "name": "Obsidian DE Law",
+  "version": "0.1.0",
+  "minAppVersion": "1.8.0",
+  "description": "Look up German law references from Obsidian.",
+  "author": "",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}
+

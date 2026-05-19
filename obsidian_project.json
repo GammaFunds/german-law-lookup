@@ -1,0 +1,137 @@
+{
+  "project": "Obsidian German Law Plugin",
+  "single_source_of_truth": "ChatGPTProjectLog.json",
+  "status": {
+    "phase": "MVP planning",
+    "last_updated": "2026-05-19",
+    "summary": "New Obsidian plugin project to access and insert German federal law texts inside Obsidian."
+  },
+  "blockers": [
+    {
+      "id": "B-001",
+      "title": "Primary law data source not yet validated",
+      "component": "LawSource",
+      "status": "open",
+      "notes": "Initial target is Gesetze im Internet / official federal law texts. Need technical validation of URL/XML/HTML access pattern before implementing fetcher."
+    },
+    {
+      "id": "B-002",
+      "title": "NeuRIS API stability and coverage must be verified",
+      "component": "LawProvider",
+      "status": "open",
+      "notes": "NeuRIS/Rechtsinformationsportal is the strategic target provider, but current service is in test phase and data coverage is limited."
+    }
+  ],
+  "issues": [
+    {
+      "id": "I-001",
+      "title": "Citation and retrieval metadata required",
+      "component": "CitationFormatter",
+      "status": "open",
+      "notes": "Every inserted law text must include source, law code, section and retrieval date."
+    },
+    {
+      "id": "I-002",
+      "title": "Scope must remain Bundesrecht-only for MVP",
+      "component": "Architecture",
+      "status": "open",
+      "notes": "No Landesrecht, EU law, case law or commentary in MVP."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Create Obsidian plugin scaffold",
+      "component": "Plugin",
+      "status": "open"
+    },
+    {
+      "id": "T-002",
+      "title": "Implement legal citation parser",
+      "component": "Parser",
+      "status": "open"
+    },
+    {
+      "id": "T-003",
+      "title": "Implement mock law source",
+      "component": "LawSource",
+      "status": "open"
+    },
+    {
+      "id": "T-004",
+      "title": "Insert formatted law text into active note",
+      "component": "ObsidianIntegration",
+      "status": "open"
+    },
+    {
+      "id": "T-005",
+      "title": "Implement provider registry",
+      "component": "LawProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-006",
+      "title": "Implement mock API provider before real network providers",
+      "component": "LawProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-007",
+      "title": "Validate NeuRIS API endpoints and schema",
+      "component": "NeuRISProvider",
+      "status": "open"
+    },
+    {
+      "id": "T-008",
+      "title": "Validate Gesetze im Internet XML fallback access",
+      "component": "GesetzeImInternetProvider",
+      "status": "open"
+    }
+  ],
+  "architecture": {
+    "components": [
+      "Plugin UI",
+      "Parser",
+      "LawSource",
+      "Local Cache",
+      "CitationFormatter",
+      "Settings"
+    ],
+    "mvp_flow": [
+      "User opens command",
+      "User enters law reference",
+      "Parser normalizes input",
+      "LawSource retrieves section",
+      "UI displays result",
+      "CitationFormatter formats Markdown",
+      "Plugin inserts text into active note"
+    ],
+    "invariants": [
+      "Plugin must not modify notes without explicit user action",
+      "Inserted law text must include source metadata",
+      "MVP must only handle German federal law",
+      "Fetching logic must remain separate from UI logic"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "title": "Start with Bundesrecht-only MVP",
+      "date": "2026-05-19",
+      "status": "accepted"
+    },
+    {
+      "id": "D-002",
+      "title": "Use Codex for repository edits and ChatGPT for architecture/debugging",
+      "date": "2026-05-19",
+      "status": "accepted"
+    },
+    {
+      "id": "D-003",
+      "title": "Use API-first provider architecture",
+      "date": "2026-05-19",
+      "status": "accepted",
+      "notes": "The plugin should retrieve German law texts via APIs where possible. Provider abstraction is required to support NeuRIS, Gesetze im Internet fallback, and optional Open Legal Data."
+    }
+  ]
+}

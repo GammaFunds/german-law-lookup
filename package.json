@@ -1,0 +1,25 @@
+{
+  "name": "obsidian-de-law",
+  "version": "0.1.0",
+  "description": "Minimal Obsidian plugin for looking up German law references.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "test": "tsc -p tsconfig.test.json && node --test \"test-dist/**/*.test.js\""
+  },
+  "keywords": [
+    "obsidian",
+    "german-law"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "builtin-modules": "^5.0.0",
+    "esbuild": "^0.25.0",
+    "obsidian": "^1.8.7",
+    "typescript": "^5.7.3"
+  }
+}
+
