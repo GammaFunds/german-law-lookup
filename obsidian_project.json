@@ -148,7 +148,8 @@
       "id": "T-018",
       "title": "Implement note insertion UX for formatted law text",
       "component": "ObsidianIntegration",
-      "status": "open"
+      "status": "completed",
+      "notes": "After successful lookup, the modal shows 'In aktuelle Note einfügen'. Insertion uses CitationFormatter markdown and happens only after explicit user click. The formatted law section is inserted at the current cursor position in the active Markdown editor. If no active Markdown editor exists, the plugin shows an Obsidian Notice. Stale lookup protection remains preserved."
     }
   ],
   "architecture": {
@@ -216,6 +217,13 @@
       "date": "2026-05-19",
       "status": "accepted",
       "notes": "MockLawProvider must not be registered in normal runtime. It is development/demo only and requires explicit opt-in."
+    },
+    {
+      "id": "D-007",
+      "title": "Note insertion requires explicit user action",
+      "date": "2026-05-19",
+      "status": "accepted",
+      "notes": "Law text insertion must require explicit user action and must insert formatted source and citation metadata, not raw provider output."
     }
   ]
 }
