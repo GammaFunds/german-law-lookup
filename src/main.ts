@@ -1,19 +1,22 @@
 import { Plugin } from "obsidian";
 import { ProviderRegistry } from "./law/ProviderRegistry";
-import { GesetzeImInternetProvider } from "./law/providers/GesetzeImInternetProvider";
-import { MockLawProvider } from "./law/providers/MockLawProvider";
-import { NeurisLawProvider } from "./law/providers/NeurisLawProvider";
+import { buildLawProviders } from "./law/providerComposition";
 import { LawLookupModal } from "./ui/LawLookupModal";
+
+interface DeLawPluginSettings {
+  enableMockLawProvider: boolean;
+}
+
+const DEFAULT_SETTINGS: DeLawPluginSettings = {
+  enableMockLawProvider: false,
+};
 
 export default class DeLawPlugin extends Plugin {
   private providerRegistry!: ProviderRegistry;
 
-  onload() {
-    this.providerRegistry = new ProviderRegistry([
-      new NeurisLawProvider(),
-      new GesetzeImInternetProvider(),
-      new MockLawProvider(),
-    ]);
+  async onload() {
+    const settings = await this.loadSettings();
+    this.providerRegistry = new ProviderRegistry(buildLawProviders(settings));
 
     this.addCommand({
       id: "deutsches-gesetz-nachschlagen",
@@ -22,5 +25,14 @@ export default class DeLawPlugin extends Plugin {
         new LawLookupModal(this.app, this.providerRegistry).open();
       },
     });
+  }
+
+  private async loadSettings(): Promise<DeLawPluginSettings> {
+    const storedSettings = (await this.loadData()) as Partial<DeLawPluginSettings> | null;
+
+    return {
+      ...DEFAULT_SETTINGS,
+      enableMockLawProvider: storedSettings?.enableMockLawProvider === true,
+    };
   }
 }
