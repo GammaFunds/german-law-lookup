@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, lookup-modal metadata footer toggle, StGB support, and canonical StGB display normalization. Tests and production build pass; runtime validation confirmed StGB § 242 displays as StGB, not STGB."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, lookup-modal metadata footer toggle, StGB support, and canonical StGB display normalization. Tests and production build pass. Gesetze-im-Internet support is now expanded through an explicit verified mapping table for additional federal laws without introducing runtime URL guessing."
   },
   "blockers": [
     {
@@ -129,7 +129,15 @@
       "id": "T-015",
       "title": "Expand Gesetze im Internet law-code support beyond BGB",
       "component": "GesetzeImInternetProvider",
-      "status": "open"
+      "status": "completed",
+      "notes": "Expanded the explicit supportedLaws mapping only for live-verified Gesetze-im-Internet section URLs that fit the current parser and provider model. Newly added mappings in this expansion: AO -> ao_1977, AktG -> aktg, ArbGG -> arbgg, AsylG -> asylvfg_1992, AufenthG -> aufenthg_2004, BetrVG -> betrvg, BUrlG -> burlg, EStG -> estg, FamFG -> famfg, FGO -> fgo, GewStG -> gewstg, GmbHG -> gmbhg, GVG -> gvg, GwG -> gwg_2017, HGB -> hgb, InsO -> inso, JGG -> jgg, KAGB -> kagb, KSchG -> kschg, KStG -> kstg_1977, PAuswG -> pauswg, SGG -> sgg, StAG -> stag, StPO -> stpo, TzBfG -> tzbfg, UmwG -> umwg_1995, UStG -> ustg_1980, VwGO -> vwgo, VwVfG -> vwvfg, WpHG -> wphg, ZPO -> zpo, ZVG -> zvg. Existing BGB and StGB support remained intact. URL helper tests cover every added mapping. Fixture-backed provider tests cover representative added laws including HGB § 1, ZPO § 1, VwVfG § 1, StAG § 1, KAGB § 1, and GwG § 10. Parser, provider fallback, requestUrl transport, cache keys, cache live-first behavior, metadata-footer toggle behavior, and terminal provider-failure semantics remain unchanged."
+    },
+    {
+      "id": "T-029",
+      "title": "Investigate skipped Gesetze-im-Internet candidates with uncertain paths or unsupported reference forms",
+      "component": "GesetzeImInternetProvider",
+      "status": "open",
+      "notes": "Skipped in the explicit mapping expansion because they were not safely verified under the current model: EGBGB at candidate path bgbeg/__1.html returned 404 and likely needs article-style rather than paragraph-style handling; GG uses article references and is outside the current parser format; OWiG at candidate path owig/__1.html returned 404; KWG at candidate path kwg/__1.html returned 404; FreizügG/EU contains a slash and is not representable by the current parser law-code pattern; SGB I, SGB II, SGB V, and SGB X require space-containing law codes that are not currently parser-supported. These remain follow-up items rather than implemented support."
     },
     {
       "id": "T-016",
