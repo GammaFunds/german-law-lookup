@@ -6,6 +6,7 @@ import {
   InMemoryLawSectionCache,
   lawSectionCacheKey,
 } from "../src/law/LawSectionCache";
+import { buildCachedLawProviders } from "../src/law/cachedProviderComposition";
 import { LawProviderUnavailableError } from "../src/law/errors";
 import type { LawReference, LawSection } from "../src/law/types";
 
@@ -48,6 +49,53 @@ describe("CachedLawProvider", () => {
 
     assert.equal(providerCalls, 0);
     assert.equal(cacheCalls, 0);
+  });
+
+  it("does not call provider or cache while composing cached providers", () => {
+    let providerCalls = 0;
+    let cacheCalls = 0;
+    const providers = [
+      lawProvider(async () => {
+        providerCalls += 1;
+        return section();
+      }),
+    ];
+
+    buildCachedLawProviders(
+      providers,
+      {
+        async get() {
+          cacheCalls += 1;
+          return null;
+        },
+        async set() {
+          cacheCalls += 1;
+        },
+      },
+      {
+        enableLawSectionCache: true,
+        lawSectionCacheTtlDays: null,
+      },
+    );
+
+    assert.equal(providerCalls, 0);
+    assert.equal(cacheCalls, 0);
+  });
+
+  it("bypasses CachedLawProvider composition when cache is disabled", () => {
+    const providers = [lawProvider(async () => section())];
+    const cache = new InMemoryLawSectionCache();
+
+    const composedProviders = buildCachedLawProviders(
+      providers,
+      cache,
+      {
+        enableLawSectionCache: false,
+        lawSectionCacheTtlDays: null,
+      },
+    );
+
+    assert.deepEqual(composedProviders, providers);
   });
 
   it("calls provider on cache miss and stores successful result", async () => {
@@ -137,6 +185,46 @@ describe("CachedLawProvider", () => {
     assert.equal(calls, 1);
     assert.equal(result?.providerId, "gesetze-im-internet");
     assert.equal(result?.cacheStatus, "cached");
+  });
+
+  it("does not return expired cached result after provider returns null", async () => {
+    const cache = new InMemoryLawSectionCache();
+    await cache.set(section({ retrievedAt: "2026-05-18T00:00:00.000Z" }));
+    let calls = 0;
+    const provider = new CachedLawProvider(
+      lawProvider(async () => {
+        calls += 1;
+        return null;
+      }),
+      cache,
+      {
+        allowedProviderIds: ["gesetze-im-internet"],
+        ttlDays: 1,
+        now: () => new Date("2026-05-20T00:00:00.000Z"),
+      },
+    );
+
+    assert.equal(await provider.getSection(reference()), null);
+    assert.equal(calls, 1);
+  });
+
+  it("returns unexpired cached result after provider returns null", async () => {
+    const cache = new InMemoryLawSectionCache();
+    await cache.set(section({ retrievedAt: "2026-05-19T12:00:00.000Z" }));
+    const provider = new CachedLawProvider(
+      lawProvider(async () => null),
+      cache,
+      {
+        allowedProviderIds: ["gesetze-im-internet"],
+        ttlDays: 1,
+        now: () => new Date("2026-05-20T00:00:00.000Z"),
+      },
+    );
+
+    const result = await provider.getSection(reference());
+
+    assert.equal(result?.cacheStatus, "cached");
+    assert.equal(result?.text, "Fixture text");
   });
 
   it("retrieves cached uppercase letter suffix with lowercase reference section", async () => {

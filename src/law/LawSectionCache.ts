@@ -13,6 +13,8 @@ export interface LawSectionCacheStorage {
 
 export interface CachedLawProviderOptions {
   allowedProviderIds: readonly string[];
+  ttlDays?: number | null;
+  now?: () => Date;
 }
 
 export function lawSectionCacheKey(reference: LawReference): string {
@@ -69,7 +71,11 @@ export class CachedLawProvider implements LawProvider {
     }
 
     const cachedSection = await this.cache.get(reference);
-    if (cachedSection && this.isAllowedCachedProvider(cachedSection.providerId)) {
+    if (
+      cachedSection &&
+      this.isAllowedCachedProvider(cachedSection.providerId) &&
+      this.isFreshCachedSection(cachedSection)
+    ) {
       return {
         ...cachedSection,
         cacheStatus: "cached",
@@ -81,6 +87,21 @@ export class CachedLawProvider implements LawProvider {
 
   private isAllowedCachedProvider(providerId: string): boolean {
     return this.options.allowedProviderIds.includes(providerId);
+  }
+
+  private isFreshCachedSection(section: LawSection): boolean {
+    if (this.options.ttlDays == null) {
+      return true;
+    }
+
+    const retrievedAtMs = Date.parse(section.retrievedAt);
+    if (!Number.isFinite(retrievedAtMs)) {
+      return false;
+    }
+
+    const nowMs = (this.options.now ?? (() => new Date()))().getTime();
+    const ttlMs = this.options.ttlDays * 24 * 60 * 60 * 1000;
+    return nowMs - retrievedAtMs <= ttlMs;
   }
 }
 

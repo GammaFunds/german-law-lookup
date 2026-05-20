@@ -1,11 +1,10 @@
-import { Plugin, requestUrl } from "obsidian";
+import { App, Plugin, PluginSettingTab, requestUrl, Setting } from "obsidian";
 import {
-  CachedLawProvider,
   StoredLawSectionCache,
   type LawSectionCacheStorage,
 } from "./law/LawSectionCache";
-import type { LawProvider } from "./law/LawProvider";
 import { ProviderRegistry } from "./law/ProviderRegistry";
+import { buildCachedLawProviders } from "./law/cachedProviderComposition";
 import { createObsidianRequestUrlTransport } from "./law/httpTransport";
 import { buildLawProviders } from "./law/providerComposition";
 import type { LawSection } from "./law/types";
@@ -13,6 +12,8 @@ import { LawLookupModal } from "./ui/LawLookupModal";
 
 interface DeLawPluginSettings {
   enableMockLawProvider: boolean;
+  enableLawSectionCache: boolean;
+  lawSectionCacheTtlDays: number | null;
 }
 
 interface DeLawPluginData extends Partial<DeLawPluginSettings> {
@@ -21,33 +22,19 @@ interface DeLawPluginData extends Partial<DeLawPluginSettings> {
 
 const DEFAULT_SETTINGS: DeLawPluginSettings = {
   enableMockLawProvider: false,
+  enableLawSectionCache: true,
+  lawSectionCacheTtlDays: null,
 };
 
 export default class DeLawPlugin extends Plugin {
   private providerRegistry!: ProviderRegistry;
+  private settings: DeLawPluginSettings = { ...DEFAULT_SETTINGS };
 
   async onload() {
-    const settings = await this.loadSettings();
-    const allowedCachedProviderIds = settings.enableMockLawProvider
-      ? ["neuris", "gesetze-im-internet", "mock"]
-      : ["neuris", "gesetze-im-internet"];
-    const runtimeProviders = buildLawProviders({
-      ...settings,
-      httpTransport: createObsidianRequestUrlTransport(requestUrl),
-    });
-    const providerChain = createProviderChain(runtimeProviders);
-    const cache = new StoredLawSectionCache(this.createLawSectionCacheStorage());
-    this.providerRegistry = new ProviderRegistry(
-      [
-        new CachedLawProvider(
-          providerChain,
-          cache,
-          {
-            allowedProviderIds: allowedCachedProviderIds,
-          },
-        ),
-      ],
-    );
+    this.settings = await this.loadSettings();
+    this.rebuildProviderRegistry();
+
+    this.addSettingTab(new DeLawSettingsTab(this.app, this));
 
     this.addCommand({
       id: "deutsches-gesetz-nachschlagen",
@@ -58,13 +45,47 @@ export default class DeLawPlugin extends Plugin {
     });
   }
 
+  getSettings(): DeLawPluginSettings {
+    return this.settings;
+  }
+
+  async updateSettings(patch: Partial<DeLawPluginSettings>): Promise<void> {
+    this.settings = {
+      ...this.settings,
+      ...patch,
+    };
+    await this.saveSettings();
+    this.rebuildProviderRegistry();
+  }
+
+  private rebuildProviderRegistry() {
+    const runtimeProviders = buildLawProviders({
+      ...this.settings,
+      httpTransport: createObsidianRequestUrlTransport(requestUrl),
+    });
+    const cache = new StoredLawSectionCache(this.createLawSectionCacheStorage());
+    this.providerRegistry = new ProviderRegistry(
+      buildCachedLawProviders(runtimeProviders, cache, this.settings),
+    );
+  }
+
   private async loadSettings(): Promise<DeLawPluginSettings> {
     const storedSettings = (await this.loadData()) as DeLawPluginData | null;
 
     return {
       ...DEFAULT_SETTINGS,
       enableMockLawProvider: storedSettings?.enableMockLawProvider === true,
+      enableLawSectionCache: storedSettings?.enableLawSectionCache !== false,
+      lawSectionCacheTtlDays: normalizeTtlDays(storedSettings?.lawSectionCacheTtlDays),
     };
+  }
+
+  private async saveSettings(): Promise<void> {
+    const storedData = ((await this.loadData()) as DeLawPluginData | null) ?? {};
+    await this.saveData({
+      ...storedData,
+      ...this.settings,
+    });
   }
 
   private createLawSectionCacheStorage(): LawSectionCacheStorage {
@@ -84,19 +105,59 @@ export default class DeLawPlugin extends Plugin {
   }
 }
 
-function createProviderChain(providers: LawProvider[]): LawProvider {
-  return {
-    id: "provider-chain",
-    label: "Provider chain",
-    async getSection(reference) {
-      for (const provider of providers) {
-        const section = await provider.getSection(reference);
-        if (section) {
-          return section;
-        }
-      }
+class DeLawSettingsTab extends PluginSettingTab {
+  constructor(
+    app: App,
+    private readonly plugin: DeLawPlugin,
+  ) {
+    super(app, plugin);
+  }
 
-      return null;
-    },
-  };
+  display(): void {
+    const { containerEl } = this;
+    const settings = this.plugin.getSettings();
+
+    containerEl.empty();
+
+    new Setting(containerEl)
+      .setName("Lokalen Gesetzestext-Cache aktivieren")
+      .setDesc("Speichert erfolgreiche Treffer lokal. Live-Anbieter werden weiterhin zuerst abgefragt.")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(settings.enableLawSectionCache)
+          .onChange(async (value) => {
+            await this.plugin.updateSettings({ enableLawSectionCache: value });
+            this.display();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Cache-Ablauf in Tagen")
+      .setDesc("Leer lassen, um gecachte Treffer ohne Ablauf als Fallback zu verwenden.")
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text
+          .setDisabled(!settings.enableLawSectionCache)
+          .setPlaceholder("kein Ablauf")
+          .setValue(settings.lawSectionCacheTtlDays == null ? "" : String(settings.lawSectionCacheTtlDays))
+          .onChange(async (value) => {
+            await this.plugin.updateSettings({
+              lawSectionCacheTtlDays: normalizeTtlDays(value),
+            });
+          });
+      });
+  }
+}
+
+function normalizeTtlDays(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+
+  return parsed;
 }

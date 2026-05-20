@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, and local LawSectionCache implementation. Tests and production build pass; plugin runtime test succeeded."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, and minimal cache settings. Tests and production build pass; plugin runtime test succeeded."
   },
   "blockers": [
     {
@@ -186,6 +186,13 @@
       "component": "Parser",
       "status": "completed",
       "notes": "Placeholder changed to \"z. B. § 823 BGB\". Parser now accepts section-first input without §, including \"823 BGB\", \"823a BGB\", \"312g BGB\", and \"312G BGB\". Existing supported forms remain supported: \"§ 823 BGB\", \"BGB 823\", \"BGB § 823\", \"KAGB § 1\", and \"GwG 10\". No provider, registry, or transport behavior changed."
+    },
+    {
+      "id": "T-024",
+      "title": "Add minimal local cache settings",
+      "component": "Settings",
+      "status": "completed",
+      "notes": "Added settings for enableLawSectionCache, default true, and lawSectionCacheTtlDays, default null. The settings UI can disable the cache wrapper or set a positive TTL in days. Cache settings preserve live-first provider semantics: live providers are still called first, cache fallback is only checked after live providers return null, provider failures remain terminal, null/not-found results are not cached, and cached mock-provider entries remain gated by explicit MockLawProvider opt-in."
     }
   ],
   "architecture": {
