@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup for BGB § 823 now resolves through Gesetze im Internet using requestUrl transport, with cleaned section-body extraction, natural citation placeholder text, and insertion UI visible after successful lookup."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, and local LawSectionCache implementation. Tests and production build pass; plugin runtime test succeeded."
   },
   "blockers": [
     {
@@ -177,8 +177,8 @@
       "id": "T-022",
       "title": "Manually validate insertion into an active Obsidian note",
       "component": "ObsidianIntegration",
-      "status": "open",
-      "notes": "Runtime validation confirmed successful lookup and visible insert button. A further manual test should confirm insertion into an active note in the Obsidian editor."
+      "status": "completed",
+      "notes": "Obsidian runtime plugin test succeeded. Lookup flow, visible insertion action, and insertion into an active note were manually validated after the cache layer and parser improvements."
     },
     {
       "id": "T-023",
