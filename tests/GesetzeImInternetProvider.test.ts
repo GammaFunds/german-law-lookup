@@ -8,6 +8,7 @@ import {
   buildGesetzeImInternetSectionUrl,
   extractGesetzeImInternetHeading,
   extractGesetzeImInternetPlainText,
+  getSupportedGesetzeImInternetLaws,
   mapGesetzeImInternetToLawSection,
 } from "../src/law/providers/gesetzeImInternetMapping";
 import type { LawReference, LawSection } from "../src/law/types";
@@ -327,6 +328,26 @@ describe("GesetzeImInternet mapping helpers", () => {
 
       assert.equal(section.lawCode, testCase.expectedDisplayLawCode);
     }
+  });
+
+  it("returns stable supported-law diagnostics metadata", () => {
+    const supportedLaws = getSupportedGesetzeImInternetLaws();
+    const byCode = new Map(supportedLaws.map((law) => [law.displayLawCode, law]));
+
+    assert.equal(byCode.get("BGB")?.lawTitle, "Bürgerliches Gesetzbuch");
+    assert.equal(byCode.get("BGB")?.referenceType, "section");
+    assert.equal(byCode.get("BGB")?.exampleInput, "BGB § 823");
+
+    assert.equal(byCode.get("StGB")?.displayLawCode, "StGB");
+    assert.equal(byCode.get("StGB")?.referenceType, "section");
+    assert.equal(byCode.get("StGB")?.exampleInput, "StGB § 242");
+
+    assert.equal(byCode.get("VwVfG")?.displayLawCode, "VwVfG");
+    assert.equal(byCode.get("VwVfG")?.referenceType, "section");
+    assert.equal(byCode.get("VwVfG")?.exampleInput, "VwVfG § 1");
+
+    assert.equal(byCode.get("GG")?.referenceType, "article");
+    assert.equal(byCode.get("GG")?.exampleInput, "Art. 1 GG");
   });
 });
 

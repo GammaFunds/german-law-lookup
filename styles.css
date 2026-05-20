@@ -86,3 +86,49 @@
   min-width: 220px;
   font-weight: 600;
 }
+
+.de-law-settings-supported-description {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+}
+
+.de-law-settings-supported-table {
+  margin-bottom: 18px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.de-law-settings-supported-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.8fr) minmax(220px, 2fr) minmax(88px, 0.8fr) minmax(140px, 1.2fr);
+  gap: 12px;
+  padding: 10px 14px;
+  align-items: start;
+}
+
+.de-law-settings-supported-row + .de-law-settings-supported-row {
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.de-law-settings-supported-row-header {
+  background: var(--background-secondary);
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+}
+
+.de-law-settings-supported-notes {
+  margin-top: 8px;
+}
+
+.de-law-settings-supported-notes ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+@media (max-width: 720px) {
+  .de-law-settings-supported-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

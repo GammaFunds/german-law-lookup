@@ -7,6 +7,10 @@ import { ProviderRegistry } from "./law/ProviderRegistry";
 import { buildCachedLawProviders } from "./law/cachedProviderComposition";
 import { createObsidianRequestUrlTransport } from "./law/httpTransport";
 import { buildLawProviders } from "./law/providerComposition";
+import {
+  getSupportedGesetzeImInternetLaws,
+  type SupportedGesetzeImInternetLaw,
+} from "./law/providers/gesetzeImInternetMapping";
 import type { LawSection } from "./law/types";
 import { LawLookupModal } from "./ui/LawLookupModal";
 
@@ -156,6 +160,53 @@ class DeLawSettingsTab extends PluginSettingTab {
             });
           });
       });
+
+    containerEl.createEl("h3", { text: "Unterstützte Gesetze" });
+    containerEl.createEl("p", {
+      cls: "de-law-settings-supported-description",
+      text: "Diese Liste zeigt die aktuell explizit unterstützten Gesetze. Die Abfrage erfolgt weiterhin live über die Provider-Kette; diese Ansicht führt keine Netzwerkanfragen aus.",
+    });
+
+    this.renderSupportedLawsGroup(containerEl, "Paragraphenreferenzen (§)", "section");
+    this.renderSupportedLawsGroup(containerEl, "Artikelreferenzen (Art.)", "article");
+
+    const notes = containerEl.createDiv({ cls: "de-law-settings-supported-notes" });
+    notes.createEl("strong", { text: "Hinweise zu bewusst nicht abgedeckten Kandidaten" });
+    const noteList = notes.createEl("ul");
+    noteList.createEl("li", {
+      text: "GG wird derzeit ausschließlich für Artikelreferenzen unterstützt.",
+    });
+    noteList.createEl("li", {
+      text: "EGBGB, OWiG, KWG, FreizügG/EU sowie SGB I, SGB II, SGB V und SGB X bleiben vorerst Follow-ups, solange sie nicht explizit implementiert sind.",
+    });
+  }
+
+  private renderSupportedLawsGroup(
+    containerEl: HTMLElement,
+    heading: string,
+    referenceType: SupportedGesetzeImInternetLaw["referenceType"],
+  ): void {
+    const laws = getSupportedGesetzeImInternetLaws().filter(
+      (law) => law.referenceType === referenceType,
+    );
+
+    containerEl.createEl("h4", { text: heading });
+    const table = containerEl.createDiv({ cls: "de-law-settings-supported-table" });
+    const headerRow = table.createDiv({
+      cls: "de-law-settings-supported-row de-law-settings-supported-row-header",
+    });
+    headerRow.createEl("div", { text: "Kürzel" });
+    headerRow.createEl("div", { text: "Gesetz" });
+    headerRow.createEl("div", { text: "Referenztyp" });
+    headerRow.createEl("div", { text: "Beispiel" });
+
+    for (const law of laws) {
+      const row = table.createDiv({ cls: "de-law-settings-supported-row" });
+      row.createEl("div", { text: law.displayLawCode });
+      row.createEl("div", { text: law.lawTitle });
+      row.createEl("div", { text: law.referenceType === "article" ? "Art." : "§" });
+      row.createEl("div", { text: law.exampleInput });
+    }
   }
 }
 

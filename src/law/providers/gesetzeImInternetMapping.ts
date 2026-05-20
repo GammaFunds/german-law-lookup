@@ -9,6 +9,7 @@ const supportedLaws: Record<string, {
   lawTitle: string;
   displayLawCode?: string;
   referenceType?: "section" | "article";
+  exampleSection?: string;
 }> = {
   AO: {
     path: "ao_1977",
@@ -37,6 +38,7 @@ const supportedLaws: Record<string, {
   BGB: {
     path: "bgb",
     lawTitle: "Bürgerliches Gesetzbuch",
+    exampleSection: "823",
   },
   BETRVG: {
     path: "betrvg",
@@ -71,6 +73,7 @@ const supportedLaws: Record<string, {
     path: "gg",
     lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
     referenceType: "article",
+    exampleSection: "1",
   },
   GMBHG: {
     path: "gmbhg",
@@ -126,6 +129,7 @@ const supportedLaws: Record<string, {
     path: "stgb",
     lawTitle: "Strafgesetzbuch",
     displayLawCode: "StGB",
+    exampleSection: "242",
   },
   STAG: {
     path: "stag",
@@ -176,6 +180,33 @@ const supportedLaws: Record<string, {
     lawTitle: "Gesetz über die Zwangsversteigerung und die Zwangsverwaltung",
   },
 };
+
+export interface SupportedGesetzeImInternetLaw {
+  displayLawCode: string;
+  lawTitle: string;
+  referenceType: "section" | "article";
+  exampleInput: string;
+}
+
+export function getSupportedGesetzeImInternetLaws(): SupportedGesetzeImInternetLaw[] {
+  return Object.entries(supportedLaws)
+    .map(([lawCode, law]) => {
+      const displayLawCode = law.displayLawCode ?? canonicalDisplayLawCode(lawCode);
+      const referenceType = law.referenceType ?? "section";
+      const exampleSection = law.exampleSection ?? "1";
+
+      return {
+        displayLawCode,
+        lawTitle: law.lawTitle,
+        referenceType,
+        exampleInput:
+          referenceType === "article"
+            ? `Art. ${exampleSection} ${displayLawCode}`
+            : `${displayLawCode} § ${exampleSection}`,
+      };
+    })
+    .sort((left, right) => left.displayLawCode.localeCompare(right.displayLawCode, "de"));
+}
 
 export function buildGesetzeImInternetSectionUrl(
   reference: LawReference,
