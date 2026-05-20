@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, and lookup-modal metadata footer toggle. Tests and production build pass; plugin runtime tests succeeded. Additional manual checks confirmed KAGB and STAG lookups work; StGB lookup currently needs investigation."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, and lookup-modal metadata footer toggle. Tests and production build pass. Additional manual checks confirmed KAGB and STAG lookups work. StGB parser coverage and Gesetze im Internet support mapping for StGB § 242 are now implemented; a manual Obsidian runtime lookup is still required to confirm the end-to-end plugin path."
   },
   "blockers": [
     {
@@ -212,8 +212,8 @@
       "id": "T-027",
       "title": "Investigate failed StGB lookup",
       "component": "GesetzeImInternetProvider",
-      "status": "open",
-      "notes": "StGB failed in manual Obsidian runtime testing while KAGB and STAG worked. Verify parser output, provider support/mapping, generated Gesetze im Internet URL, HTTP status, and extraction behavior. Do not change provider fallback semantics: null may fall through, provider failures remain terminal."
+      "status": "completed",
+      "notes": "Root cause: StGB already parsed correctly through the generic uppercasing parser path, but GesetzeImInternetProvider did not support STGB in supportedLaws, so no Gesetze im Internet URL was generated and the provider returned null without fetching. Added parser coverage for StGB input variants, added STGB -> stgb / Strafgesetzbuch mapping, and added provider tests for https://www.gesetze-im-internet.de/stgb/__242.html while preserving provider fallback, 404/null, non-404/LawProviderUnavailableError, transport, cache, and UI invariants. Manual Obsidian runtime lookup/build validation is still required after the code change."
     }
   ],
   "architecture": {
