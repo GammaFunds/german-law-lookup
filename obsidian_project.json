@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, expanded Gesetze-im-Internet mappings, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
+    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, supported-law diagnostics in settings, expanded Gesetze-im-Internet mappings, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
   },
   "blockers": [
     {
@@ -137,7 +137,7 @@
       "title": "Investigate skipped Gesetze-im-Internet candidates with uncertain paths or unsupported reference forms",
       "component": "GesetzeImInternetProvider",
       "status": "open",
-      "notes": "Skipped in the explicit mapping expansion because they were not safely verified under the current model: EGBGB at candidate path bgbeg/__1.html returned 404 and likely needs article-style rather than paragraph-style handling; GG uses article references and is outside the current parser format; OWiG at candidate path owig/__1.html returned 404; KWG at candidate path kwg/__1.html returned 404; FreizügG/EU contains a slash and is not representable by the current parser law-code pattern; SGB I, SGB II, SGB V, and SGB X require space-containing law codes that are not currently parser-supported. These remain follow-up items rather than implemented support."
+      "notes": "Skipped in the explicit mapping expansion because they were not safely verified under the current model: EGBGB at candidate path bgbeg/__1.html returned 404 and likely needs article-style rather than paragraph-style handling; OWiG at candidate path owig/__1.html returned 404; KWG at candidate path kwg/__1.html returned 404; FreizügG/EU contains a slash and is not representable by the current parser law-code pattern; SGB I, SGB II, SGB V, and SGB X require space-containing law codes that are not currently parser-supported. These remain follow-up items rather than implemented support."
     },
     {
       "id": "T-016",
@@ -243,6 +243,13 @@
       "component": "Parser",
       "status": "completed",
       "notes": "Added explicit article-reference parsing only for GG inputs: \"Art. 1 GG\", \"Artikel 1 GG\", \"GG Art. 1\", \"GG Artikel 1\", and compatibility form \"Art 1 GG\". Internal references now carry a minimal referenceType field so GG article references remain distinct from existing section references. GesetzeImInternetProvider now supports GG with verified official path pattern https://www.gesetze-im-internet.de/gg/art_1.html and title \"Grundgesetz für die Bundesrepublik Deutschland\", while existing section-style URLs such as BGB § 823 -> /bgb/__823.html and StGB § 242 -> /stgb/__242.html remain unchanged. CitationFormatter, preview rendering, and cache fallback now display Art. for GG article references; cache keys remain deterministic and distinguish article vs. section references without invalidating existing section-style cache entries. ProviderRegistry semantics, Obsidian requestUrl transport, metadata toggle behavior, preview layout, live-first cache semantics, and terminal provider-failure behavior remain unchanged. Manual Obsidian runtime validation confirmed that GG article references work end to end: Art. 1 GG / Artikel 1 GG / GG Art. 1 resolve through Gesetze im Internet, preview and inserted Markdown use Art. labels instead of § labels, and existing § lookups remain functional."
+    },
+    {
+      "id": "T-032",
+      "title": "Add supported-law diagnostics view",
+      "component": "Settings",
+      "status": "completed",
+      "notes": "Added a settings/UI-only diagnostics view named \"Unterstützte Gesetze\" that renders the explicitly supported Gesetze-im-Internet mappings from shared mapping metadata, grouped into paragraph and article references with German labels, titles, reference types, and example inputs. The settings view performs no network calls and does not probe provider URLs dynamically. Provider behavior, parser behavior, requestUrl transport, cache keys, cache fallback semantics, preview rendering, lookup-modal behavior, and CitationFormatter insertion output remain unchanged."
     }
   ],
   "architecture": {
