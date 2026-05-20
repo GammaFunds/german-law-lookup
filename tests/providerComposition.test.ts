@@ -20,4 +20,22 @@ describe("provider composition", () => {
       ["neuris", "gesetze-im-internet", "mock"],
     );
   });
+
+  it("does not call the configured transport while composing providers", () => {
+    let calls = 0;
+
+    buildLawProviders({
+      httpTransport: async () => {
+        calls += 1;
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({}),
+          text: async () => "",
+        };
+      },
+    });
+
+    assert.equal(calls, 0);
+  });
 });

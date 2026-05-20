@@ -145,6 +145,7 @@ describe("GesetzeImInternetProvider", () => {
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => ({
       ok: false,
       status: 500,
+      json: async () => ({}),
       text: async () => "",
     }));
 
@@ -158,6 +159,7 @@ describe("GesetzeImInternetProvider", () => {
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => ({
       ok: false,
       status: 404,
+      json: async () => ({}),
       text: async () => "",
     }));
 
@@ -168,6 +170,7 @@ describe("GesetzeImInternetProvider", () => {
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => ({
       ok: false,
       status: 500,
+      json: async () => ({}),
       text: async () => "",
     }));
 
@@ -247,6 +250,7 @@ function textResponse(body: string) {
   return {
     ok: true,
     status: 200,
+    json: async () => ({}),
     text: async () => body,
   };
 }

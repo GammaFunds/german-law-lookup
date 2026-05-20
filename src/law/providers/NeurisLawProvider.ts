@@ -1,5 +1,9 @@
 import type { LawProvider } from "../LawProvider";
 import { LawProviderUnavailableError } from "../errors";
+import {
+  createFetchLawProviderTransport,
+  type LawProviderHttpTransport,
+} from "../httpTransport";
 import type { LawReference, LawSection } from "../types";
 import {
   buildArticleHtmlUrl,
@@ -11,12 +15,6 @@ import {
   type NeurisLegislationExpression,
 } from "./neurisMapping";
 
-type FetchLike = (input: string) => Promise<{
-  ok: boolean;
-  json(): Promise<unknown>;
-  text(): Promise<string>;
-}>;
-
 const DEFAULT_BASE_URL = "https://testphase.rechtsinformationen.bund.de";
 
 export class NeurisLawProvider implements LawProvider {
@@ -25,7 +23,7 @@ export class NeurisLawProvider implements LawProvider {
 
   constructor(
     private readonly baseUrl = DEFAULT_BASE_URL,
-    private readonly fetchFn: FetchLike = (input) => fetch(input),
+    private readonly fetchFn: LawProviderHttpTransport = createFetchLawProviderTransport(),
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
@@ -126,7 +124,7 @@ export class NeurisLawProvider implements LawProvider {
     }
   }
 
-  private async request(url: string): ReturnType<FetchLike> {
+  private async request(url: string): ReturnType<LawProviderHttpTransport> {
     try {
       return await this.fetchFn(url);
     } catch (error) {

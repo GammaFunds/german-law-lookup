@@ -1,5 +1,6 @@
-import { Plugin } from "obsidian";
+import { Plugin, requestUrl } from "obsidian";
 import { ProviderRegistry } from "./law/ProviderRegistry";
+import { createObsidianRequestUrlTransport } from "./law/httpTransport";
 import { buildLawProviders } from "./law/providerComposition";
 import { LawLookupModal } from "./ui/LawLookupModal";
 
@@ -16,7 +17,12 @@ export default class DeLawPlugin extends Plugin {
 
   async onload() {
     const settings = await this.loadSettings();
-    this.providerRegistry = new ProviderRegistry(buildLawProviders(settings));
+    this.providerRegistry = new ProviderRegistry(
+      buildLawProviders({
+        ...settings,
+        httpTransport: createObsidianRequestUrlTransport(requestUrl),
+      }),
+    );
 
     this.addCommand({
       id: "deutsches-gesetz-nachschlagen",

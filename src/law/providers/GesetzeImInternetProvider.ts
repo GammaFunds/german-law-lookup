@@ -1,16 +1,15 @@
 import type { LawProvider } from "../LawProvider";
 import { LawProviderUnavailableError } from "../errors";
+import {
+  createFetchLawProviderTransport,
+  type LawProviderHttpResponse,
+  type LawProviderHttpTransport,
+} from "../httpTransport";
 import type { LawReference, LawSection } from "../types";
 import {
   buildGesetzeImInternetSectionUrl,
   mapGesetzeImInternetToLawSection,
 } from "./gesetzeImInternetMapping";
-
-type FetchLike = (input: string) => Promise<{
-  ok: boolean;
-  status?: number;
-  text(): Promise<string>;
-}>;
 
 const BASE_URL = "https://www.gesetze-im-internet.de";
 
@@ -20,7 +19,7 @@ export class GesetzeImInternetProvider implements LawProvider {
 
   constructor(
     private readonly baseUrl = BASE_URL,
-    private readonly fetchFn: FetchLike = (input) => fetch(input),
+    private readonly fetchFn: LawProviderHttpTransport = createFetchLawProviderTransport(),
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
@@ -64,7 +63,7 @@ export class GesetzeImInternetProvider implements LawProvider {
     }
   }
 
-  private async request(url: string): ReturnType<FetchLike> {
+  private async request(url: string): ReturnType<LawProviderHttpTransport> {
     try {
       return await this.fetchFn(url);
     } catch (error) {
@@ -76,7 +75,7 @@ export class GesetzeImInternetProvider implements LawProvider {
     }
   }
 
-  private async getText(response: Awaited<ReturnType<FetchLike>>, url: string): Promise<string> {
+  private async getText(response: LawProviderHttpResponse, url: string): Promise<string> {
     try {
       return await response.text();
     } catch (error) {
