@@ -3,8 +3,8 @@
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
     "phase": "MVP planning",
-    "last_updated": "2026-05-19",
-    "summary": "New Obsidian plugin project to access and insert German federal law texts inside Obsidian."
+    "last_updated": "2026-05-20",
+    "summary": "Obsidian runtime lookup for BGB § 823 now resolves through Gesetze im Internet using requestUrl transport, with cleaned section-body extraction and insertion UI visible after successful lookup."
   },
   "blockers": [
     {
@@ -150,6 +150,34 @@
       "component": "ObsidianIntegration",
       "status": "completed",
       "notes": "After successful lookup, the modal shows 'In aktuelle Note einfügen'. Insertion uses CitationFormatter markdown and happens only after explicit user click. The formatted law section is inserted at the current cursor position in the active Markdown editor. If no active Markdown editor exists, the plugin shows an Obsidian Notice. Stale lookup protection remains preserved."
+    },
+    {
+      "id": "T-019",
+      "title": "Fix Obsidian runtime transport for external law-provider HTTP",
+      "component": "LawProvider",
+      "status": "completed",
+      "notes": "Global fetch worked in Node validation but failed in Obsidian runtime for Gesetze im Internet. Runtime providers now use Obsidian requestUrl transport. Constructor injection remains available for fixture tests, and startup still performs no law-provider network calls."
+    },
+    {
+      "id": "T-020",
+      "title": "Clean Gesetze im Internet section extraction for BGB § 823",
+      "component": "GesetzeImInternetProvider",
+      "status": "completed",
+      "notes": "Obsidian runtime validation confirmed BGB § 823 resolves through Gesetze im Internet. Extraction now prefers norm paragraph blocks and excludes footer/navigation artifacts. Confirmed removed artifacts: zum Seitenanfang, Impressum, Datenschutz, Barrierefreiheitserklärung, Feedback-Formular, Seite ausdrucken. Legal paragraphs (1) and (2) remain present. The insert button appears after successful lookup."
+    },
+    {
+      "id": "T-021",
+      "title": "Optionally render lookup result preview instead of raw Markdown display",
+      "component": "Plugin UI",
+      "status": "open",
+      "notes": "Current lookup result can display raw Markdown. A future UX pass may render the preview while preserving formatted Markdown insertion."
+    },
+    {
+      "id": "T-022",
+      "title": "Manually validate insertion into an active Obsidian note",
+      "component": "ObsidianIntegration",
+      "status": "open",
+      "notes": "Runtime validation confirmed successful lookup and visible insert button. A further manual test should confirm insertion into an active note in the Obsidian editor."
     }
   ],
   "architecture": {
@@ -224,6 +252,20 @@
       "date": "2026-05-19",
       "status": "accepted",
       "notes": "Law text insertion must require explicit user action and must insert formatted source and citation metadata, not raw provider output."
+    },
+    {
+      "id": "D-008",
+      "title": "Obsidian runtime law-provider HTTP uses requestUrl transport",
+      "date": "2026-05-20",
+      "status": "accepted",
+      "notes": "Law providers in Obsidian runtime must use Obsidian requestUrl transport, not global fetch, because browser/Electron transport behavior can fail for external law-provider websites even when Node validation succeeds."
+    },
+    {
+      "id": "D-009",
+      "title": "Gesetze im Internet extraction prefers norm paragraph blocks",
+      "date": "2026-05-20",
+      "status": "accepted",
+      "notes": "Gesetze im Internet extraction must prefer actual norm paragraph blocks and exclude page chrome, navigation, footer, print links, and script/style/comment fragments from LawSection.text."
     }
   ]
 }
