@@ -11,7 +11,7 @@ const lawFirstPattern = new RegExp(
 );
 
 const sectionFirstPattern = new RegExp(
-  String.raw`^§\s*(${sectionPattern})\s+(${lawCodePattern})$`,
+  String.raw`^(?:§\s*)?(${sectionPattern})\s+(${lawCodePattern})$`,
   "u",
 );
 
