@@ -17,8 +17,21 @@ const bgb823HtmlFixture = `
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
 <head>
   <title>&#167; 823 BGB - Einzelnorm</title>
+  <style>
+    .print { display: none; }
+  </style>
+  <script>
+    /* <![CDATA[ */
+    window.printLinksEnabled = true;
+    /* ]]> */
+  </script>
 </head>
 <body>
+  <!-- Navigation comment that should not enter text -->
+  <nav>
+    <a href="#seitenanfang">zum Seitenanfang</a>
+    <a href="/bgb/inhaltsuebersicht.html">Inhaltsübersicht</a>
+  </nav>
   <div class="jnheader">
     <h1>Bürgerliches Gesetzbuch (BGB)<br />
       <span class="jnenbez">&#167; 823</span>&#160;<span class="jnentitel">Schadensersatzpflicht</span>
@@ -30,8 +43,17 @@ const bgb823HtmlFixture = `
         <div class="jurAbsatz">(1) Wer vorsätzlich oder fahrlässig das Leben, den Körper, die Gesundheit, die Freiheit, das Eigentum oder ein sonstiges Recht eines anderen widerrechtlich verletzt, ist dem anderen zum Ersatz des daraus entstehenden Schadens verpflichtet.</div>
         <div class="jurAbsatz">(2) Die gleiche Verpflichtung trifft denjenigen, welcher gegen ein den Schutz eines anderen bezweckendes Gesetz verstößt.</div>
       </div>
+      <div class="print">
+        <a href="#">Seite ausdrucken</a>
+      </div>
     </div>
   </div>
+  <footer>
+    <a href="/impressum.html">Impressum</a>
+    <a href="/datenschutz.html">Datenschutz</a>
+    <a href="/barrierefreiheit.html">Barrierefreiheitserklärung</a>
+    <a href="/feedback.html">Feedback-Formular</a>
+  </footer>
 </body>
 </html>`;
 
@@ -66,6 +88,23 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.doesNotMatch(text, /<div/);
   });
 
+  it("excludes Gesetze im Internet navigation, footer, and script artifacts", () => {
+    const text = extractGesetzeImInternetPlainText(bgb823HtmlFixture);
+
+    assert.match(text, /\(1\) Wer vorsätzlich oder fahrlässig das Leben/);
+    assert.match(text, /\(2\) Die gleiche Verpflichtung trifft denjenigen/);
+    assert.doesNotMatch(text, /zum Seitenanfang/);
+    assert.doesNotMatch(text, /Impressum/);
+    assert.doesNotMatch(text, /Datenschutz/);
+    assert.doesNotMatch(text, /Barrierefreiheitserklärung/);
+    assert.doesNotMatch(text, /Feedback-Formular/);
+    assert.doesNotMatch(text, /Seite ausdrucken/);
+    assert.doesNotMatch(text, /CDATA/);
+    assert.doesNotMatch(text, /window\.printLinksEnabled/);
+    assert.doesNotMatch(text, /\/\*/);
+    assert.doesNotMatch(text, /\/\/-->/);
+  });
+
   it("maps BGB § 823 into LawSection", () => {
     const section = mapGesetzeImInternetToLawSection({
       reference: { lawCode: "BGB", section: "823" },
@@ -87,6 +126,8 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.equal(section.isOfficialSource, true);
     assert.equal(section.isAuthoritativeText, false);
     assert.match(section.text, /Wer vorsätzlich oder fahrlässig/);
+    assert.match(section.text, /\(2\) Die gleiche Verpflichtung trifft denjenigen/);
+    assert.doesNotMatch(section.text, /Impressum|Datenschutz|zum Seitenanfang/);
   });
 
   it("preserves original reference section while mapping LawSection", () => {
