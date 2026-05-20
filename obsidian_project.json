@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, supported-law diagnostics in settings, expanded Gesetze-im-Internet mappings, diagnostics example-input UX, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
+    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, supported-law diagnostics in settings, diagnostics example layout UX, expanded Gesetze-im-Internet mappings, diagnostics example-input UX, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
   },
   "blockers": [
     {
@@ -257,6 +257,13 @@
       "component": "Settings",
       "status": "completed",
       "notes": "Updated the settings/diagnostics metadata so each explicitly supported law now exposes multiple supported input forms in a stable order, with the first example using natural citation order such as \"§ 823 BGB\" and \"Art. 1 GG\". The settings UI renders these compactly without adding any runtime provider calls. Parser behavior, provider mappings, requestUrl transport, cache behavior, lookup flow, preview rendering, and CitationFormatter insertion output remain unchanged."
+    },
+    {
+      "id": "T-034",
+      "title": "Improve supported-law diagnostics example layout",
+      "component": "Settings",
+      "status": "completed",
+      "notes": "Updated the settings/UI-only diagnostics view to render each supported input form as a compact wrapped chip instead of one joined text string. This improves readability in narrow settings panels while preserving the existing exampleInputs metadata and ordering. Parser behavior, provider behavior, requestUrl transport, cache behavior, lookup flow, preview rendering, and CitationFormatter insertion output remain unchanged."
     }
   ],
   "architecture": {

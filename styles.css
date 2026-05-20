@@ -111,8 +111,24 @@
   border-top: 1px solid var(--background-modifier-border);
 }
 
-.de-law-settings-supported-examples {
-  line-height: 1.5;
+.de-law-settings-supported-example-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.de-law-settings-supported-example {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 2px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  background: var(--background-secondary);
+  line-height: 1.45;
+  font-size: var(--font-ui-smaller);
+  word-break: break-word;
 }
 
 .de-law-settings-supported-row-header {
@@ -134,5 +150,9 @@
   .de-law-settings-supported-row {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .de-law-settings-supported-example {
+    border-radius: 10px;
   }
 }

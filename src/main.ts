@@ -205,10 +205,13 @@ class DeLawSettingsTab extends PluginSettingTab {
       row.createEl("div", { text: law.displayLawCode });
       row.createEl("div", { text: law.lawTitle });
       row.createEl("div", { text: law.referenceType === "article" ? "Art." : "§" });
-      row.createEl("div", {
-        cls: "de-law-settings-supported-examples",
-        text: law.exampleInputs.join(" · "),
-      });
+      const examples = row.createDiv({ cls: "de-law-settings-supported-example-list" });
+      for (const exampleInput of law.exampleInputs) {
+        examples.createEl("span", {
+          cls: "de-law-settings-supported-example",
+          text: exampleInput,
+        });
+      }
     }
   }
 }
