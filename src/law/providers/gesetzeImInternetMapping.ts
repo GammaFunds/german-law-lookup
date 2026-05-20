@@ -1,8 +1,9 @@
+import { canonicalDisplayLawCode } from "../displayLawCode";
 import type { LawReference, LawSection } from "../types";
 
 const BASE_URL = "https://www.gesetze-im-internet.de";
 
-const supportedLaws: Record<string, { path: string; lawTitle: string }> = {
+const supportedLaws: Record<string, { path: string; lawTitle: string; displayLawCode?: string }> = {
   BGB: {
     path: "bgb",
     lawTitle: "Bürgerliches Gesetzbuch",
@@ -10,6 +11,7 @@ const supportedLaws: Record<string, { path: string; lawTitle: string }> = {
   STGB: {
     path: "stgb",
     lawTitle: "Strafgesetzbuch",
+    displayLawCode: "StGB",
   },
 };
 
@@ -30,6 +32,11 @@ export function buildGesetzeImInternetSectionUrl(
 
 export function lawTitleForReference(reference: LawReference): string | null {
   return supportedLaws[reference.lawCode.toUpperCase()]?.lawTitle ?? null;
+}
+
+function displayLawCodeForReference(reference: LawReference): string {
+  return supportedLaws[reference.lawCode.toUpperCase()]?.displayLawCode
+    ?? canonicalDisplayLawCode(reference.lawCode);
 }
 
 export function extractGesetzeImInternetHeading(html: string): string | undefined {
@@ -63,7 +70,7 @@ export function mapGesetzeImInternetToLawSection(params: {
     providerId: params.providerId,
     providerLabel: params.providerLabel,
     sourceUrl: params.sourceUrl,
-    lawCode: params.reference.lawCode,
+    lawCode: displayLawCodeForReference(params.reference),
     lawTitle,
     section: params.reference.section,
     heading: extractGesetzeImInternetHeading(params.html),

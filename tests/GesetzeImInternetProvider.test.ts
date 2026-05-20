@@ -206,6 +206,7 @@ describe("GesetzeImInternetProvider", () => {
     const section = await provider.getSection({ lawCode: "STGB", section: "242" });
 
     assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "StGB");
     assert.equal(section?.lawTitle, "Strafgesetzbuch");
     assert.equal(section?.heading, "Diebstahl");
     assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/stgb/__242.html");

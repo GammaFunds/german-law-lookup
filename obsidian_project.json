@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, and lookup-modal metadata footer toggle. Tests and production build pass. Additional manual checks confirmed KAGB and STAG lookups work. StGB parser coverage and Gesetze im Internet support mapping for StGB § 242 are now implemented; a manual Obsidian runtime lookup is still required to confirm the end-to-end plugin path."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, and lookup-modal metadata footer toggle. Tests and production build pass. Additional manual checks confirmed KAGB, STAG, and StGB lookups work. StGB display abbreviation normalization is implemented for both fresh Gesetze-im-Internet results and cached fallback results, so inserted output uses the canonical legal abbreviation without changing parser, lookup, cache keys, or provider failure semantics."
   },
   "blockers": [
     {
@@ -213,7 +213,14 @@
       "title": "Investigate failed StGB lookup",
       "component": "GesetzeImInternetProvider",
       "status": "completed",
-      "notes": "Root cause: StGB already parsed correctly through the generic uppercasing parser path, but GesetzeImInternetProvider did not support STGB in supportedLaws, so no Gesetze im Internet URL was generated and the provider returned null without fetching. Added parser coverage for StGB input variants, added STGB -> stgb / Strafgesetzbuch mapping, and added provider tests for https://www.gesetze-im-internet.de/stgb/__242.html while preserving provider fallback, 404/null, non-404/LawProviderUnavailableError, transport, cache, and UI invariants. Manual Obsidian runtime lookup/build validation is still required after the code change."
+      "notes": "Root cause: StGB already parsed correctly through the generic uppercasing parser path, but GesetzeImInternetProvider did not support STGB in supportedLaws, so no Gesetze im Internet URL was generated and the provider returned null without fetching. Added parser coverage for StGB input variants, added STGB -> stgb / Strafgesetzbuch mapping, and added provider tests for https://www.gesetze-im-internet.de/stgb/__242.html while preserving provider fallback, 404/null, non-404/LawProviderUnavailableError, transport, cache, and UI invariants. Subsequent Obsidian runtime validation confirmed that StGB lookup, insertion, and the metadata toggle now work end to end."
+    },
+    {
+      "id": "T-028",
+      "title": "Normalize canonical display abbreviation for StGB output",
+      "component": "CitationFormatter",
+      "status": "completed",
+      "notes": "Root cause: internal lookup code remains uppercase by parser and lookup design, but the mapped LawSection reused STGB for display, so inserted output showed '§ 242 STGB' instead of the canonical legal abbreviation '§ 242 StGB'. Initial live-result mapping fix corrected fresh GesetzeImInternetProvider results, but review identified a P2 upgrade-path gap: pre-existing cached STGB LawSection entries could still surface uppercase STGB during cache fallback because CitationFormatter renders section.lawCode verbatim. The fix adds a small shared canonical display-law-code helper, keeps parser normalization, provider lookup keys, cache keys, requestUrl transport, provider fallback semantics, and metadata-footer toggle behavior unchanged, and normalizes cached pre-existing STGB entries on fallback/read before returning the cached LawSection."
     }
   ],
   "architecture": {

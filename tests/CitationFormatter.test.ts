@@ -81,4 +81,23 @@ describe("formatLawSectionAsMarkdown", () => {
       ].join("\n"),
     );
   });
+
+  it("uses canonical display abbreviations in formatted headings", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "StGB",
+      lawTitle: "Strafgesetzbuch",
+      section: "242",
+      heading: "Diebstahl",
+      text: "Wer eine fremde bewegliche Sache wegnimmt.",
+      retrievedAt: "2026-05-20T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.match(markdown, /^> \*\*§ 242 StGB – Diebstahl\*\*/m);
+    assert.doesNotMatch(markdown, /§ 242 STGB/);
+  });
 });

@@ -187,6 +187,31 @@ describe("CachedLawProvider", () => {
     assert.equal(result?.cacheStatus, "cached");
   });
 
+  it("canonicalizes pre-existing cached STGB display code on fallback", async () => {
+    const cache = new InMemoryLawSectionCache();
+    await cache.set(section({
+      providerId: "gesetze-im-internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/stgb/__242.html",
+      lawCode: "STGB",
+      lawTitle: "Strafgesetzbuch",
+      section: "242",
+      heading: "Diebstahl",
+      text: "Wer eine fremde bewegliche Sache wegnimmt.",
+    }));
+    const provider = new CachedLawProvider(
+      lawProvider(async () => null),
+      cache,
+      {
+        allowedProviderIds: ["neuris", "gesetze-im-internet"],
+      },
+    );
+
+    const result = await provider.getSection({ lawCode: "STGB", section: "242" });
+
+    assert.equal(result?.lawCode, "StGB");
+    assert.equal(result?.cacheStatus, "cached");
+  });
+
   it("does not return expired cached result after provider returns null", async () => {
     const cache = new InMemoryLawSectionCache();
     await cache.set(section({ retrievedAt: "2026-05-18T00:00:00.000Z" }));

@@ -1,3 +1,4 @@
+import { canonicalDisplayLawCode } from "./displayLawCode";
 import type { LawProvider } from "./LawProvider";
 import type { LawReference, LawSection } from "./types";
 
@@ -78,6 +79,7 @@ export class CachedLawProvider implements LawProvider {
     ) {
       return {
         ...cachedSection,
+        lawCode: canonicalDisplayLawCode(cachedSection.lawCode),
         cacheStatus: "cached",
       };
     }
