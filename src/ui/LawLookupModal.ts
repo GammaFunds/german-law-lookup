@@ -29,7 +29,7 @@ export class LawLookupModal extends Modal {
     const formEl = contentEl.createDiv({ cls: "de-law-lookup-form" });
     this.inputEl = formEl.createEl("input", {
       type: "text",
-      placeholder: "z. B. BGB 823",
+      placeholder: "z. B. § 823 BGB",
     });
     this.inputEl.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
