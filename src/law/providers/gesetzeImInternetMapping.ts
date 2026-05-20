@@ -185,7 +185,7 @@ export interface SupportedGesetzeImInternetLaw {
   displayLawCode: string;
   lawTitle: string;
   referenceType: "section" | "article";
-  exampleInput: string;
+  exampleInputs: string[];
 }
 
 export function getSupportedGesetzeImInternetLaws(): SupportedGesetzeImInternetLaw[] {
@@ -199,10 +199,20 @@ export function getSupportedGesetzeImInternetLaws(): SupportedGesetzeImInternetL
         displayLawCode,
         lawTitle: law.lawTitle,
         referenceType,
-        exampleInput:
+        exampleInputs:
           referenceType === "article"
-            ? `Art. ${exampleSection} ${displayLawCode}`
-            : `${displayLawCode} § ${exampleSection}`,
+            ? [
+                `Art. ${exampleSection} ${displayLawCode}`,
+                `${displayLawCode} Art. ${exampleSection}`,
+                `Artikel ${exampleSection} ${displayLawCode}`,
+                `${displayLawCode} Artikel ${exampleSection}`,
+              ]
+            : [
+                `§ ${exampleSection} ${displayLawCode}`,
+                `${displayLawCode} § ${exampleSection}`,
+                `${exampleSection} ${displayLawCode}`,
+                `${displayLawCode} ${exampleSection}`,
+              ],
       };
     })
     .sort((left, right) => left.displayLawCode.localeCompare(right.displayLawCode, "de"));

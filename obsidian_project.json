@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, supported-law diagnostics in settings, expanded Gesetze-im-Internet mappings, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
+    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, supported-law diagnostics in settings, expanded Gesetze-im-Internet mappings, diagnostics example-input UX, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
   },
   "blockers": [
     {
@@ -250,6 +250,13 @@
       "component": "Settings",
       "status": "completed",
       "notes": "Added a settings/UI-only diagnostics view named \"Unterstützte Gesetze\" that renders the explicitly supported Gesetze-im-Internet mappings from shared mapping metadata, grouped into paragraph and article references with German labels, titles, reference types, and example inputs. The settings view performs no network calls and does not probe provider URLs dynamically. Provider behavior, parser behavior, requestUrl transport, cache keys, cache fallback semantics, preview rendering, lookup-modal behavior, and CitationFormatter insertion output remain unchanged."
+    },
+    {
+      "id": "T-033",
+      "title": "Improve supported-law diagnostics example-input UX",
+      "component": "Settings",
+      "status": "completed",
+      "notes": "Updated the settings/diagnostics metadata so each explicitly supported law now exposes multiple supported input forms in a stable order, with the first example using natural citation order such as \"§ 823 BGB\" and \"Art. 1 GG\". The settings UI renders these compactly without adding any runtime provider calls. Parser behavior, provider mappings, requestUrl transport, cache behavior, lookup flow, preview rendering, and CitationFormatter insertion output remain unchanged."
     }
   ],
   "architecture": {
