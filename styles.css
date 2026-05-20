@@ -13,6 +13,37 @@
   padding: 8px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 4px;
+}
+
+.de-law-lookup-result-message {
   white-space: pre-wrap;
 }
 
+.de-law-lookup-preview-title {
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.de-law-lookup-preview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.de-law-lookup-preview-paragraph {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--background-modifier-border);
+}
+
+.de-law-lookup-preview-metadata {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.de-law-lookup-preview-metadata-line + .de-law-lookup-preview-metadata-line {
+  margin-top: 4px;
+}
