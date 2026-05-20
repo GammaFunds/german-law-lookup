@@ -193,6 +193,13 @@
       "component": "Settings",
       "status": "completed",
       "notes": "Added settings for enableLawSectionCache, default true, and lawSectionCacheTtlDays, default null. The settings UI can disable the cache wrapper or set a positive TTL in days. Cache settings preserve live-first provider semantics: live providers are still called first, cache fallback is only checked after live providers return null, provider failures remain terminal, null/not-found results are not cached, and cached mock-provider entries remain gated by explicit MockLawProvider opt-in."
+    },
+    {
+      "id": "T-025",
+      "title": "Add lookup-modal toggle for inserted source/cache metadata footer",
+      "component": "Plugin UI",
+      "status": "completed",
+      "notes": "Added showInsertedSourceMetadata, default true, persisted in plugin settings and exposed directly in the lookup modal as \"Quellen- und Cache-Hinweis einfügen\". CitationFormatter now accepts an options object so inserted Markdown can omit only the source/cache footer while preserving the section heading and quoted law text. Provider order, live-first cache behavior, terminal provider failures, and lookup lifecycle remain unchanged."
     }
   ],
   "architecture": {
@@ -215,7 +222,7 @@
     ],
     "invariants": [
       "Plugin must not modify notes without explicit user action",
-      "Inserted law text must include source metadata",
+      "Inserted law text may omit the source/cache footer only when the user explicitly disables it in the lookup modal",
       "MVP must only handle German federal law",
       "Fetching logic must remain separate from UI logic"
     ]
