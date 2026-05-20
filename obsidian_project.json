@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, and minimal cache settings. Tests and production build pass; plugin runtime test succeeded."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, and lookup-modal metadata footer toggle. Tests and production build pass; plugin runtime tests succeeded."
   },
   "blockers": [
     {
@@ -199,7 +199,7 @@
       "title": "Add lookup-modal toggle for inserted source/cache metadata footer",
       "component": "Plugin UI",
       "status": "completed",
-      "notes": "Added showInsertedSourceMetadata, default true, persisted in plugin settings and exposed directly in the lookup modal as \"Quellen- und Cache-Hinweis einfügen\". CitationFormatter now accepts an options object so inserted Markdown can omit only the source/cache footer while preserving the section heading and quoted law text. Provider order, live-first cache behavior, terminal provider failures, and lookup lifecycle remain unchanged."
+      "notes": "Runtime validation succeeded. The lookup modal toggle \"Quellen- und Cache-Hinweis einfügen\" is visible, persists its selected state, and controls whether inserted Markdown includes the Quelle/Cache footer. With the toggle enabled, the existing metadata footer is inserted. With the toggle disabled, the inserted law text keeps the heading and quoted section text but omits the footer. Lookup and insertion behavior remain functional."
     }
   ],
   "architecture": {
