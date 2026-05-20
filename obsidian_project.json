@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, lookup-modal metadata footer toggle, StGB support, canonical StGB display normalization, expanded explicit Gesetze-im-Internet law mappings, and rendered lookup preview. Tests and production build pass; manual Obsidian runtime validation confirmed the rendered preview works."
+    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, lookup-modal metadata footer toggle, StGB support, canonical StGB display normalization, expanded explicit Gesetze-im-Internet law mappings, rendered lookup preview, and lookup-modal UX polish. Tests and production build pass; manual Obsidian runtime validation confirmed the rendered preview works."
   },
   "blockers": [
     {
@@ -229,6 +229,13 @@
       "component": "CitationFormatter",
       "status": "completed",
       "notes": "Root cause: internal lookup code remains uppercase by parser and lookup design, but the mapped LawSection reused STGB for display, so inserted output showed '§ 242 STGB' instead of the canonical legal abbreviation '§ 242 StGB'. Initial live-result mapping fix corrected fresh GesetzeImInternetProvider results, but review identified a P2 upgrade-path gap: pre-existing cached STGB LawSection entries could still surface uppercase STGB during cache fallback because CitationFormatter renders section.lawCode verbatim. The fix adds a small shared canonical display-law-code helper, keeps parser normalization, provider lookup keys, cache keys, requestUrl transport, provider fallback semantics, and metadata-footer toggle behavior unchanged, and normalizes cached pre-existing STGB entries on fallback/read before returning the cached LawSection. Runtime validation confirmed that StGB § 242 now displays and inserts as \"§ 242 StGB – Diebstahl\" rather than \"§ 242 STGB – Diebstahl\"."
+    },
+    {
+      "id": "T-030",
+      "title": "Polish lookup-modal preview and action layout",
+      "component": "Plugin UI",
+      "status": "completed",
+      "notes": "Visual/UI-only follow-up after the rendered preview implementation. The modal title remains \"Deutsches Gesetz nachschlagen\". The preview block spacing was increased, the result container was made more readable, the metadata toggle was visually de-emphasized relative to the preview, and the \"In aktuelle Note einfügen\" action remains easy to find. Toggle-on/off preview updates, CitationFormatter insertion output, stale lookup protection, parser/provider/cache behavior, and lifecycle semantics remain unchanged."
     }
   ],
   "architecture": {

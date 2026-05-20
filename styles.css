@@ -1,7 +1,7 @@
 .de-law-lookup-form {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .de-law-lookup-form input {
@@ -10,35 +10,40 @@
 
 .de-law-lookup-result {
   min-height: 72px;
-  padding: 8px;
+  padding: 14px 16px;
   border: 1px solid var(--background-modifier-border);
-  border-radius: 4px;
+  border-radius: 8px;
+  background: var(--background-secondary);
+  box-shadow: inset 0 1px 0 var(--background-modifier-border-hover);
 }
 
 .de-law-lookup-result-message {
   white-space: pre-wrap;
+  color: var(--text-muted);
 }
 
 .de-law-lookup-preview-title {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .de-law-lookup-preview-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .de-law-lookup-preview-paragraph {
   margin: 0;
-  padding-left: 12px;
-  border-left: 2px solid var(--background-modifier-border);
+  padding-left: 14px;
+  line-height: 1.6;
+  border-left: 3px solid var(--interactive-accent);
 }
 
 .de-law-lookup-preview-metadata {
-  margin-top: 12px;
-  padding-top: 8px;
+  margin-top: 16px;
+  padding-top: 10px;
   border-top: 1px solid var(--background-modifier-border);
   color: var(--text-muted);
   font-size: var(--font-ui-smaller);
@@ -46,4 +51,38 @@
 
 .de-law-lookup-preview-metadata-line + .de-law-lookup-preview-metadata-line {
   margin-top: 4px;
+}
+
+.de-law-lookup-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.de-law-lookup-actions .setting-item {
+  flex: 1 1 260px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.de-law-lookup-actions .setting-item-info {
+  color: var(--text-muted);
+}
+
+.de-law-lookup-actions .setting-item-name {
+  font-size: var(--font-ui-smaller);
+  font-weight: 500;
+}
+
+.de-law-lookup-actions button {
+  flex: 0 0 auto;
+}
+
+.de-law-lookup-actions > button {
+  min-width: 220px;
+  font-weight: 600;
 }
