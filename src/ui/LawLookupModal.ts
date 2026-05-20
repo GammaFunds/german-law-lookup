@@ -1,20 +1,29 @@
-import { App, MarkdownView, Modal, Notice } from "obsidian";
+import { App, MarkdownView, Modal, Notice, Setting } from "obsidian";
 import { formatLawSectionAsMarkdown } from "../law/CitationFormatter";
 import { ProviderRegistry } from "../law/ProviderRegistry";
+import type { LawSection } from "../law/types";
 import { parseLawReference } from "../parser";
 import { LookupSequence } from "./LookupSequence";
 import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
+
+interface LawLookupModalSettingsStore {
+  getShowInsertedSourceMetadata(): boolean;
+  setShowInsertedSourceMetadata(value: boolean): Promise<void>;
+}
 
 export class LawLookupModal extends Modal {
   private inputEl!: HTMLInputElement;
   private resultEl!: HTMLElement;
   private actionsEl!: HTMLElement;
+  private currentSection: LawSection | null = null;
   private currentMarkdown = "";
+  private showInsertedSourceMetadata = true;
   private readonly lookupSequence = new LookupSequence();
 
   constructor(
     app: App,
     private readonly providerRegistry: ProviderRegistry,
+    private readonly settingsStore: LawLookupModalSettingsStore,
   ) {
     super(app);
   }
@@ -43,6 +52,9 @@ export class LawLookupModal extends Modal {
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
     this.resultEl.setText("Noch keine Suche ausgeführt.");
     this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
+    this.showInsertedSourceMetadata =
+      this.settingsStore.getShowInsertedSourceMetadata();
+    this.renderActions();
   }
 
   onClose() {
@@ -52,8 +64,9 @@ export class LawLookupModal extends Modal {
   private async renderParsedReference() {
     const lookupId = this.lookupSequence.next();
     const parsed = parseLawReference(this.inputEl.value);
+    this.currentSection = null;
     this.currentMarkdown = "";
-    this.actionsEl.empty();
+    this.renderActions();
 
     if (!parsed) {
       this.resultEl.setText("Keine erkannte Fundstelle.");
@@ -68,21 +81,45 @@ export class LawLookupModal extends Modal {
         return;
       }
 
-      this.currentMarkdown = formatLawSectionAsMarkdown(section);
+      this.currentSection = section;
+      this.currentMarkdown = this.formatCurrentSection();
       this.resultEl.setText(this.currentMarkdown);
-      this.renderInsertButton();
+      this.renderActions();
     } catch (error) {
       if (!this.lookupSequence.isCurrent(lookupId)) {
         return;
       }
 
+      this.currentSection = null;
       this.resultEl.setText(
         error instanceof Error ? error.message : "Keine Fundstelle gefunden.",
       );
     }
   }
 
-  private renderInsertButton() {
+  private renderActions() {
+    this.actionsEl.empty();
+
+    new Setting(this.actionsEl)
+      .setName("Quellen- und Cache-Hinweis einfügen")
+      .addToggle((toggle) => {
+        toggle.setValue(this.showInsertedSourceMetadata).onChange((value) => {
+          this.showInsertedSourceMetadata = value;
+          void this.settingsStore.setShowInsertedSourceMetadata(value);
+
+          if (!this.currentSection) {
+            return;
+          }
+
+          this.currentMarkdown = this.formatCurrentSection();
+          this.resultEl.setText(this.currentMarkdown);
+        });
+      });
+
+    if (!this.currentSection) {
+      return;
+    }
+
     const button = this.actionsEl.createEl("button", {
       text: "In aktuelle Note einfügen",
     });
@@ -95,6 +132,16 @@ export class LawLookupModal extends Modal {
       }
 
       insertMarkdownIntoMarkdownView(view, this.currentMarkdown);
+    });
+  }
+
+  private formatCurrentSection(): string {
+    if (!this.currentSection) {
+      return "";
+    }
+
+    return formatLawSectionAsMarkdown(this.currentSection, {
+      includeMetadataFooter: this.showInsertedSourceMetadata,
     });
   }
 }

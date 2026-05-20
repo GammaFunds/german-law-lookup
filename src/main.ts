@@ -14,6 +14,7 @@ interface DeLawPluginSettings {
   enableMockLawProvider: boolean;
   enableLawSectionCache: boolean;
   lawSectionCacheTtlDays: number | null;
+  showInsertedSourceMetadata: boolean;
 }
 
 interface DeLawPluginData extends Partial<DeLawPluginSettings> {
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS: DeLawPluginSettings = {
   enableMockLawProvider: false,
   enableLawSectionCache: true,
   lawSectionCacheTtlDays: null,
+  showInsertedSourceMetadata: true,
 };
 
 export default class DeLawPlugin extends Plugin {
@@ -40,7 +42,13 @@ export default class DeLawPlugin extends Plugin {
       id: "deutsches-gesetz-nachschlagen",
       name: "Deutsches Gesetz nachschlagen",
       callback: () => {
-        new LawLookupModal(this.app, this.providerRegistry).open();
+        new LawLookupModal(this.app, this.providerRegistry, {
+          getShowInsertedSourceMetadata: () =>
+            this.settings.showInsertedSourceMetadata,
+          setShowInsertedSourceMetadata: async (value) => {
+            await this.updateSettings({ showInsertedSourceMetadata: value });
+          },
+        }).open();
       },
     });
   }
@@ -77,6 +85,8 @@ export default class DeLawPlugin extends Plugin {
       enableMockLawProvider: storedSettings?.enableMockLawProvider === true,
       enableLawSectionCache: storedSettings?.enableLawSectionCache !== false,
       lawSectionCacheTtlDays: normalizeTtlDays(storedSettings?.lawSectionCacheTtlDays),
+      showInsertedSourceMetadata:
+        storedSettings?.showInsertedSourceMetadata !== false,
     };
   }
 
