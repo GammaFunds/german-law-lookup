@@ -57,11 +57,36 @@ const bgb823HtmlFixture = `
 </body>
 </html>`;
 
+const stgb242HtmlFixture = `
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
+<head>
+  <title>&#167; 242 StGB - Einzelnorm</title>
+</head>
+<body>
+  <div class="jnheader">
+    <h1>Strafgesetzbuch (StGB)<br />
+      <span class="jnenbez">&#167; 242</span>&#160;<span class="jnentitel">Diebstahl</span>
+    </h1>
+  </div>
+  <div class="jnhtml">
+    <div class="jurAbsatz">(1) Wer eine fremde bewegliche Sache einem anderen in der Absicht wegnimmt, die Sache sich oder einem Dritten rechtswidrig zuzueignen, wird mit Freiheitsstrafe bis zu fünf Jahren oder mit Geldstrafe bestraft.</div>
+  </div>
+</body>
+</html>`;
+
 describe("GesetzeImInternet mapping helpers", () => {
   it("builds the BGB § 823 section URL", () => {
     assert.equal(
       buildGesetzeImInternetSectionUrl({ lawCode: "BGB", section: "823" }),
       "https://www.gesetze-im-internet.de/bgb/__823.html",
+    );
+  });
+
+  it("builds the StGB § 242 section URL", () => {
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({ lawCode: "STGB", section: "242" }),
+      "https://www.gesetze-im-internet.de/stgb/__242.html",
     );
   });
 
@@ -153,7 +178,7 @@ describe("GesetzeImInternetProvider", () => {
       return textResponse(bgb823HtmlFixture);
     });
 
-    assert.equal(await provider.getSection({ lawCode: "KAGB", section: "1" }), null);
+    assert.equal(await provider.getSection({ lawCode: "XYZ", section: "1" }), null);
     assert.equal(calls, 0);
   });
 
@@ -169,6 +194,23 @@ describe("GesetzeImInternetProvider", () => {
     assert.equal(section?.providerId, "gesetze-im-internet");
     assert.equal(section?.heading, "Schadensersatzpflicht");
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/bgb/__823.html"]);
+  });
+
+  it("resolves StGB § 242 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(stgb242HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "STGB", section: "242" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawTitle, "Strafgesetzbuch");
+    assert.equal(section?.heading, "Diebstahl");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/stgb/__242.html");
+    assert.match(section?.text ?? "", /^\(1\) Wer eine fremde bewegliche Sache/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/stgb/__242.html"]);
   });
 
   it("throws provider failure for failed fetch", async () => {

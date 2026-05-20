@@ -12,6 +12,10 @@ describe("parseLawReference", () => {
       lawCode: "BGB",
       section: "823",
     });
+    assert.deepEqual(parseLawReference("StGB § 242"), {
+      lawCode: "STGB",
+      section: "242",
+    });
   });
 
   it("parses law-code-first references without section sign", () => {
@@ -23,12 +27,20 @@ describe("parseLawReference", () => {
       lawCode: "GWG",
       section: "10",
     });
+    assert.deepEqual(parseLawReference("StGB 242"), {
+      lawCode: "STGB",
+      section: "242",
+    });
   });
 
   it("parses section-first references with section sign", () => {
     assert.deepEqual(parseLawReference("§ 823 BGB"), {
       lawCode: "BGB",
       section: "823",
+    });
+    assert.deepEqual(parseLawReference("§ 242 StGB"), {
+      lawCode: "STGB",
+      section: "242",
     });
   });
 
@@ -48,6 +60,10 @@ describe("parseLawReference", () => {
     assert.deepEqual(parseLawReference("312G BGB"), {
       lawCode: "BGB",
       section: "312G",
+    });
+    assert.deepEqual(parseLawReference("242 StGB"), {
+      lawCode: "STGB",
+      section: "242",
     });
   });
 

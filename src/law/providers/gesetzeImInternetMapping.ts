@@ -7,6 +7,10 @@ const supportedLaws: Record<string, { path: string; lawTitle: string }> = {
     path: "bgb",
     lawTitle: "Bürgerliches Gesetzbuch",
   },
+  STGB: {
+    path: "stgb",
+    lawTitle: "Strafgesetzbuch",
+  },
 };
 
 export function buildGesetzeImInternetSectionUrl(
