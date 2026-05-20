@@ -5,6 +5,7 @@ import type { LawSection } from "../law/types";
 import { parseLawReference } from "../parser";
 import { LookupSequence } from "./LookupSequence";
 import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
+import { buildLawSectionPreviewModel } from "./lawSectionPreview";
 
 interface LawLookupModalSettingsStore {
   getShowInsertedSourceMetadata(): boolean;
@@ -50,7 +51,7 @@ export class LawLookupModal extends Modal {
     searchButton.addEventListener("click", () => this.renderParsedReference());
 
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
-    this.resultEl.setText("Noch keine Suche ausgeführt.");
+    this.renderResultMessage("Noch keine Suche ausgeführt.");
     this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
     this.showInsertedSourceMetadata =
       this.settingsStore.getShowInsertedSourceMetadata();
@@ -69,11 +70,11 @@ export class LawLookupModal extends Modal {
     this.renderActions();
 
     if (!parsed) {
-      this.resultEl.setText("Keine erkannte Fundstelle.");
+      this.renderResultMessage("Keine erkannte Fundstelle.");
       return;
     }
 
-    this.resultEl.setText("Suche läuft...");
+    this.renderResultMessage("Suche läuft...");
 
     try {
       const section = await this.providerRegistry.getSection(parsed);
@@ -83,7 +84,7 @@ export class LawLookupModal extends Modal {
 
       this.currentSection = section;
       this.currentMarkdown = this.formatCurrentSection();
-      this.resultEl.setText(this.currentMarkdown);
+      this.renderCurrentPreview();
       this.renderActions();
     } catch (error) {
       if (!this.lookupSequence.isCurrent(lookupId)) {
@@ -91,7 +92,7 @@ export class LawLookupModal extends Modal {
       }
 
       this.currentSection = null;
-      this.resultEl.setText(
+      this.renderResultMessage(
         error instanceof Error ? error.message : "Keine Fundstelle gefunden.",
       );
     }
@@ -112,7 +113,7 @@ export class LawLookupModal extends Modal {
           }
 
           this.currentMarkdown = this.formatCurrentSection();
-          this.resultEl.setText(this.currentMarkdown);
+          this.renderCurrentPreview();
         });
       });
 
@@ -142,6 +143,53 @@ export class LawLookupModal extends Modal {
 
     return formatLawSectionAsMarkdown(this.currentSection, {
       includeMetadataFooter: this.showInsertedSourceMetadata,
+    });
+  }
+
+  private renderCurrentPreview() {
+    if (!this.currentSection) {
+      this.renderResultMessage("Keine Fundstelle gefunden.");
+      return;
+    }
+
+    const preview = buildLawSectionPreviewModel(this.currentSection, {
+      includeMetadataFooter: this.showInsertedSourceMetadata,
+    });
+
+    this.resultEl.empty();
+
+    this.resultEl.createEl("div", {
+      cls: "de-law-lookup-preview-title",
+      text: preview.title,
+    });
+
+    const bodyEl = this.resultEl.createDiv({ cls: "de-law-lookup-preview-body" });
+    for (const paragraph of preview.paragraphs) {
+      bodyEl.createEl("p", {
+        cls: "de-law-lookup-preview-paragraph",
+        text: paragraph,
+      });
+    }
+
+    if (preview.metadataLines.length > 0) {
+      const metadataEl = this.resultEl.createDiv({
+        cls: "de-law-lookup-preview-metadata",
+      });
+
+      for (const line of preview.metadataLines) {
+        metadataEl.createEl("div", {
+          cls: "de-law-lookup-preview-metadata-line",
+          text: line,
+        });
+      }
+    }
+  }
+
+  private renderResultMessage(message: string) {
+    this.resultEl.empty();
+    this.resultEl.createEl("div", {
+      cls: "de-law-lookup-result-message",
+      text: message,
     });
   }
 }
