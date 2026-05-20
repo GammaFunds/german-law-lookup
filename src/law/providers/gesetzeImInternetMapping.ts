@@ -4,14 +4,165 @@ import type { LawReference, LawSection } from "../types";
 const BASE_URL = "https://www.gesetze-im-internet.de";
 
 const supportedLaws: Record<string, { path: string; lawTitle: string; displayLawCode?: string }> = {
+  AO: {
+    path: "ao_1977",
+    lawTitle: "Abgabenordnung",
+  },
+  AKTG: {
+    path: "aktg",
+    lawTitle: "Aktiengesetz",
+    displayLawCode: "AktG",
+  },
+  ARBGG: {
+    path: "arbgg",
+    lawTitle: "Arbeitsgerichtsgesetz",
+    displayLawCode: "ArbGG",
+  },
+  ASYLG: {
+    path: "asylvfg_1992",
+    lawTitle: "Asylgesetz",
+    displayLawCode: "AsylG",
+  },
+  AUFENTHG: {
+    path: "aufenthg_2004",
+    lawTitle: "Aufenthaltsgesetz",
+    displayLawCode: "AufenthG",
+  },
   BGB: {
     path: "bgb",
     lawTitle: "Bürgerliches Gesetzbuch",
+  },
+  BETRVG: {
+    path: "betrvg",
+    lawTitle: "Betriebsverfassungsgesetz",
+    displayLawCode: "BetrVG",
+  },
+  BURLG: {
+    path: "burlg",
+    lawTitle: "Bundesurlaubsgesetz",
+    displayLawCode: "BUrlG",
+  },
+  ESTG: {
+    path: "estg",
+    lawTitle: "Einkommensteuergesetz",
+    displayLawCode: "EStG",
+  },
+  FAMFG: {
+    path: "famfg",
+    lawTitle: "Gesetz über das Verfahren in Familiensachen und in den Angelegenheiten der freiwilligen Gerichtsbarkeit",
+    displayLawCode: "FamFG",
+  },
+  FGO: {
+    path: "fgo",
+    lawTitle: "Finanzgerichtsordnung",
+  },
+  GEWSTG: {
+    path: "gewstg",
+    lawTitle: "Gewerbesteuergesetz",
+    displayLawCode: "GewStG",
+  },
+  GMBHG: {
+    path: "gmbhg",
+    lawTitle: "Gesetz betreffend die Gesellschaften mit beschränkter Haftung",
+    displayLawCode: "GmbHG",
+  },
+  GVG: {
+    path: "gvg",
+    lawTitle: "Gerichtsverfassungsgesetz",
+  },
+  GWG: {
+    path: "gwg_2017",
+    lawTitle: "Geldwäschegesetz",
+    displayLawCode: "GwG",
+  },
+  HGB: {
+    path: "hgb",
+    lawTitle: "Handelsgesetzbuch",
+  },
+  INSO: {
+    path: "inso",
+    lawTitle: "Insolvenzordnung",
+    displayLawCode: "InsO",
+  },
+  JGG: {
+    path: "jgg",
+    lawTitle: "Jugendgerichtsgesetz",
+  },
+  KAGB: {
+    path: "kagb",
+    lawTitle: "Kapitalanlagegesetzbuch",
+  },
+  KSCHG: {
+    path: "kschg",
+    lawTitle: "Kündigungsschutzgesetz",
+    displayLawCode: "KSchG",
+  },
+  KSTG: {
+    path: "kstg_1977",
+    lawTitle: "Körperschaftsteuergesetz",
+    displayLawCode: "KStG",
+  },
+  PAUSWG: {
+    path: "pauswg",
+    lawTitle: "Personalausweisgesetz",
+    displayLawCode: "PAuswG",
+  },
+  SGG: {
+    path: "sgg",
+    lawTitle: "Sozialgerichtsgesetz",
   },
   STGB: {
     path: "stgb",
     lawTitle: "Strafgesetzbuch",
     displayLawCode: "StGB",
+  },
+  STAG: {
+    path: "stag",
+    lawTitle: "Staatsangehörigkeitsgesetz",
+    displayLawCode: "StAG",
+  },
+  STPO: {
+    path: "stpo",
+    lawTitle: "Strafprozeßordnung",
+    displayLawCode: "StPO",
+  },
+  TZBFG: {
+    path: "tzbfg",
+    lawTitle: "Teilzeit- und Befristungsgesetz",
+    displayLawCode: "TzBfG",
+  },
+  UMWG: {
+    path: "umwg_1995",
+    lawTitle: "Umwandlungsgesetz",
+    displayLawCode: "UmwG",
+  },
+  USTG: {
+    path: "ustg_1980",
+    lawTitle: "Umsatzsteuergesetz",
+    displayLawCode: "UStG",
+  },
+  VWGO: {
+    path: "vwgo",
+    lawTitle: "Verwaltungsgerichtsordnung",
+    displayLawCode: "VwGO",
+  },
+  VWVFG: {
+    path: "vwvfg",
+    lawTitle: "Verwaltungsverfahrensgesetz",
+    displayLawCode: "VwVfG",
+  },
+  WPHG: {
+    path: "wphg",
+    lawTitle: "Wertpapierhandelsgesetz",
+    displayLawCode: "WpHG",
+  },
+  ZPO: {
+    path: "zpo",
+    lawTitle: "Zivilprozessordnung",
+  },
+  ZVG: {
+    path: "zvg",
+    lawTitle: "Gesetz über die Zwangsversteigerung und die Zwangsverwaltung",
   },
 };
 
