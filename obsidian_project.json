@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup and insertion flow is validated after parser, requestUrl transport, Gesetze im Internet extraction, local LawSectionCache implementation, minimal cache settings, lookup-modal metadata footer toggle, StGB support, canonical StGB display normalization, expanded explicit Gesetze-im-Internet law mappings, rendered lookup preview, lookup-modal UX polish, and explicit GG article-reference support. Tests and production build pass; manual Obsidian runtime validation confirmed the rendered preview works."
+    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, expanded Gesetze-im-Internet mappings, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
   },
   "blockers": [
     {
@@ -242,7 +242,7 @@
       "title": "Add explicit GG article-reference support",
       "component": "Parser",
       "status": "completed",
-      "notes": "Added explicit article-reference parsing only for GG inputs: \"Art. 1 GG\", \"Artikel 1 GG\", \"GG Art. 1\", \"GG Artikel 1\", and compatibility form \"Art 1 GG\". Internal references now carry a minimal referenceType field so GG article references remain distinct from existing section references. GesetzeImInternetProvider now supports GG with verified official path pattern https://www.gesetze-im-internet.de/gg/art_1.html and title \"Grundgesetz für die Bundesrepublik Deutschland\", while existing section-style URLs such as BGB § 823 -> /bgb/__823.html and StGB § 242 -> /stgb/__242.html remain unchanged. CitationFormatter, preview rendering, and cache fallback now display Art. for GG article references; cache keys remain deterministic and distinguish article vs. section references without invalidating existing section-style cache entries. ProviderRegistry semantics, Obsidian requestUrl transport, metadata toggle behavior, preview layout, live-first cache semantics, and terminal provider-failure behavior remain unchanged."
+      "notes": "Added explicit article-reference parsing only for GG inputs: \"Art. 1 GG\", \"Artikel 1 GG\", \"GG Art. 1\", \"GG Artikel 1\", and compatibility form \"Art 1 GG\". Internal references now carry a minimal referenceType field so GG article references remain distinct from existing section references. GesetzeImInternetProvider now supports GG with verified official path pattern https://www.gesetze-im-internet.de/gg/art_1.html and title \"Grundgesetz für die Bundesrepublik Deutschland\", while existing section-style URLs such as BGB § 823 -> /bgb/__823.html and StGB § 242 -> /stgb/__242.html remain unchanged. CitationFormatter, preview rendering, and cache fallback now display Art. for GG article references; cache keys remain deterministic and distinguish article vs. section references without invalidating existing section-style cache entries. ProviderRegistry semantics, Obsidian requestUrl transport, metadata toggle behavior, preview layout, live-first cache semantics, and terminal provider-failure behavior remain unchanged. Manual Obsidian runtime validation confirmed that GG article references work end to end: Art. 1 GG / Artikel 1 GG / GG Art. 1 resolve through Gesetze im Internet, preview and inserted Markdown use Art. labels instead of § labels, and existing § lookups remain functional."
     }
   ],
   "architecture": {
