@@ -205,7 +205,10 @@ class DeLawSettingsTab extends PluginSettingTab {
       row.createEl("div", { text: law.displayLawCode });
       row.createEl("div", { text: law.lawTitle });
       row.createEl("div", { text: law.referenceType === "article" ? "Art." : "§" });
-      row.createEl("div", { text: law.exampleInput });
+      row.createEl("div", {
+        cls: "de-law-settings-supported-examples",
+        text: law.exampleInputs.join(" · "),
+      });
     }
   }
 }

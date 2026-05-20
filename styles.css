@@ -111,6 +111,10 @@
   border-top: 1px solid var(--background-modifier-border);
 }
 
+.de-law-settings-supported-examples {
+  line-height: 1.5;
+}
+
 .de-law-settings-supported-row-header {
   background: var(--background-secondary);
   font-size: var(--font-ui-smaller);

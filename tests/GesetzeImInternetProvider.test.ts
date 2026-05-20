@@ -336,18 +336,38 @@ describe("GesetzeImInternet mapping helpers", () => {
 
     assert.equal(byCode.get("BGB")?.lawTitle, "Bürgerliches Gesetzbuch");
     assert.equal(byCode.get("BGB")?.referenceType, "section");
-    assert.equal(byCode.get("BGB")?.exampleInput, "BGB § 823");
+    assert.deepEqual(byCode.get("BGB")?.exampleInputs, [
+      "§ 823 BGB",
+      "BGB § 823",
+      "823 BGB",
+      "BGB 823",
+    ]);
 
     assert.equal(byCode.get("StGB")?.displayLawCode, "StGB");
     assert.equal(byCode.get("StGB")?.referenceType, "section");
-    assert.equal(byCode.get("StGB")?.exampleInput, "StGB § 242");
+    assert.deepEqual(byCode.get("StGB")?.exampleInputs, [
+      "§ 242 StGB",
+      "StGB § 242",
+      "242 StGB",
+      "StGB 242",
+    ]);
 
     assert.equal(byCode.get("VwVfG")?.displayLawCode, "VwVfG");
     assert.equal(byCode.get("VwVfG")?.referenceType, "section");
-    assert.equal(byCode.get("VwVfG")?.exampleInput, "VwVfG § 1");
+    assert.deepEqual(byCode.get("VwVfG")?.exampleInputs, [
+      "§ 1 VwVfG",
+      "VwVfG § 1",
+      "1 VwVfG",
+      "VwVfG 1",
+    ]);
 
     assert.equal(byCode.get("GG")?.referenceType, "article");
-    assert.equal(byCode.get("GG")?.exampleInput, "Art. 1 GG");
+    assert.deepEqual(byCode.get("GG")?.exampleInputs, [
+      "Art. 1 GG",
+      "GG Art. 1",
+      "Artikel 1 GG",
+      "GG Artikel 1",
+    ]);
   });
 });
 
