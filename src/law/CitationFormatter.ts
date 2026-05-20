@@ -1,3 +1,4 @@
+import { formatReferenceLabel } from "./referenceLabel";
 import type { LawSection } from "./types";
 
 interface CitationFormatterOptions {
@@ -11,9 +12,10 @@ export function formatLawSectionAsMarkdown(
   const heading = section.heading ? ` – ${section.heading}` : "";
   const retrievedDate = section.retrievedAt.slice(0, 10);
   const includeMetadataFooter = options.includeMetadataFooter !== false;
+  const referenceLabel = formatReferenceLabel(section);
 
   const lines = [
-    `> **§ ${section.section} ${section.lawCode}${heading}**`,
+    `> **${referenceLabel} ${section.lawCode}${heading}**`,
     ">",
     ...section.text.split("\n").map((line) => `> ${line}`),
   ];
@@ -21,7 +23,7 @@ export function formatLawSectionAsMarkdown(
   if (includeMetadataFooter) {
     lines.push(
       "",
-      `Quelle: ${section.providerLabel}, ${section.lawCode}, § ${section.section}, abgerufen am ${retrievedDate}.`,
+      `Quelle: ${section.providerLabel}, ${section.lawCode}, ${referenceLabel}, abgerufen am ${retrievedDate}.`,
       `Cache: ${section.cacheStatus}.`,
     );
   }

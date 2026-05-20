@@ -1,6 +1,9 @@
+export type LawReferenceType = "section" | "article";
+
 export interface LawReference {
   lawCode: string;
   section: string;
+  referenceType?: LawReferenceType;
   subsection?: string;
   sentence?: string;
 }
@@ -12,6 +15,7 @@ export interface LawSection {
   lawCode: string;
   lawTitle: string;
   section: string;
+  referenceType?: LawReferenceType;
   heading?: string;
   text: string;
   retrievedAt: string;
@@ -26,4 +30,3 @@ export interface LawSearchResult {
   label: string;
   reference: LawReference;
 }
-

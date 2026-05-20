@@ -100,4 +100,28 @@ describe("formatLawSectionAsMarkdown", () => {
     assert.match(markdown, /^> \*\*§ 242 StGB – Diebstahl\*\*/m);
     assert.doesNotMatch(markdown, /§ 242 STGB/);
   });
+
+  it("formats GG article references with Art. labels in heading and metadata", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "GG",
+      lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+      section: "1",
+      referenceType: "article",
+      heading: "Menschenwürde",
+      text: "Die Würde des Menschen ist unantastbar.",
+      retrievedAt: "2026-05-20T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.match(markdown, /^> \*\*Art\. 1 GG – Menschenwürde\*\*/m);
+    assert.match(
+      markdown,
+      /^Quelle: Gesetze im Internet, GG, Art\. 1, abgerufen am 2026-05-20\.$/m,
+    );
+    assert.doesNotMatch(markdown, /§ 1 GG/);
+  });
 });
