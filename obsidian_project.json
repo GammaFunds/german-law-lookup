@@ -4,7 +4,7 @@
   "status": {
     "phase": "MVP planning",
     "last_updated": "2026-05-20",
-    "summary": "Obsidian runtime lookup for BGB § 823 now resolves through Gesetze im Internet using requestUrl transport, with cleaned section-body extraction and insertion UI visible after successful lookup."
+    "summary": "Obsidian runtime lookup for BGB § 823 now resolves through Gesetze im Internet using requestUrl transport, with cleaned section-body extraction, natural citation placeholder text, and insertion UI visible after successful lookup."
   },
   "blockers": [
     {
@@ -135,7 +135,8 @@
       "id": "T-016",
       "title": "Implement cache layer for retrieved law sections",
       "component": "Local Cache",
-      "status": "open"
+      "status": "completed",
+      "notes": "Local LawSectionCache implemented. Cache key format is LAWCODE:section. lawCode is uppercased for the key; section is trimmed and lowercased for the key only, so letter-suffixed sections such as 312G and 312g resolve to the same cache key. Live provider chain remains authoritative and is called first. Successful live LawSection results are cached best-effort; cache write failures do not fail the lookup. Cache fallback is only checked after live providers return null. Provider failures remain terminal and must not be hidden by cache. null/not-found results are not cached. Cached mock-provider entries are ignored unless MockLawProvider is explicitly enabled. Tests cover cache key normalization, live-first behavior, provider failure behavior, best-effort cache writes, and mock-cache isolation."
     },
     {
       "id": "T-017",
@@ -178,6 +179,13 @@
       "component": "ObsidianIntegration",
       "status": "open",
       "notes": "Runtime validation confirmed successful lookup and visible insert button. A further manual test should confirm insertion into an active note in the Obsidian editor."
+    },
+    {
+      "id": "T-023",
+      "title": "Improve law-reference input placeholder and section-first parser coverage",
+      "component": "Parser",
+      "status": "completed",
+      "notes": "Placeholder changed to \"z. B. § 823 BGB\". Parser now accepts section-first input without §, including \"823 BGB\", \"823a BGB\", \"312g BGB\", and \"312G BGB\". Existing supported forms remain supported: \"§ 823 BGB\", \"BGB 823\", \"BGB § 823\", \"KAGB § 1\", and \"GwG 10\". No provider, registry, or transport behavior changed."
     }
   ],
   "architecture": {
