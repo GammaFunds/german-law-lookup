@@ -72,12 +72,74 @@ export function mapGesetzeImInternetToLawSection(params: {
 }
 
 function extractMainLawContent(html: string): string {
-  const lawContentMatch = html.match(/<div\b[^>]*class=["']jnhtml["'][^>]*>([\s\S]*?)(?:<div\b[^>]*class=["']jnfussnote["']|<\/body>)/i);
-  if (lawContentMatch) {
-    return lawContentMatch[1];
+  const sanitizedHtml = removeNonContentBlocks(html);
+  const lawContent = findFirstElementContentByClass(sanitizedHtml, "jnhtml");
+  if (lawContent) {
+    const paragraphBlocks = findElementContentsByClass(lawContent, "jurAbsatz");
+    return paragraphBlocks.length > 0 ? paragraphBlocks.join("\n") : lawContent;
   }
 
-  return html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? html;
+  return sanitizedHtml.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? sanitizedHtml;
+}
+
+function removeNonContentBlocks(html: string): string {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ");
+}
+
+function findFirstElementContentByClass(html: string, className: string): string | null {
+  return findElementContentsByClass(html, className)[0] ?? null;
+}
+
+function findElementContentsByClass(html: string, className: string): string[] {
+  const contents: string[] = [];
+  const openingTagPattern = /<([a-z][\w:-]*)\b[^>]*>/gi;
+
+  for (const match of html.matchAll(openingTagPattern)) {
+    const tag = match[1];
+    const openingTag = match[0];
+    const classAttribute = openingTag.match(/\bclass\s*=\s*(["'])(.*?)\1/i)?.[2];
+    if (!classAttribute?.split(/\s+/).includes(className)) {
+      continue;
+    }
+
+    const openingEnd = match.index + openingTag.length;
+    const elementEnd = findElementEnd(html, tag, openingEnd);
+    if (elementEnd !== null) {
+      contents.push(html.slice(openingEnd, elementEnd));
+    }
+  }
+
+  return contents;
+}
+
+function findElementEnd(html: string, tag: string, openingEnd: number): number | null {
+  const tagPattern = new RegExp(`<\\/?${escapeRegExp(tag)}\\b[^>]*>`, "gi");
+  tagPattern.lastIndex = openingEnd;
+  let depth = 1;
+
+  for (let match = tagPattern.exec(html); match; match = tagPattern.exec(html)) {
+    const token = match[0];
+    if (token.startsWith("</")) {
+      depth -= 1;
+      if (depth === 0) {
+        return match.index;
+      }
+      continue;
+    }
+
+    if (!token.endsWith("/>")) {
+      depth += 1;
+    }
+  }
+
+  return null;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function stripTags(value: string): string {
