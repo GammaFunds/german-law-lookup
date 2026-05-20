@@ -1,4 +1,5 @@
 import { canonicalDisplayLawCode } from "./displayLawCode";
+import { normalizeReferenceType } from "./referenceLabel";
 import type { LawProvider } from "./LawProvider";
 import type { LawReference, LawSection } from "./types";
 
@@ -19,7 +20,13 @@ export interface CachedLawProviderOptions {
 }
 
 export function lawSectionCacheKey(reference: LawReference): string {
-  return `${reference.lawCode.trim().toUpperCase()}:${reference.section.trim().toLowerCase()}`;
+  const lawCode = reference.lawCode.trim().toUpperCase();
+  const section = reference.section.trim().toLowerCase();
+  if (normalizeReferenceType(reference.referenceType) === "article") {
+    return `${lawCode}:art:${section}`;
+  }
+
+  return `${lawCode}:${section}`;
 }
 
 export class InMemoryLawSectionCache implements LawSectionCache {

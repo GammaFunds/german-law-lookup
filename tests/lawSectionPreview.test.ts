@@ -41,4 +41,28 @@ describe("lawSectionPreview", () => {
     assert.equal(preview.title, "§ 242 StGB – Diebstahl");
     assert.deepEqual(preview.metadataLines, []);
   });
+
+  it("uses Art. labels for GG article previews", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/gg/art_1.html",
+      lawCode: "GG",
+      lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+      section: "1",
+      referenceType: "article",
+      heading: "Menschenwürde",
+      text: "(1) Die Würde des Menschen ist unantastbar.",
+      retrievedAt: "2026-05-20T12:34:56.000Z",
+      cacheStatus: "cached",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.equal(preview.title, "Art. 1 GG – Menschenwürde");
+    assert.deepEqual(preview.metadataLines, [
+      "Quelle: Gesetze im Internet, GG, Art. 1, abgerufen am 2026-05-20.",
+      "Cache: cached.",
+    ]);
+  });
 });

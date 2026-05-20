@@ -21,6 +21,14 @@ describe("lawSectionCacheKey", () => {
     assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "823a" }), "BGB:823a");
     assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "823A" }), "BGB:823a");
   });
+
+  it("distinguishes article references from section references", () => {
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "GG", section: "1", referenceType: "article" }),
+      "GG:art:1",
+    );
+    assert.equal(lawSectionCacheKey({ lawCode: "GG", section: "1" }), "GG:1");
+  });
 });
 
 describe("CachedLawProvider", () => {
@@ -209,6 +217,36 @@ describe("CachedLawProvider", () => {
     const result = await provider.getSection({ lawCode: "STGB", section: "242" });
 
     assert.equal(result?.lawCode, "StGB");
+    assert.equal(result?.cacheStatus, "cached");
+  });
+
+  it("returns cached GG article result without colliding with section-style keys", async () => {
+    const cache = new InMemoryLawSectionCache();
+    await cache.set(section({
+      sourceUrl: "https://www.gesetze-im-internet.de/gg/art_1.html",
+      lawCode: "GG",
+      lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+      section: "1",
+      referenceType: "article",
+      heading: "Menschenwürde",
+      text: "Die Würde des Menschen ist unantastbar.",
+    }));
+    const provider = new CachedLawProvider(
+      lawProvider(async () => null),
+      cache,
+      {
+        allowedProviderIds: ["neuris", "gesetze-im-internet"],
+      },
+    );
+
+    const result = await provider.getSection({
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
+
+    assert.equal(result?.referenceType, "article");
+    assert.equal(result?.lawCode, "GG");
     assert.equal(result?.cacheStatus, "cached");
   });
 

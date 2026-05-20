@@ -75,6 +75,25 @@ const stgb242HtmlFixture = `
 </body>
 </html>`;
 
+const ggArt1HtmlFixture = `
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
+<head>
+  <title>Art 1 GG - Einzelnorm</title>
+</head>
+<body>
+  <div class="jnheader">
+    <h1>Grundgesetz für die Bundesrepublik Deutschland<br />
+      <span class="jnenbez">Art 1</span>
+    </h1>
+  </div>
+  <div class="jnhtml">
+    <div class="jurAbsatz">(1) Die Würde des Menschen ist unantastbar. Sie zu achten und zu schützen ist Verpflichtung aller staatlichen Gewalt.</div>
+    <div class="jurAbsatz">(2) Das Deutsche Volk bekennt sich darum zu unverletzlichen und unveräußerlichen Menschenrechten.</div>
+  </div>
+</body>
+</html>`;
+
 const hgb1HtmlFixture = makeSectionHtmlFixture({
   lawTitle: "Handelsgesetzbuch",
   lawCode: "HGB",
@@ -130,7 +149,12 @@ const genericHeadingFixture = makeSectionHtmlFixture({
 
 describe("GesetzeImInternet mapping helpers", () => {
   it("builds section URLs for all supported mapped laws", () => {
-    const cases = [
+    const cases: Array<{
+      lawCode: string;
+      section: string;
+      referenceType?: LawReference["referenceType"];
+      expectedUrl: string;
+    }> = [
       { lawCode: "AO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/ao_1977/__1.html" },
       { lawCode: "AKTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/aktg/__1.html" },
       { lawCode: "ARBGG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/arbgg/__1.html" },
@@ -143,6 +167,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "FAMFG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/famfg/__1.html" },
       { lawCode: "FGO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/fgo/__1.html" },
       { lawCode: "GEWSTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gewstg/__1.html" },
+      { lawCode: "GG", section: "1", referenceType: "article", expectedUrl: "https://www.gesetze-im-internet.de/gg/art_1.html" },
       { lawCode: "GMBHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gmbhg/__1.html" },
       { lawCode: "GVG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gvg/__1.html" },
       { lawCode: "GWG", section: "10", expectedUrl: "https://www.gesetze-im-internet.de/gwg_2017/__10.html" },
@@ -172,6 +197,7 @@ describe("GesetzeImInternet mapping helpers", () => {
         buildGesetzeImInternetSectionUrl({
           lawCode: testCase.lawCode,
           section: testCase.section,
+          referenceType: testCase.referenceType as LawReference["referenceType"],
         }),
         testCase.expectedUrl,
       );
@@ -241,6 +267,24 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.match(section.text, /Wer vorsätzlich oder fahrlässig/);
     assert.match(section.text, /\(2\) Die gleiche Verpflichtung trifft denjenigen/);
     assert.doesNotMatch(section.text, /Impressum|Datenschutz|zum Seitenanfang/);
+  });
+
+  it("maps GG Art. 1 into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "GG", section: "1", referenceType: "article" },
+      html: ggArt1HtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/gg/art_1.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-20T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "GG");
+    assert.equal(section.lawTitle, "Grundgesetz für die Bundesrepublik Deutschland");
+    assert.equal(section.referenceType, "article");
+    assert.equal(section.section, "1");
+    assert.equal(section.sourceUrl, "https://www.gesetze-im-internet.de/gg/art_1.html");
+    assert.match(section.text, /^\(1\) Die Würde des Menschen ist unantastbar\./);
   });
 
   it("preserves original reference section while mapping LawSection", () => {
@@ -328,6 +372,29 @@ describe("GesetzeImInternetProvider", () => {
     assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/stgb/__242.html");
     assert.match(section?.text ?? "", /^\(1\) Wer eine fremde bewegliche Sache/);
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/stgb/__242.html"]);
+  });
+
+  it("resolves GG Art. 1 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(ggArt1HtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "GG");
+    assert.equal(section?.lawTitle, "Grundgesetz für die Bundesrepublik Deutschland");
+    assert.equal(section?.referenceType, "article");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/gg/art_1.html");
+    assert.equal(section?.heading, undefined);
+    assert.match(section?.text ?? "", /^\(1\) Die Würde des Menschen ist unantastbar\./);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/gg/art_1.html"]);
   });
 
   it("resolves representative verified mapped laws from fixtures", async () => {

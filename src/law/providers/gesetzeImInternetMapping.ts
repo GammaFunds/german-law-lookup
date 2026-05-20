@@ -1,9 +1,15 @@
+import { normalizeReferenceType } from "../referenceLabel";
 import { canonicalDisplayLawCode } from "../displayLawCode";
 import type { LawReference, LawSection } from "../types";
 
 const BASE_URL = "https://www.gesetze-im-internet.de";
 
-const supportedLaws: Record<string, { path: string; lawTitle: string; displayLawCode?: string }> = {
+const supportedLaws: Record<string, {
+  path: string;
+  lawTitle: string;
+  displayLawCode?: string;
+  referenceType?: "section" | "article";
+}> = {
   AO: {
     path: "ao_1977",
     lawTitle: "Abgabenordnung",
@@ -60,6 +66,11 @@ const supportedLaws: Record<string, { path: string; lawTitle: string; displayLaw
     path: "gewstg",
     lawTitle: "Gewerbesteuergesetz",
     displayLawCode: "GewStG",
+  },
+  GG: {
+    path: "gg",
+    lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+    referenceType: "article",
   },
   GMBHG: {
     path: "gmbhg",
@@ -171,12 +182,24 @@ export function buildGesetzeImInternetSectionUrl(
   baseUrl = BASE_URL,
 ): string | null {
   const law = supportedLaws[reference.lawCode.toUpperCase()];
+  const referenceType = normalizeReferenceType(reference.referenceType);
   if (!law || !/^\d+[a-z]?$/i.test(reference.section)) {
     return null;
   }
 
+  const supportedReferenceType = law.referenceType ?? "section";
+  if (referenceType !== supportedReferenceType) {
+    return null;
+  }
+
+  const suffix = reference.section.toLowerCase();
+  const path =
+    referenceType === "article"
+      ? `/${law.path}/art_${suffix}.html`
+      : `/${law.path}/__${suffix}.html`;
+
   return new URL(
-    `/${law.path}/__${reference.section.toLowerCase()}.html`,
+    path,
     baseUrl,
   ).toString();
 }
@@ -224,6 +247,7 @@ export function mapGesetzeImInternetToLawSection(params: {
     lawCode: displayLawCodeForReference(params.reference),
     lawTitle,
     section: params.reference.section,
+    referenceType: normalizeReferenceType(params.reference.referenceType),
     heading: extractGesetzeImInternetHeading(params.html),
     text: extractGesetzeImInternetPlainText(params.html),
     retrievedAt: params.retrievedAt,
