@@ -24,14 +24,23 @@ export class GesetzeImInternetProvider implements LawProvider {
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
+    const lookupReference = this.referenceForLookup(reference);
     const sectionUrl = buildGesetzeImInternetSectionUrl(reference, this.baseUrl);
     if (!sectionUrl) {
+      if (reference.sourceVariant === "translation-en") {
+        return this.getSection(lookupReference);
+      }
+
       return null;
     }
 
     try {
       const response = await this.request(sectionUrl);
       if (response.status === 404) {
+        if (reference.sourceVariant === "translation-en") {
+          return this.getSection(lookupReference);
+        }
+
         return null;
       }
 
@@ -44,6 +53,10 @@ export class GesetzeImInternetProvider implements LawProvider {
 
       const html = await this.getText(response, sectionUrl);
       if (!canMapGesetzeImInternetReference(reference, html)) {
+        if (reference.sourceVariant === "translation-en") {
+          return this.getSection(lookupReference);
+        }
+
         return null;
       }
 
@@ -66,6 +79,17 @@ export class GesetzeImInternetProvider implements LawProvider {
         error,
       );
     }
+  }
+
+  private referenceForLookup(reference: LawReference): LawReference {
+    if (reference.sourceVariant !== "translation-en") {
+      return reference;
+    }
+
+    return {
+      ...reference,
+      sourceVariant: "official-de",
+    };
   }
 
   private async request(url: string): ReturnType<LawProviderHttpTransport> {

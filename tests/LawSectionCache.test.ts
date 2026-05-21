@@ -4,6 +4,7 @@ import type { LawProvider } from "../src/law/LawProvider";
 import {
   CachedLawProvider,
   InMemoryLawSectionCache,
+  StoredLawSectionCache,
   lawSectionCacheKey,
 } from "../src/law/LawSectionCache";
 import { buildCachedLawProviders } from "../src/law/cachedProviderComposition";
@@ -12,22 +13,22 @@ import type { LawReference, LawSection } from "../src/law/types";
 
 describe("lawSectionCacheKey", () => {
   it("normalizes law code for cache keys", () => {
-    assert.equal(lawSectionCacheKey({ lawCode: "bgb", section: "823" }), "BGB:823");
+    assert.equal(lawSectionCacheKey({ lawCode: "bgb", section: "823" }), "BGB:823:official-de");
   });
 
   it("normalizes letter suffix casing for cache keys", () => {
-    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "312G" }), "BGB:312g");
-    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "312g" }), "BGB:312g");
-    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "823a" }), "BGB:823a");
-    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "823A" }), "BGB:823a");
+    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "312G" }), "BGB:312g:official-de");
+    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "312g" }), "BGB:312g:official-de");
+    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "823a" }), "BGB:823a:official-de");
+    assert.equal(lawSectionCacheKey({ lawCode: "BGB", section: "823A" }), "BGB:823a:official-de");
   });
 
   it("distinguishes article references from section references", () => {
     assert.equal(
       lawSectionCacheKey({ lawCode: "GG", section: "1", referenceType: "article" }),
-      "GG:art:1",
+      "GG:art:1:official-de",
     );
-    assert.equal(lawSectionCacheKey({ lawCode: "GG", section: "1" }), "GG:1");
+    assert.equal(lawSectionCacheKey({ lawCode: "GG", section: "1" }), "GG:1:official-de");
   });
 
   it("distinguishes pure article and article-section cache keys", () => {
@@ -37,7 +38,7 @@ describe("lawSectionCacheKey", () => {
         section: "1",
         referenceType: "article",
       }),
-      "EGBGB:art:1",
+      "EGBGB:art:1:official-de",
     );
     assert.equal(
       lawSectionCacheKey({
@@ -46,7 +47,23 @@ describe("lawSectionCacheKey", () => {
         subsection: "6",
         referenceType: "article",
       }),
-      "EGBGB:art:229:sec:6",
+      "EGBGB:art:229:sec:6:official-de",
+    );
+  });
+
+  it("distinguishes source variants in cache keys", () => {
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "BGB", section: "823", sourceVariant: "translation-en" }),
+      "BGB:823:translation-en",
+    );
+    assert.equal(
+      lawSectionCacheKey({
+        lawCode: "GG",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      }),
+      "GG:art:1:translation-en",
     );
   });
 });
@@ -270,6 +287,140 @@ describe("CachedLawProvider", () => {
     assert.equal(result?.cacheStatus, "cached");
   });
 
+  it("keeps official and translation cache entries separate", async () => {
+    const cache = new InMemoryLawSectionCache();
+    await cache.set(section({ text: "German text" }));
+    await cache.set(section({
+      sourceVariant: "translation-en",
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+      heading: "Liability in damages",
+      text: "English text",
+    }));
+
+    assert.equal((await cache.get(reference()))?.text, "German text");
+    assert.equal(
+      (await cache.get({ ...reference(), sourceVariant: "translation-en" }))?.text,
+      "English text",
+    );
+  });
+
+  it("reads legacy official-de section cache entries", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "BGB:823": section({ text: "Legacy German text" }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal((await cache.get(reference()))?.text, "Legacy German text");
+  });
+
+  it("reads legacy official-de article cache entries", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "GG:art:1": section({
+            lawCode: "GG",
+            lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+            section: "1",
+            referenceType: "article",
+            text: "Legacy article text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      (await cache.get({
+        lawCode: "GG",
+        section: "1",
+        referenceType: "article",
+      }))?.text,
+      "Legacy article text",
+    );
+  });
+
+  it("does not use legacy official-de cache entries for translation requests", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "BGB:823": section({ text: "Legacy German text" }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      (
+        await cache.get({
+          ...reference(),
+          sourceVariant: "translation-en",
+        })
+      )?.text,
+      "Legacy German text",
+    );
+  });
+
+  it("reads official-de variant keys for translation requests before legacy fallback", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "OWIG:1:official-de": section({
+            lawCode: "OWiG",
+            lawTitle: "Gesetz über Ordnungswidrigkeiten",
+            section: "1",
+            text: "Variant-key German text",
+          }),
+          "OWIG:1": section({
+            lawCode: "OWiG",
+            lawTitle: "Gesetz über Ordnungswidrigkeiten",
+            section: "1",
+            text: "Legacy German text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      (
+        await cache.get({
+          lawCode: "OWIG",
+          section: "1",
+          sourceVariant: "translation-en",
+        })
+      )?.text,
+      "Variant-key German text",
+    );
+  });
+
+  it("writes new variant-aware cache keys", async () => {
+    let entries: Record<string, LawSection> | null = null;
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return entries;
+      },
+      async save(nextEntries) {
+        entries = nextEntries;
+      },
+    });
+
+    await cache.set(section());
+
+    assert.deepEqual(Object.keys(entries ?? {}), ["BGB:823:official-de"]);
+  });
+
   it("does not return expired cached result after provider returns null", async () => {
     const cache = new InMemoryLawSectionCache();
     await cache.set(section({ retrievedAt: "2026-05-18T00:00:00.000Z" }));
@@ -478,6 +629,7 @@ function section(overrides: Partial<LawSection> = {}): LawSection {
     lawCode: "BGB",
     lawTitle: "Bürgerliches Gesetzbuch",
     section: "823",
+    sourceVariant: "official-de",
     heading: "Schadensersatzpflicht",
     text: "Fixture text",
     retrievedAt: "2026-05-20T00:00:00.000Z",

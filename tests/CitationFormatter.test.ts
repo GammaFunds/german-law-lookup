@@ -172,4 +172,55 @@ describe("formatLawSectionAsMarkdown", () => {
     );
     assert.doesNotMatch(markdown, /§ 229 EGBGB/);
   });
+
+  it("marks English translations while keeping the German footer structure", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "BGB",
+      lawTitle: "Bürgerliches Gesetzbuch",
+      section: "823",
+      sourceVariant: "translation-en",
+      heading: "Liability in damages",
+      text: "A person who unlawfully injures another is liable in damages.",
+      retrievedAt: "2026-05-22T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.match(
+      markdown,
+      /^Textvariante: Englischer Gesetzestext von Gesetze im Internet \(nicht amtlich\)\.$/m,
+    );
+    assert.match(
+      markdown,
+      /^Quelle: Gesetze im Internet, BGB, § 823, abgerufen am 2026-05-22\.$/m,
+    );
+  });
+
+  it("keeps the translation notice even when source and cache metadata are disabled", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "GG",
+      lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+      section: "1",
+      referenceType: "article",
+      sourceVariant: "translation-en",
+      heading: "Human dignity",
+      text: "Human dignity shall be inviolable.",
+      retrievedAt: "2026-05-22T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    }, { includeMetadataFooter: false });
+
+    assert.match(
+      markdown,
+      /^Textvariante: Englischer Gesetzestext von Gesetze im Internet \(nicht amtlich\)\.$/m,
+    );
+    assert.doesNotMatch(markdown, /^Quelle:/m);
+    assert.doesNotMatch(markdown, /^Cache:/m);
+  });
 });

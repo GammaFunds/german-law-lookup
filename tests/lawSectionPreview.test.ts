@@ -42,6 +42,31 @@ describe("lawSectionPreview", () => {
     assert.deepEqual(preview.metadataLines, []);
   });
 
+  it("keeps the translation notice when source and cache metadata are disabled", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_gg/englisch_gg.html",
+      lawCode: "GG",
+      lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
+      section: "1",
+      referenceType: "article",
+      sourceVariant: "translation-en",
+      heading: "Human dignity",
+      text: "(1) Human dignity shall be inviolable.",
+      retrievedAt: "2026-05-22T12:34:56.000Z",
+      cacheStatus: "cached",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    }, {
+      includeMetadataFooter: false,
+    });
+
+    assert.deepEqual(preview.metadataLines, [
+      "Textvariante: Englischer Gesetzestext von Gesetze im Internet (nicht amtlich).",
+    ]);
+  });
+
   it("uses Art. labels for GG article previews", () => {
     const preview = buildLawSectionPreviewModel({
       providerId: "gesetze-im-internet",
@@ -110,6 +135,31 @@ describe("lawSectionPreview", () => {
     assert.equal(preview.title, "Art. 229 § 6 EGBGB – Überleitungsvorschrift");
     assert.deepEqual(preview.metadataLines, [
       "Quelle: Gesetze im Internet, EGBGB, Art. 229 § 6, abgerufen am 2026-05-21.",
+      "Cache: cached.",
+    ]);
+  });
+
+  it("marks English translations while keeping preview metadata aligned with inserted content", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+      lawCode: "BGB",
+      lawTitle: "Bürgerliches Gesetzbuch",
+      section: "823",
+      sourceVariant: "translation-en",
+      heading: "Liability in damages",
+      text: "(1) A person who unlawfully injures another is liable in damages.",
+      retrievedAt: "2026-05-22T12:34:56.000Z",
+      cacheStatus: "cached",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.equal(preview.title, "§ 823 BGB – Liability in damages");
+    assert.deepEqual(preview.metadataLines, [
+      "Textvariante: Englischer Gesetzestext von Gesetze im Internet (nicht amtlich).",
+      "Quelle: Gesetze im Internet, BGB, § 823, abgerufen am 2026-05-22.",
       "Cache: cached.",
     ]);
   });

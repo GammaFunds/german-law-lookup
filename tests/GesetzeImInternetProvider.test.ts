@@ -95,6 +95,78 @@ const ggArt1HtmlFixture = `
 </body>
 </html>`;
 
+const englishBgbHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>German Civil Code</div>
+  <div>BGB</div>
+  <div>table of contents</div>
+  <div>Section 822</div>
+  <div>Unjust enrichment</div>
+  <div>A person who obtains something without legal grounds is obliged to return it.</div>
+  <div>table of contents</div>
+  <div>Section 823</div>
+  <div>Liability in damages</div>
+  <div>(1) A person who, intentionally or negligently, unlawfully injures the life, body, health, freedom, property or another right of another person is liable to make compensation to the other party for the damage arising from this.</div>
+  <div>(2) The same duty is held by a person who commits a breach of a statute that is intended to protect another person.</div>
+  <div>table of contents</div>
+  <div>Section 824</div>
+  <div>Credit endangerment</div>
+</body>
+</html>`;
+
+const englishBgbTocFirstHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>German Civil Code</div>
+  <div>table of contents</div>
+  <div>Section 823</div>
+  <div>table of contents</div>
+  <div>Section 823</div>
+  <div>Liability in damages</div>
+  <div>(1) A person who, intentionally or negligently, unlawfully injures the life, body, health, freedom, property or another right of another person is liable to make compensation to the other party for the damage arising from this.</div>
+  <div>(2) The same duty is held by a person who commits a breach of a statute that is intended to protect another person.</div>
+  <div>Section 824</div>
+  <div>Credit endangerment</div>
+</body>
+</html>`;
+
+const englishGgHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>Basic Law for the Federal Republic of Germany</div>
+  <div>table of contents</div>
+  <div>Article 1</div>
+  <div>[Human dignity]</div>
+  <div>(1) Human dignity shall be inviolable. To respect and protect it shall be the duty of all state authority.</div>
+  <div>(2) The German people therefore acknowledge inviolable and inalienable human rights as the basis of every community, of peace and of justice in the world.</div>
+  <div>(3) The following basic rights shall bind the legislature, the executive and the judiciary as directly applicable law.</div>
+  <div>table of contents</div>
+  <div>Article 2</div>
+  <div>[Personal freedoms]</div>
+</body>
+</html>`;
+
+const englishGgTocFirstHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>Basic Law for the Federal Republic of Germany</div>
+  <div>table of contents</div>
+  <div>Article 1</div>
+  <div>table of contents</div>
+  <div>Article 1</div>
+  <div>[Human dignity]</div>
+  <div>(1) Human dignity shall be inviolable. To respect and protect it shall be the duty of all state authority.</div>
+  <div>(2) The German people therefore acknowledge inviolable and inalienable human rights as the basis of every community, of peace and of justice in the world.</div>
+  <div>Article 2</div>
+  <div>[Personal freedoms]</div>
+</body>
+</html>`;
+
 const egbgbArt229Sec1HtmlFixture = `
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
@@ -360,6 +432,34 @@ describe("GesetzeImInternet mapping helpers", () => {
     );
   });
 
+  it("builds verified English translation URLs only for configured Phase 1 laws", () => {
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "BGB",
+        section: "823",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "GG",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_gg/englisch_gg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "OWIG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      null,
+    );
+  });
+
   it("extracts heading and text from a Gesetze im Internet HTML fixture", () => {
     assert.equal(
       extractGesetzeImInternetHeading(bgb823HtmlFixture),
@@ -430,6 +530,78 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.equal(section.section, "1");
     assert.equal(section.sourceUrl, "https://www.gesetze-im-internet.de/gg/art_1.html");
     assert.match(section.text, /^\(1\) Die Würde des Menschen ist unantastbar\./);
+  });
+
+  it("maps BGB § 823 English translation into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "BGB", section: "823", sourceVariant: "translation-en" },
+      html: englishBgbHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "BGB");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, "Liability in damages");
+    assert.match(section.text, /^\(1\) A person who, intentionally or negligently/);
+    assert.match(section.text, /\(2\) The same duty is held by a person/);
+  });
+
+  it("maps GG Art. 1 English translation into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: {
+        lawCode: "GG",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      },
+      html: englishGgHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_gg/englisch_gg.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "GG");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, "Human dignity");
+    assert.match(section.text, /^\(1\) Human dignity shall be inviolable\./);
+    assert.match(section.text, /\(3\) The following basic rights shall bind/);
+  });
+
+  it("skips a TOC match before extracting the real BGB English section", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "BGB", section: "823", sourceVariant: "translation-en" },
+      html: englishBgbTocFirstHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.heading, "Liability in damages");
+    assert.match(section.text, /^\(1\) A person who, intentionally or negligently/);
+  });
+
+  it("skips a TOC match before extracting the real GG English article", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: {
+        lawCode: "GG",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      },
+      html: englishGgTocFirstHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_gg/englisch_gg.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.heading, "Human dignity");
+    assert.match(section.text, /^\(1\) Human dignity shall be inviolable\./);
   });
 
   it("maps EGBGB Art. 1 from the official full-law HTML into LawSection", () => {
@@ -795,6 +967,49 @@ describe("GesetzeImInternetProvider", () => {
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/gg/art_1.html"]);
   });
 
+  it("resolves BGB § 823 English translation from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishBgbHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "BGB",
+      section: "823",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, "Liability in damages");
+    assert.match(section?.text ?? "", /^\(1\) A person who, intentionally or negligently/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+    ]);
+  });
+
+  it("resolves GG Art. 1 English translation from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishGgHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, "Human dignity");
+    assert.match(section?.text ?? "", /^\(1\) Human dignity shall be inviolable\./);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_gg/englisch_gg.html",
+    ]);
+  });
+
   it("resolves EGBGB Art. 229 § 1 from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -998,6 +1213,64 @@ describe("GesetzeImInternetProvider", () => {
       LawProviderUnavailableError,
     );
   });
+
+  it("falls back to official German text for unconfigured English translations", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(owig1HtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "OWIG",
+      section: "1",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "OWiG");
+    assert.equal(section?.sourceVariant, "official-de");
+    assert.match(section?.text ?? "", /^\(1\) Eine Ordnungswidrigkeit ist/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/owig_1968/__1.html",
+    ]);
+  });
+
+  it("falls back to official German text when the configured English citation is missing", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+
+      if (url.endsWith("/englisch_bgb/englisch_bgb.html")) {
+        return textResponse(englishBgbHtmlFixture);
+      }
+
+      if (url.endsWith("/bgb/__999.html")) {
+        return textResponse(makeSectionHtmlFixture({
+          lawTitle: "Bürgerliches Gesetzbuch",
+          lawCode: "BGB",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }));
+      }
+
+      return { ok: false, status: 404, json: async () => ({}), text: async () => "" };
+    });
+
+    const section = await provider.getSection({
+        lawCode: "BGB",
+        section: "999",
+        sourceVariant: "translation-en",
+      });
+
+    assert.equal(section?.sourceVariant, "official-de");
+    assert.equal(section?.heading, "Deutsche Ersatznorm");
+    assert.match(section?.text ?? "", /^Deutscher amtlicher Ersatztext\.$/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+      "https://www.gesetze-im-internet.de/bgb/__999.html",
+    ]);
+  });
 });
 
 describe("ProviderRegistry with GesetzeImInternetProvider", () => {
@@ -1037,20 +1310,44 @@ describe("ProviderRegistry with GesetzeImInternetProvider", () => {
     );
     assert.deepEqual(calls, ["neuris", "gesetze-im-internet"]);
   });
+
+  it("allows translation requests to skip a NeuRIS-like null and resolve through Gesetze im Internet", async () => {
+    const calls: string[] = [];
+    const registry = new ProviderRegistry([
+      provider("neuris", null, calls),
+      provider("gesetze-im-internet", section("gesetze-im-internet", {
+        sourceVariant: "translation-en",
+        heading: "Liability in damages",
+        text: "English law text.",
+      }), calls),
+    ]);
+
+    const result = await registry.getSection({
+      lawCode: "BGB",
+      section: "823",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(result.providerId, "gesetze-im-internet");
+    assert.equal(result.sourceVariant, "translation-en");
+    assert.deepEqual(calls, ["neuris", "gesetze-im-internet"]);
+  });
 });
 
-function section(providerId: string): LawSection {
+function section(providerId: string, overrides: Partial<LawSection> = {}): LawSection {
   return {
     providerId,
     providerLabel: providerId,
     lawCode: "BGB",
     lawTitle: "Bürgerliches Gesetzbuch",
     section: "823",
+    sourceVariant: "official-de",
     text: "Fixture text",
     retrievedAt: "2026-05-19T00:00:00.000Z",
     cacheStatus: "live",
     isOfficialSource: true,
     isAuthoritativeText: false,
+    ...overrides,
   };
 }
 

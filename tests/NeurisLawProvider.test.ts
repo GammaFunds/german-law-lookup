@@ -172,6 +172,24 @@ describe("NeuRIS mapping helpers", () => {
 });
 
 describe("NeurisLawProvider", () => {
+  it("returns null immediately for translation-en requests", async () => {
+    let calls = 0;
+    const provider = new NeurisLawProvider("https://testphase.rechtsinformationen.bund.de", async () => {
+      calls += 1;
+      return response(searchFixture);
+    });
+
+    assert.equal(
+      await provider.getSection({
+        lawCode: "KAGB",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      null,
+    );
+    assert.equal(calls, 0);
+  });
+
   it("resolves a section through fixture-backed fetch calls", async () => {
     const requestedUrls: string[] = [];
     const provider = new NeurisLawProvider("https://testphase.rechtsinformationen.bund.de", async (url) => {

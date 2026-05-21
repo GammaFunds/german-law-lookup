@@ -27,6 +27,10 @@ export class NeurisLawProvider implements LawProvider {
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
+    if (reference.sourceVariant === "translation-en") {
+      return null;
+    }
+
     try {
       const searchUrl = new URL("/v1/legislation", this.baseUrl);
       searchUrl.searchParams.set("searchTerm", reference.lawCode);

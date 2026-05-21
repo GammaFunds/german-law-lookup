@@ -1,7 +1,8 @@
 import { App, MarkdownView, Modal, Notice, Setting } from "obsidian";
 import { formatLawSectionAsMarkdown } from "../law/CitationFormatter";
+import { LawTranslationUnavailableError } from "../law/errors";
 import { ProviderRegistry } from "../law/ProviderRegistry";
-import type { LawSection } from "../law/types";
+import type { LawSection, LawSourceVariant } from "../law/types";
 import { parseLawReference } from "../parser";
 import { LookupSequence } from "./LookupSequence";
 import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
@@ -9,6 +10,7 @@ import type { UiStrings } from "./i18n";
 import { buildLawSectionPreviewModel } from "./lawSectionPreview";
 
 interface LawLookupModalSettingsStore {
+  getDefaultLawSourceVariant(): LawSourceVariant;
   getShowInsertedSourceMetadata(): boolean;
   setShowInsertedSourceMetadata(value: boolean): Promise<void>;
 }
@@ -19,6 +21,7 @@ export class LawLookupModal extends Modal {
   private actionsEl!: HTMLElement;
   private currentSection: LawSection | null = null;
   private currentMarkdown = "";
+  private selectedSourceVariant: LawSourceVariant = "official-de";
   private showInsertedSourceMetadata = true;
   private readonly lookupSequence = new LookupSequence();
 
@@ -55,6 +58,7 @@ export class LawLookupModal extends Modal {
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
     this.renderResultMessage(this.ui.noLookupRunYet);
     this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
+    this.selectedSourceVariant = this.settingsStore.getDefaultLawSourceVariant();
     this.showInsertedSourceMetadata =
       this.settingsStore.getShowInsertedSourceMetadata();
     this.renderActions();
@@ -66,15 +70,20 @@ export class LawLookupModal extends Modal {
 
   private async renderParsedReference() {
     const lookupId = this.lookupSequence.next();
-    const parsed = parseLawReference(this.inputEl.value);
+    const parsedReference = parseLawReference(this.inputEl.value);
     this.currentSection = null;
     this.currentMarkdown = "";
     this.renderActions();
 
-    if (!parsed) {
+    if (!parsedReference) {
       this.renderResultMessage(this.ui.noRecognizedCitation);
       return;
     }
+
+    const parsed = {
+      ...parsedReference,
+      sourceVariant: this.selectedSourceVariant,
+    };
 
     this.renderResultMessage(this.ui.lookingUpLaw);
 
@@ -95,13 +104,30 @@ export class LawLookupModal extends Modal {
 
       this.currentSection = null;
       this.renderResultMessage(
-        error instanceof Error ? error.message : this.ui.noCitationFound,
+        error instanceof LawTranslationUnavailableError
+          ? this.ui.englishTranslationUnavailableForCitation
+          : error instanceof Error
+            ? error.message
+            : this.ui.noCitationFound,
       );
     }
   }
 
   private renderActions() {
     this.actionsEl.empty();
+
+    new Setting(this.actionsEl)
+      .setName(this.ui.useEnglishTranslationWhenAvailable)
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.selectedSourceVariant === "translation-en")
+          .onChange((value) => {
+            this.selectedSourceVariant = value ? "translation-en" : "official-de";
+            if (this.inputEl?.value.trim()) {
+              void this.renderParsedReference();
+            }
+          });
+      });
 
     new Setting(this.actionsEl)
       .setName(this.ui.insertSourceAndCacheNote)

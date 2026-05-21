@@ -1,3 +1,5 @@
+import type { LawReference } from "./types";
+
 export class LawProviderUnavailableError extends Error {
   constructor(
     readonly providerId: string,
@@ -9,3 +11,9 @@ export class LawProviderUnavailableError extends Error {
   }
 }
 
+export class LawTranslationUnavailableError extends Error {
+  constructor(readonly reference: LawReference) {
+    super(`No verified English translation is configured for ${reference.lawCode}.`);
+    this.name = "LawTranslationUnavailableError";
+  }
+}

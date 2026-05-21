@@ -1,8 +1,14 @@
 import { normalizeReferenceType } from "../referenceLabel";
 import { canonicalDisplayLawCode } from "../displayLawCode";
 import type { LawReference, LawSection } from "../types";
+import { normalizeLawSourceVariant } from "../LawSectionCache";
 
 const BASE_URL = "https://www.gesetze-im-internet.de";
+
+interface TranslationConfig {
+  path: string;
+  documentType: "section-full-text" | "article-full-text";
+}
 
 const supportedLaws: Record<string, {
   path: string;
@@ -11,6 +17,7 @@ const supportedLaws: Record<string, {
   referenceType?: "section" | "article";
   exampleSection?: string;
   exampleInputs?: string[];
+  translation?: TranslationConfig;
 }> = {
   AO: {
     path: "ao_1977",
@@ -40,6 +47,10 @@ const supportedLaws: Record<string, {
     path: "bgb",
     lawTitle: "Bürgerliches Gesetzbuch",
     exampleSection: "823",
+    translation: {
+      path: "englisch_bgb/englisch_bgb.html",
+      documentType: "section-full-text",
+    },
   },
   BETRVG: {
     path: "betrvg",
@@ -87,6 +98,10 @@ const supportedLaws: Record<string, {
     lawTitle: "Grundgesetz für die Bundesrepublik Deutschland",
     referenceType: "article",
     exampleSection: "1",
+    translation: {
+      path: "englisch_gg/englisch_gg.html",
+      documentType: "article-full-text",
+    },
   },
   GMBHG: {
     path: "gmbhg",
@@ -307,9 +322,18 @@ export function buildGesetzeImInternetSectionUrl(
   baseUrl = BASE_URL,
 ): string | null {
   const law = supportedLaws[reference.lawCode.toUpperCase()];
+  const sourceVariant = normalizeLawSourceVariant(reference.sourceVariant);
   const referenceType = normalizeReferenceType(reference.referenceType);
   if (!law || !/^\d+[a-z]?$/i.test(reference.section)) {
     return null;
+  }
+
+  if (sourceVariant === "translation-en") {
+    if (!law.translation || referenceType !== (law.referenceType ?? "section")) {
+      return null;
+    }
+
+    return new URL(`/${law.translation.path}`, baseUrl).toString();
   }
 
   if (reference.lawCode.toUpperCase() === "EGBGB") {
@@ -372,6 +396,10 @@ export function extractGesetzeImInternetPlainText(html: string): string {
 }
 
 export function canMapGesetzeImInternetReference(reference: LawReference, html: string): boolean {
+  if (normalizeLawSourceVariant(reference.sourceVariant) === "translation-en") {
+    return extractEnglishTranslation(reference, html) !== null;
+  }
+
   return htmlForReference(reference, html) !== null;
 }
 
@@ -388,6 +416,32 @@ export function mapGesetzeImInternetToLawSection(params: {
     throw new Error(`Unsupported law code: ${params.reference.lawCode}`);
   }
 
+  const sourceVariant = normalizeLawSourceVariant(params.reference.sourceVariant);
+  if (sourceVariant === "translation-en") {
+    const translation = extractEnglishTranslation(params.reference, params.html);
+    if (!translation) {
+      throw new Error(`Unsupported English translation reference: ${params.reference.lawCode}`);
+    }
+
+    return {
+      providerId: params.providerId,
+      providerLabel: params.providerLabel,
+      sourceUrl: params.sourceUrl,
+      lawCode: displayLawCodeForReference(params.reference),
+      lawTitle,
+      section: params.reference.section,
+      referenceType: normalizeReferenceType(params.reference.referenceType),
+      sourceVariant,
+      subsection: params.reference.subsection,
+      heading: translation.heading,
+      text: translation.text,
+      retrievedAt: params.retrievedAt,
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    };
+  }
+
   const referenceHtml = htmlForReference(params.reference, params.html) ?? params.html;
 
   return {
@@ -398,6 +452,7 @@ export function mapGesetzeImInternetToLawSection(params: {
     lawTitle,
     section: params.reference.section,
     referenceType: normalizeReferenceType(params.reference.referenceType),
+    sourceVariant,
     subsection: params.reference.subsection,
     heading: extractGesetzeImInternetHeading(referenceHtml),
     text: extractGesetzeImInternetPlainText(referenceHtml),
@@ -414,6 +469,23 @@ function htmlForReference(reference: LawReference, html: string): string | null 
   }
 
   return html;
+}
+
+function extractEnglishTranslation(
+  reference: LawReference,
+  html: string,
+): { heading?: string; text: string } | null {
+  const translation = supportedLaws[reference.lawCode.toUpperCase()]?.translation;
+  if (!translation) {
+    return null;
+  }
+
+  const lines = extractTranslationDocumentLines(html);
+  if (translation.documentType === "section-full-text") {
+    return extractEnglishSectionTranslation(reference.section, lines);
+  }
+
+  return extractEnglishArticleTranslation(reference.section, lines);
 }
 
 function isEgbgbPureArticleReference(reference: LawReference): boolean {
@@ -450,6 +522,99 @@ function extractMainLawContent(html: string): string {
   }
 
   return sanitizedHtml.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? sanitizedHtml;
+}
+
+function extractTranslationDocumentLines(html: string): string[] {
+  const sanitizedHtml = removeNonContentBlocks(html);
+  const bodyHtml = sanitizedHtml.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? sanitizedHtml;
+  return bodyHtml
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(h[1-6]|p|div|li|dt|dd|dl|ul|ol|table|tr|section|article|nav)>/gi, "\n")
+    .split("\n")
+    .map((line) => normalizeText(stripTags(line)))
+    .filter((line) => line.length > 0);
+}
+
+function extractEnglishSectionTranslation(
+  section: string,
+  lines: string[],
+): { heading?: string; text: string } | null {
+  const normalizedSection = section.trim().toLowerCase();
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const match = line.match(/^Section\s+(\d+[a-z]?)$/i);
+    if (!match || match[1].toLowerCase() !== normalizedSection) {
+      continue;
+    }
+
+    const heading = lines[index + 1];
+    const textLines = collectTranslationTextLines(lines, index + 2, /^Section\s+\d+[a-z]?$/i);
+    if (textLines.length === 0) {
+      continue;
+    }
+
+    return {
+      heading,
+      text: textLines.join("\n"),
+    };
+  }
+
+  return null;
+}
+
+function extractEnglishArticleTranslation(
+  article: string,
+  lines: string[],
+): { heading?: string; text: string } | null {
+  const normalizedArticle = article.trim().toLowerCase();
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const match = line.match(/^Article\s+(\d+[a-z]?)$/i);
+    if (!match || match[1].toLowerCase() !== normalizedArticle) {
+      continue;
+    }
+
+    const rawHeading = lines[index + 1];
+    const heading = rawHeading?.startsWith("[") && rawHeading.endsWith("]")
+      ? rawHeading.slice(1, -1)
+      : rawHeading;
+    const textLines = collectTranslationTextLines(lines, index + 2, /^Article\s+\d+[a-z]?$/i);
+    if (textLines.length === 0) {
+      continue;
+    }
+
+    return {
+      heading,
+      text: textLines.join("\n"),
+    };
+  }
+
+  return null;
+}
+
+function collectTranslationTextLines(
+  lines: string[],
+  startIndex: number,
+  nextReferencePattern: RegExp,
+): string[] {
+  const collected: string[] = [];
+
+  for (let index = startIndex; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line === "table of contents") {
+      break;
+    }
+
+    if (nextReferencePattern.test(line)) {
+      break;
+    }
+
+    collected.push(line);
+  }
+
+  return collected;
 }
 
 function removeNonContentBlocks(html: string): string {

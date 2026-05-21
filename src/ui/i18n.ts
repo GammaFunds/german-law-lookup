@@ -4,6 +4,9 @@ export interface UiStrings {
   commandName: string;
   enableLocalLawTextCache: string;
   enableLocalLawTextCacheDescription: string;
+  defaultLawTextSource: string;
+  germanOfficialText: string;
+  englishTranslationWhenAvailable: string;
   cacheExpirationInDays: string;
   cacheExpirationInDaysDescription: string;
   noExpirationPlaceholder: string;
@@ -25,6 +28,8 @@ export interface UiStrings {
   noRecognizedCitation: string;
   lookingUpLaw: string;
   noCitationFound: string;
+  useEnglishTranslationWhenAvailable: string;
+  englishTranslationUnavailableForCitation: string;
   insertSourceAndCacheNote: string;
   insertIntoCurrentNote: string;
   noActiveMarkdownEditorFound: string;
@@ -36,6 +41,9 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     enableLocalLawTextCache: "Lokalen Gesetzestext-Cache aktivieren",
     enableLocalLawTextCacheDescription:
       "Speichert erfolgreiche Treffer lokal. Live-Anbieter werden weiterhin zuerst abgefragt.",
+    defaultLawTextSource: "Standard-Gesetzestextquelle",
+    germanOfficialText: "Deutscher amtlicher Text",
+    englishTranslationWhenAvailable: "Englischer Gesetzestext, sofern vorhanden",
     cacheExpirationInDays: "Cache-Ablauf in Tagen",
     cacheExpirationInDaysDescription:
       "Leer lassen, um gecachte Treffer ohne Ablauf als Fallback zu verwenden.",
@@ -62,6 +70,9 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     noRecognizedCitation: "Keine erkannte Fundstelle.",
     lookingUpLaw: "Suche läuft...",
     noCitationFound: "Keine Fundstelle gefunden.",
+    useEnglishTranslationWhenAvailable: "Englischen Gesetzestext anzeigen, sofern vorhanden",
+    englishTranslationUnavailableForCitation:
+      "Für diese Fundstelle ist keine verifizierte englische Übersetzung konfiguriert.",
     insertSourceAndCacheNote: "Quellen- und Cache-Hinweis einfügen",
     insertIntoCurrentNote: "In aktuelle Note einfügen",
     noActiveMarkdownEditorFound: "Kein aktiver Markdown-Editor gefunden.",
@@ -71,6 +82,9 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     enableLocalLawTextCache: "Enable local law text cache",
     enableLocalLawTextCacheDescription:
       "Stores successful lookups locally. Live providers are still queried first.",
+    defaultLawTextSource: "Default law text source",
+    germanOfficialText: "German official text",
+    englishTranslationWhenAvailable: "English law text when available",
     cacheExpirationInDays: "Cache expiration in days",
     cacheExpirationInDaysDescription:
       "Leave empty to keep cached matches available as a fallback without expiration.",
@@ -97,6 +111,9 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     noRecognizedCitation: "No recognized citation.",
     lookingUpLaw: "Looking up law...",
     noCitationFound: "No citation found.",
+    useEnglishTranslationWhenAvailable: "Show English law text when available",
+    englishTranslationUnavailableForCitation:
+      "No verified English translation is configured for this citation.",
     insertSourceAndCacheNote: "Insert source and cache note",
     insertIntoCurrentNote: "Insert into current note",
     noActiveMarkdownEditorFound: "No active Markdown editor found.",
