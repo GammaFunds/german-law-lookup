@@ -121,9 +121,74 @@ const supportedLaws: Record<string, {
     lawTitle: "Personalausweisgesetz",
     displayLawCode: "PAuswG",
   },
+  "SGB I": {
+    path: "sgb_1",
+    lawTitle: "Sozialgesetzbuch (SGB) Erstes Buch (I) - Allgemeiner Teil",
+    displayLawCode: "SGB I",
+  },
+  "SGB II": {
+    path: "sgb_2",
+    lawTitle: "Sozialgesetzbuch (SGB) Zweites Buch (II) - Bürgergeld, Grundsicherung für Arbeitsuchende",
+    displayLawCode: "SGB II",
+  },
+  "SGB III": {
+    path: "sgb_3",
+    lawTitle: "Sozialgesetzbuch (SGB) Drittes Buch (III) - Arbeitsförderung",
+    displayLawCode: "SGB III",
+  },
+  "SGB IV": {
+    path: "sgb_4",
+    lawTitle: "Sozialgesetzbuch (SGB) Viertes Buch (IV) - Gemeinsame Vorschriften für die Sozialversicherung",
+    displayLawCode: "SGB IV",
+  },
   SGG: {
     path: "sgg",
     lawTitle: "Sozialgerichtsgesetz",
+  },
+  "SGB V": {
+    path: "sgb_5",
+    lawTitle: "Sozialgesetzbuch (SGB) Fünftes Buch (V) - Gesetzliche Krankenversicherung",
+    displayLawCode: "SGB V",
+  },
+  "SGB VI": {
+    path: "sgb_6",
+    lawTitle: "Sozialgesetzbuch (SGB) Sechstes Buch (VI) - Gesetzliche Rentenversicherung",
+    displayLawCode: "SGB VI",
+  },
+  "SGB VII": {
+    path: "sgb_7",
+    lawTitle: "Siebtes Buch Sozialgesetzbuch - Gesetzliche Unfallversicherung",
+    displayLawCode: "SGB VII",
+  },
+  "SGB VIII": {
+    path: "sgb_8",
+    lawTitle: "Sozialgesetzbuch (SGB) Achtes Buch (VIII) - Kinder- und Jugendhilfe",
+    displayLawCode: "SGB VIII",
+  },
+  "SGB IX": {
+    path: "sgb_9_2018",
+    lawTitle: "Sozialgesetzbuch (SGB) Neuntes Buch (IX) - Rehabilitation und Teilhabe von Menschen mit Behinderungen",
+    displayLawCode: "SGB IX",
+  },
+  "SGB X": {
+    path: "sgb_10",
+    lawTitle: "Zehntes Buch Sozialgesetzbuch - Sozialverwaltungsverfahren und Sozialdatenschutz",
+    displayLawCode: "SGB X",
+  },
+  "SGB XI": {
+    path: "sgb_11",
+    lawTitle: "Sozialgesetzbuch (SGB) Elftes Buch (XI) - Soziale Pflegeversicherung",
+    displayLawCode: "SGB XI",
+  },
+  "SGB XII": {
+    path: "sgb_12",
+    lawTitle: "Sozialgesetzbuch (SGB) Zwölftes Buch (XII) - Sozialhilfe",
+    displayLawCode: "SGB XII",
+  },
+  "SGB XIV": {
+    path: "sgb_14",
+    lawTitle: "Sozialgesetzbuch Vierzehntes Buch - Soziale Entschädigung",
+    displayLawCode: "SGB XIV",
   },
   STGB: {
     path: "stgb",

@@ -177,7 +177,7 @@ class DeLawSettingsTab extends PluginSettingTab {
       text: "GG wird derzeit ausschließlich für Artikelreferenzen unterstützt.",
     });
     noteList.createEl("li", {
-      text: "EGBGB, OWiG, KWG, FreizügG/EU sowie SGB I, SGB II, SGB V und SGB X bleiben vorerst Follow-ups, solange sie nicht explizit implementiert sind.",
+      text: "EGBGB, OWiG, KWG und FreizügG/EU bleiben vorerst Follow-ups; SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
     });
   }
 

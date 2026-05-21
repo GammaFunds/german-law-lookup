@@ -140,6 +140,22 @@ const gwg10HtmlFixture = makeSectionHtmlFixture({
   text: "(1) Die Verpflichteten müssen die allgemeinen Sorgfaltspflichten erfüllen.",
 });
 
+const sgbV1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Sozialgesetzbuch (SGB) Fünftes Buch (V) - Gesetzliche Krankenversicherung",
+  lawCode: "SGB V",
+  section: "1",
+  heading: "Solidarität und Eigenverantwortung",
+  text: "Die Krankenversicherung als Solidargemeinschaft hat die Aufgabe, die Gesundheit der Versicherten zu erhalten.",
+});
+
+const sgbIX1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Sozialgesetzbuch (SGB) Neuntes Buch (IX) - Rehabilitation und Teilhabe von Menschen mit Behinderungen",
+  lawCode: "SGB IX",
+  section: "1",
+  heading: "Selbstbestimmung und Teilhabe am Leben in der Gesellschaft",
+  text: "Menschen mit Behinderungen oder von Behinderung bedrohte Menschen erhalten Leistungen nach diesem Buch.",
+});
+
 const genericHeadingFixture = makeSectionHtmlFixture({
   lawTitle: "Beispielgesetz",
   lawCode: "BspG",
@@ -179,7 +195,20 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "KSCHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kschg/__1.html" },
       { lawCode: "KSTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kstg_1977/__1.html" },
       { lawCode: "PAUSWG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/pauswg/__1.html" },
+      { lawCode: "SGB I", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_1/__1.html" },
+      { lawCode: "SGB II", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_2/__1.html" },
+      { lawCode: "SGB III", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_3/__1.html" },
+      { lawCode: "SGB IV", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_4/__1.html" },
       { lawCode: "SGG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgg/__1.html" },
+      { lawCode: "SGB V", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_5/__1.html" },
+      { lawCode: "SGB VI", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_6/__1.html" },
+      { lawCode: "SGB VII", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_7/__1.html" },
+      { lawCode: "SGB VIII", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_8/__1.html" },
+      { lawCode: "SGB IX", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_9_2018/__1.html" },
+      { lawCode: "SGB X", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_10/__1.html" },
+      { lawCode: "SGB XI", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_11/__1.html" },
+      { lawCode: "SGB XII", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_12/__1.html" },
+      { lawCode: "SGB XIV", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_14/__1.html" },
       { lawCode: "STAG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/stag/__1.html" },
       { lawCode: "STGB", section: "242", expectedUrl: "https://www.gesetze-im-internet.de/stgb/__242.html" },
       { lawCode: "STPO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/stpo/__1.html" },
@@ -361,12 +390,116 @@ describe("GesetzeImInternet mapping helpers", () => {
       "VwVfG 1",
     ]);
 
+    assert.equal(byCode.get("SGB V")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB V")?.exampleInputs, [
+      "§ 1 SGB V",
+      "SGB V § 1",
+      "1 SGB V",
+      "SGB V 1",
+    ]);
+
+    assert.equal(byCode.get("SGB X")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB X")?.exampleInputs, [
+      "§ 1 SGB X",
+      "SGB X § 1",
+      "1 SGB X",
+      "SGB X 1",
+    ]);
+
+    assert.equal(byCode.get("SGB I")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB I")?.exampleInputs, [
+      "§ 1 SGB I",
+      "SGB I § 1",
+      "1 SGB I",
+      "SGB I 1",
+    ]);
+
+    assert.equal(byCode.get("SGB II")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB II")?.exampleInputs, [
+      "§ 1 SGB II",
+      "SGB II § 1",
+      "1 SGB II",
+      "SGB II 1",
+    ]);
+
+    assert.equal(byCode.get("SGB III")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB III")?.exampleInputs, [
+      "§ 1 SGB III",
+      "SGB III § 1",
+      "1 SGB III",
+      "SGB III 1",
+    ]);
+
+    assert.equal(byCode.get("SGB IV")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB IV")?.exampleInputs, [
+      "§ 1 SGB IV",
+      "SGB IV § 1",
+      "1 SGB IV",
+      "SGB IV 1",
+    ]);
+
     assert.equal(byCode.get("GG")?.referenceType, "article");
     assert.deepEqual(byCode.get("GG")?.exampleInputs, [
       "Art. 1 GG",
       "GG Art. 1",
       "Artikel 1 GG",
       "GG Artikel 1",
+    ]);
+
+    assert.equal(byCode.get("SGB VI")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB VI")?.exampleInputs, [
+      "§ 1 SGB VI",
+      "SGB VI § 1",
+      "1 SGB VI",
+      "SGB VI 1",
+    ]);
+
+    assert.equal(byCode.get("SGB VII")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB VII")?.exampleInputs, [
+      "§ 1 SGB VII",
+      "SGB VII § 1",
+      "1 SGB VII",
+      "SGB VII 1",
+    ]);
+
+    assert.equal(byCode.get("SGB VIII")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB VIII")?.exampleInputs, [
+      "§ 1 SGB VIII",
+      "SGB VIII § 1",
+      "1 SGB VIII",
+      "SGB VIII 1",
+    ]);
+
+    assert.equal(byCode.get("SGB IX")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB IX")?.exampleInputs, [
+      "§ 1 SGB IX",
+      "SGB IX § 1",
+      "1 SGB IX",
+      "SGB IX 1",
+    ]);
+
+    assert.equal(byCode.get("SGB XI")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB XI")?.exampleInputs, [
+      "§ 1 SGB XI",
+      "SGB XI § 1",
+      "1 SGB XI",
+      "SGB XI 1",
+    ]);
+
+    assert.equal(byCode.get("SGB XII")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB XII")?.exampleInputs, [
+      "§ 1 SGB XII",
+      "SGB XII § 1",
+      "1 SGB XII",
+      "SGB XII 1",
+    ]);
+
+    assert.equal(byCode.get("SGB XIV")?.referenceType, "section");
+    assert.deepEqual(byCode.get("SGB XIV")?.exampleInputs, [
+      "§ 1 SGB XIV",
+      "SGB XIV § 1",
+      "1 SGB XIV",
+      "SGB XIV 1",
     ]);
   });
 });
@@ -413,6 +546,42 @@ describe("GesetzeImInternetProvider", () => {
     assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/stgb/__242.html");
     assert.match(section?.text ?? "", /^\(1\) Wer eine fremde bewegliche Sache/);
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/stgb/__242.html"]);
+  });
+
+  it("resolves SGB V § 1 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(sgbV1HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "SGB V", section: "1" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "SGB V");
+    assert.equal(section?.lawTitle, "Sozialgesetzbuch (SGB) Fünftes Buch (V) - Gesetzliche Krankenversicherung");
+    assert.equal(section?.heading, "Solidarität und Eigenverantwortung");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/sgb_5/__1.html");
+    assert.match(section?.text ?? "", /^Die Krankenversicherung als Solidargemeinschaft hat die Aufgabe/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/sgb_5/__1.html"]);
+  });
+
+  it("resolves SGB IX § 1 from fixture-backed fetch via sgb_9_2018", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(sgbIX1HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "SGB IX", section: "1" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "SGB IX");
+    assert.equal(section?.lawTitle, "Sozialgesetzbuch (SGB) Neuntes Buch (IX) - Rehabilitation und Teilhabe von Menschen mit Behinderungen");
+    assert.equal(section?.heading, "Selbstbestimmung und Teilhabe am Leben in der Gesellschaft");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/sgb_9_2018/__1.html");
+    assert.match(section?.text ?? "", /^Menschen mit Behinderungen oder von Behinderung bedrohte Menschen/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/sgb_9_2018/__1.html"]);
   });
 
   it("resolves GG Art. 1 from fixture-backed fetch", async () => {
