@@ -34,12 +34,12 @@ export class LawLookupModal extends Modal {
     contentEl.empty();
     contentEl.addClass("de-law-lookup-modal");
 
-    contentEl.createEl("h2", { text: "Deutsches Gesetz nachschlagen" });
+    contentEl.createEl("h2", { text: "Look up law" });
 
     const formEl = contentEl.createDiv({ cls: "de-law-lookup-form" });
     this.inputEl = formEl.createEl("input", {
       type: "text",
-      placeholder: "z. B. § 823 BGB",
+      placeholder: "e.g. § 823 BGB",
     });
     this.inputEl.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -47,11 +47,11 @@ export class LawLookupModal extends Modal {
       }
     });
 
-    const searchButton = formEl.createEl("button", { text: "Suchen" });
+    const searchButton = formEl.createEl("button", { text: "Look up" });
     searchButton.addEventListener("click", () => this.renderParsedReference());
 
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
-    this.renderResultMessage("Noch keine Suche ausgeführt.");
+    this.renderResultMessage("No lookup run yet.");
     this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
     this.showInsertedSourceMetadata =
       this.settingsStore.getShowInsertedSourceMetadata();
@@ -70,11 +70,11 @@ export class LawLookupModal extends Modal {
     this.renderActions();
 
     if (!parsed) {
-      this.renderResultMessage("Keine erkannte Fundstelle.");
+      this.renderResultMessage("No recognized citation.");
       return;
     }
 
-    this.renderResultMessage("Suche läuft...");
+    this.renderResultMessage("Looking up law...");
 
     try {
       const section = await this.providerRegistry.getSection(parsed);
@@ -93,7 +93,7 @@ export class LawLookupModal extends Modal {
 
       this.currentSection = null;
       this.renderResultMessage(
-        error instanceof Error ? error.message : "Keine Fundstelle gefunden.",
+        error instanceof Error ? error.message : "No citation found.",
       );
     }
   }
@@ -102,7 +102,7 @@ export class LawLookupModal extends Modal {
     this.actionsEl.empty();
 
     new Setting(this.actionsEl)
-      .setName("Quellen- und Cache-Hinweis einfügen")
+      .setName("Insert source and cache note")
       .addToggle((toggle) => {
         toggle.setValue(this.showInsertedSourceMetadata).onChange((value) => {
           this.showInsertedSourceMetadata = value;
@@ -122,13 +122,13 @@ export class LawLookupModal extends Modal {
     }
 
     const button = this.actionsEl.createEl("button", {
-      text: "In aktuelle Note einfügen",
+      text: "Insert into current note",
     });
 
     button.addEventListener("click", () => {
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (!view) {
-        new Notice("Kein aktiver Markdown-Editor gefunden.");
+        new Notice("No active Markdown editor found.");
         return;
       }
 
@@ -148,7 +148,7 @@ export class LawLookupModal extends Modal {
 
   private renderCurrentPreview() {
     if (!this.currentSection) {
-      this.renderResultMessage("Keine Fundstelle gefunden.");
+      this.renderResultMessage("No citation found.");
       return;
     }
 

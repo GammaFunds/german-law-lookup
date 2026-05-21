@@ -44,7 +44,7 @@ export default class DeLawPlugin extends Plugin {
 
     this.addCommand({
       id: "deutsches-gesetz-nachschlagen",
-      name: "Deutsches Gesetz nachschlagen",
+      name: "Deutsches Gesetz nachschlagen / Look up German law",
       callback: () => {
         new LawLookupModal(this.app, this.providerRegistry, {
           getShowInsertedSourceMetadata: () =>
@@ -134,8 +134,8 @@ class DeLawSettingsTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Lokalen Gesetzestext-Cache aktivieren")
-      .setDesc("Speichert erfolgreiche Treffer lokal. Live-Anbieter werden weiterhin zuerst abgefragt.")
+      .setName("Enable local law text cache")
+      .setDesc("Stores successful lookups locally. Live providers are still queried first.")
       .addToggle((toggle) => {
         toggle
           .setValue(settings.enableLawSectionCache)
@@ -146,13 +146,13 @@ class DeLawSettingsTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName("Cache-Ablauf in Tagen")
-      .setDesc("Leer lassen, um gecachte Treffer ohne Ablauf als Fallback zu verwenden.")
+      .setName("Cache expiration in days")
+      .setDesc("Leave empty to keep cached matches available as a fallback without expiration.")
       .addText((text) => {
         text.inputEl.type = "number";
         text
           .setDisabled(!settings.enableLawSectionCache)
-          .setPlaceholder("kein Ablauf")
+          .setPlaceholder("no expiration")
           .setValue(settings.lawSectionCacheTtlDays == null ? "" : String(settings.lawSectionCacheTtlDays))
           .onChange(async (value) => {
             await this.plugin.updateSettings({
@@ -161,23 +161,23 @@ class DeLawSettingsTab extends PluginSettingTab {
           });
       });
 
-    containerEl.createEl("h3", { text: "Unterstützte Gesetze" });
+    containerEl.createEl("h3", { text: "Supported laws" });
     containerEl.createEl("p", {
       cls: "de-law-settings-supported-description",
-      text: "Diese Liste zeigt die aktuell explizit unterstützten Gesetze. Die Abfrage erfolgt weiterhin live über die Provider-Kette; diese Ansicht führt keine Netzwerkanfragen aus.",
+      text: "This list shows the laws that are explicitly supported right now. Lookups still run live through the provider chain; this view does not make any network requests.",
     });
 
-    this.renderSupportedLawsGroup(containerEl, "Paragraphenreferenzen (§)", "section");
-    this.renderSupportedLawsGroup(containerEl, "Artikelreferenzen (Art.)", "article");
+    this.renderSupportedLawsGroup(containerEl, "Section references (§)", "section");
+    this.renderSupportedLawsGroup(containerEl, "Article references (Art.)", "article");
 
     const notes = containerEl.createDiv({ cls: "de-law-settings-supported-notes" });
-    notes.createEl("strong", { text: "Hinweise zu bewusst nicht abgedeckten Kandidaten" });
+    notes.createEl("strong", { text: "Notes on intentionally unsupported candidates" });
     const noteList = notes.createEl("ul");
     noteList.createEl("li", {
-      text: "GG wird derzeit ausschließlich für Artikelreferenzen unterstützt.",
+      text: "GG is currently supported only for article references.",
     });
     noteList.createEl("li", {
-      text: "KWG und FreizügG/EU bleiben vorerst Follow-ups; SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
+      text: "KWG and FreizügG/EU remain follow-ups for now; SGB XIII is intentionally not supported as a current SGB book.",
     });
   }
 
@@ -195,10 +195,10 @@ class DeLawSettingsTab extends PluginSettingTab {
     const headerRow = table.createDiv({
       cls: "de-law-settings-supported-row de-law-settings-supported-row-header",
     });
-    headerRow.createEl("div", { text: "Kürzel" });
-    headerRow.createEl("div", { text: "Gesetz" });
-    headerRow.createEl("div", { text: "Referenztyp" });
-    headerRow.createEl("div", { text: "Beispiel" });
+    headerRow.createEl("div", { text: "Code" });
+    headerRow.createEl("div", { text: "Law" });
+    headerRow.createEl("div", { text: "Reference type" });
+    headerRow.createEl("div", { text: "Examples" });
 
     for (const law of laws) {
       const row = table.createDiv({ cls: "de-law-settings-supported-row" });
