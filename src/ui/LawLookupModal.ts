@@ -5,6 +5,7 @@ import type { LawSection } from "../law/types";
 import { parseLawReference } from "../parser";
 import { LookupSequence } from "./LookupSequence";
 import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
+import type { UiStrings } from "./i18n";
 import { buildLawSectionPreviewModel } from "./lawSectionPreview";
 
 interface LawLookupModalSettingsStore {
@@ -25,6 +26,7 @@ export class LawLookupModal extends Modal {
     app: App,
     private readonly providerRegistry: ProviderRegistry,
     private readonly settingsStore: LawLookupModalSettingsStore,
+    private readonly ui: UiStrings,
   ) {
     super(app);
   }
@@ -34,12 +36,12 @@ export class LawLookupModal extends Modal {
     contentEl.empty();
     contentEl.addClass("de-law-lookup-modal");
 
-    contentEl.createEl("h2", { text: "Look up law" });
+    contentEl.createEl("h2", { text: this.ui.lookUpLawTitle });
 
     const formEl = contentEl.createDiv({ cls: "de-law-lookup-form" });
     this.inputEl = formEl.createEl("input", {
       type: "text",
-      placeholder: "e.g. § 823 BGB",
+      placeholder: this.ui.lawReferencePlaceholder,
     });
     this.inputEl.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -47,11 +49,11 @@ export class LawLookupModal extends Modal {
       }
     });
 
-    const searchButton = formEl.createEl("button", { text: "Look up" });
+    const searchButton = formEl.createEl("button", { text: this.ui.lookUpLawButton });
     searchButton.addEventListener("click", () => this.renderParsedReference());
 
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
-    this.renderResultMessage("No lookup run yet.");
+    this.renderResultMessage(this.ui.noLookupRunYet);
     this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
     this.showInsertedSourceMetadata =
       this.settingsStore.getShowInsertedSourceMetadata();
@@ -70,11 +72,11 @@ export class LawLookupModal extends Modal {
     this.renderActions();
 
     if (!parsed) {
-      this.renderResultMessage("No recognized citation.");
+      this.renderResultMessage(this.ui.noRecognizedCitation);
       return;
     }
 
-    this.renderResultMessage("Looking up law...");
+    this.renderResultMessage(this.ui.lookingUpLaw);
 
     try {
       const section = await this.providerRegistry.getSection(parsed);
@@ -93,7 +95,7 @@ export class LawLookupModal extends Modal {
 
       this.currentSection = null;
       this.renderResultMessage(
-        error instanceof Error ? error.message : "No citation found.",
+        error instanceof Error ? error.message : this.ui.noCitationFound,
       );
     }
   }
@@ -102,7 +104,7 @@ export class LawLookupModal extends Modal {
     this.actionsEl.empty();
 
     new Setting(this.actionsEl)
-      .setName("Insert source and cache note")
+      .setName(this.ui.insertSourceAndCacheNote)
       .addToggle((toggle) => {
         toggle.setValue(this.showInsertedSourceMetadata).onChange((value) => {
           this.showInsertedSourceMetadata = value;
@@ -122,13 +124,13 @@ export class LawLookupModal extends Modal {
     }
 
     const button = this.actionsEl.createEl("button", {
-      text: "Insert into current note",
+      text: this.ui.insertIntoCurrentNote,
     });
 
     button.addEventListener("click", () => {
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (!view) {
-        new Notice("No active Markdown editor found.");
+        new Notice(this.ui.noActiveMarkdownEditorFound);
         return;
       }
 
@@ -148,7 +150,7 @@ export class LawLookupModal extends Modal {
 
   private renderCurrentPreview() {
     if (!this.currentSection) {
-      this.renderResultMessage("No citation found.");
+      this.renderResultMessage(this.ui.noCitationFound);
       return;
     }
 

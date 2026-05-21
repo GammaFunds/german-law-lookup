@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, requestUrl, Setting } from "obsidian";
+import { App, Plugin, PluginSettingTab, getLanguage, requestUrl, Setting } from "obsidian";
 import {
   StoredLawSectionCache,
   type LawSectionCacheStorage,
@@ -12,6 +12,7 @@ import {
   type SupportedGesetzeImInternetLaw,
 } from "./law/providers/gesetzeImInternetMapping";
 import type { LawSection } from "./law/types";
+import { getUiStrings, type UiStrings } from "./ui/i18n";
 import { LawLookupModal } from "./ui/LawLookupModal";
 
 interface DeLawPluginSettings {
@@ -35,6 +36,7 @@ const DEFAULT_SETTINGS: DeLawPluginSettings = {
 export default class DeLawPlugin extends Plugin {
   private providerRegistry!: ProviderRegistry;
   private settings: DeLawPluginSettings = { ...DEFAULT_SETTINGS };
+  private readonly uiStrings = getUiStrings(safeGetObsidianLanguage());
 
   async onload() {
     this.settings = await this.loadSettings();
@@ -44,21 +46,30 @@ export default class DeLawPlugin extends Plugin {
 
     this.addCommand({
       id: "deutsches-gesetz-nachschlagen",
-      name: "Deutsches Gesetz nachschlagen / Look up German law",
+      name: this.uiStrings.commandName,
       callback: () => {
-        new LawLookupModal(this.app, this.providerRegistry, {
-          getShowInsertedSourceMetadata: () =>
-            this.settings.showInsertedSourceMetadata,
-          setShowInsertedSourceMetadata: async (value) => {
-            await this.updateSettings({ showInsertedSourceMetadata: value });
+        new LawLookupModal(
+          this.app,
+          this.providerRegistry,
+          {
+            getShowInsertedSourceMetadata: () =>
+              this.settings.showInsertedSourceMetadata,
+            setShowInsertedSourceMetadata: async (value) => {
+              await this.updateSettings({ showInsertedSourceMetadata: value });
+            },
           },
-        }).open();
+          this.uiStrings,
+        ).open();
       },
     });
   }
 
   getSettings(): DeLawPluginSettings {
     return this.settings;
+  }
+
+  getUiStrings(): UiStrings {
+    return this.uiStrings;
   }
 
   async updateSettings(patch: Partial<DeLawPluginSettings>): Promise<void> {
@@ -130,12 +141,13 @@ class DeLawSettingsTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     const settings = this.plugin.getSettings();
+    const ui = this.plugin.getUiStrings();
 
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Enable local law text cache")
-      .setDesc("Stores successful lookups locally. Live providers are still queried first.")
+      .setName(ui.enableLocalLawTextCache)
+      .setDesc(ui.enableLocalLawTextCacheDescription)
       .addToggle((toggle) => {
         toggle
           .setValue(settings.enableLawSectionCache)
@@ -146,13 +158,13 @@ class DeLawSettingsTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName("Cache expiration in days")
-      .setDesc("Leave empty to keep cached matches available as a fallback without expiration.")
+      .setName(ui.cacheExpirationInDays)
+      .setDesc(ui.cacheExpirationInDaysDescription)
       .addText((text) => {
         text.inputEl.type = "number";
         text
           .setDisabled(!settings.enableLawSectionCache)
-          .setPlaceholder("no expiration")
+          .setPlaceholder(ui.noExpirationPlaceholder)
           .setValue(settings.lawSectionCacheTtlDays == null ? "" : String(settings.lawSectionCacheTtlDays))
           .onChange(async (value) => {
             await this.plugin.updateSettings({
@@ -161,23 +173,23 @@ class DeLawSettingsTab extends PluginSettingTab {
           });
       });
 
-    containerEl.createEl("h3", { text: "Supported laws" });
+    containerEl.createEl("h3", { text: ui.supportedLaws });
     containerEl.createEl("p", {
       cls: "de-law-settings-supported-description",
-      text: "This list shows the laws that are explicitly supported right now. Lookups still run live through the provider chain; this view does not make any network requests.",
+      text: ui.supportedLawsDescription,
     });
 
-    this.renderSupportedLawsGroup(containerEl, "Section references (§)", "section");
-    this.renderSupportedLawsGroup(containerEl, "Article references (Art.)", "article");
+    this.renderSupportedLawsGroup(containerEl, ui.sectionReferences, "section", ui);
+    this.renderSupportedLawsGroup(containerEl, ui.articleReferences, "article", ui);
 
     const notes = containerEl.createDiv({ cls: "de-law-settings-supported-notes" });
-    notes.createEl("strong", { text: "Notes on intentionally unsupported candidates" });
+    notes.createEl("strong", { text: ui.intentionallyUnsupportedCandidates });
     const noteList = notes.createEl("ul");
     noteList.createEl("li", {
-      text: "GG is currently supported only for article references.",
+      text: ui.ggArticleOnlyNote,
     });
     noteList.createEl("li", {
-      text: "KWG and FreizügG/EU remain follow-ups for now; SGB XIII is intentionally not supported as a current SGB book.",
+      text: ui.unsupportedCandidatesNote,
     });
   }
 
@@ -185,6 +197,7 @@ class DeLawSettingsTab extends PluginSettingTab {
     containerEl: HTMLElement,
     heading: string,
     referenceType: SupportedGesetzeImInternetLaw["referenceType"],
+    ui: UiStrings,
   ): void {
     const laws = getSupportedGesetzeImInternetLaws().filter(
       (law) => law.referenceType === referenceType,
@@ -195,10 +208,10 @@ class DeLawSettingsTab extends PluginSettingTab {
     const headerRow = table.createDiv({
       cls: "de-law-settings-supported-row de-law-settings-supported-row-header",
     });
-    headerRow.createEl("div", { text: "Code" });
-    headerRow.createEl("div", { text: "Law" });
-    headerRow.createEl("div", { text: "Reference type" });
-    headerRow.createEl("div", { text: "Examples" });
+    headerRow.createEl("div", { text: ui.code });
+    headerRow.createEl("div", { text: ui.law });
+    headerRow.createEl("div", { text: ui.referenceType });
+    headerRow.createEl("div", { text: ui.examples });
 
     for (const law of laws) {
       const row = table.createDiv({ cls: "de-law-settings-supported-row" });
@@ -213,6 +226,14 @@ class DeLawSettingsTab extends PluginSettingTab {
         });
       }
     }
+  }
+}
+
+function safeGetObsidianLanguage(): string {
+  try {
+    return getLanguage();
+  } catch {
+    return "en";
   }
 }
 
