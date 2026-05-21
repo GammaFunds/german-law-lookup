@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + full explicit SGB support",
+    "phase": "Stable MVP + full SGB and EGBGB support",
     "last_updated": "2026-05-21",
-    "summary": "Stable MVP remains validated. Full explicit SGB lookup support was added and committed: SGB I, SGB II, SGB III, SGB IV, SGB V, SGB VI, SGB VII, SGB VIII, SGB IX, SGB X, SGB XI, SGB XII, and SGB XIV are supported via explicit parser entries and verified Gesetze-im-Internet mappings. SGB IX uses the special official path sgb_9_2018. SGB XIII is intentionally unsupported. Obsidian runtime, tests, and production build were validated."
+    "summary": "Stable MVP remains validated. Full explicit SGB lookup support is implemented and committed. EGBGB article lookup support is implemented and runtime-validated: pure EGBGB articles such as Art. 1 EGBGB and EGBGB Art. 1 work, and EGBGB article-subsection references such as Art. 229 § 6 EGBGB and EGBGB Artikel 246a § 1 work. EGBGB uses referenceType article with optional subsection; pure articles are resolved through the official full-law HTML, while article-subsection references use the bgbeg/art_<article>__<subsection>.html structure. Tests and production build pass."
   },
   "blockers": [
     {
@@ -37,7 +37,6 @@
       "status": "open",
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
     },
-    "EGBGB remains unsupported pending explicit verified mapping.",
     "OWiG remains unsupported pending explicit verified mapping.",
     "KWG remains unsupported pending explicit verified mapping.",
     "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes."
@@ -368,6 +367,19 @@
         "Added verified Gesetze-im-Internet mappings for SGB I, II, III, IV, V, VI, VII, VIII, IX, X, XI, XII, XIV.",
         "Handled SGB IX via official sgb_9_2018 path.",
         "Updated supported-law diagnostics and tests.",
+        "Validated Obsidian runtime, npm test, and npm run build."
+      ]
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Add EGBGB article lookup support",
+      "commit": "9bcd63d",
+      "details": [
+        "Added EGBGB pure article parsing for forms such as Art. 1 EGBGB, Artikel 1 EGBGB, EGBGB Art. 1, and EGBGB Artikel 1.",
+        "Added EGBGB article-subsection parsing for forms such as Art. 229 § 6 EGBGB and EGBGB Artikel 246a § 1.",
+        "Modelled EGBGB as referenceType article with optional subsection.",
+        "Resolved pure EGBGB articles through the official full-law HTML because bgbeg/art_1.html returns 404.",
+        "Kept EGBGB §-only forms unsupported: § 1 EGBGB, EGBGB § 1, EGBGB 1, 1 EGBGB.",
         "Validated Obsidian runtime, npm test, and npm run build."
       ]
     }
