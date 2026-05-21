@@ -11,6 +11,11 @@ export function referencePrefix(referenceType?: LawReferenceType): "§" | "Art."
 export function formatReferenceLabel(reference: {
   section: string;
   referenceType?: LawReferenceType;
+  subsection?: string;
 }): string {
+  if (normalizeReferenceType(reference.referenceType) === "article" && reference.subsection) {
+    return `Art. ${reference.section} § ${reference.subsection}`;
+  }
+
   return `${referencePrefix(reference.referenceType)} ${reference.section}`;
 }

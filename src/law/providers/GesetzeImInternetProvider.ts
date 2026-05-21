@@ -8,6 +8,7 @@ import {
 import type { LawReference, LawSection } from "../types";
 import {
   buildGesetzeImInternetSectionUrl,
+  canMapGesetzeImInternetReference,
   mapGesetzeImInternetToLawSection,
 } from "./gesetzeImInternetMapping";
 
@@ -42,6 +43,10 @@ export class GesetzeImInternetProvider implements LawProvider {
       }
 
       const html = await this.getText(response, sectionUrl);
+      if (!canMapGesetzeImInternetReference(reference, html)) {
+        return null;
+      }
+
       return mapGesetzeImInternetToLawSection({
         reference,
         html,

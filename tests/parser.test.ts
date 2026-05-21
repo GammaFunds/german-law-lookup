@@ -34,6 +34,116 @@ describe("parseLawReference", () => {
     });
   });
 
+  it("parses explicit EGBGB pure article references", () => {
+    assert.deepEqual(parseLawReference("Art. 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Artikel 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Art. 1"), {
+      lawCode: "EGBGB",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Artikel 1"), {
+      lawCode: "EGBGB",
+      section: "1",
+      referenceType: "article",
+    });
+  });
+
+  it("parses explicit EGBGB article-section references", () => {
+    assert.deepEqual(parseLawReference("Art. 229 § 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Art. 229 § 1"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Art 229 § 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Art 229 § 1"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Art. 246a § 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "246a",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Art. 246a § 1"), {
+      lawCode: "EGBGB",
+      section: "246a",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Artikel 229 § 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Artikel 229 § 1"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Artikel 246a § 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "246a",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Artikel 246a § 1"), {
+      lawCode: "EGBGB",
+      section: "246a",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Art. 229 § 6 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "6",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Art. 229 § 67"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "67",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("Artikel 247 § 3 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "247",
+      subsection: "3",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("EGBGB Artikel 247 § 3"), {
+      lawCode: "EGBGB",
+      section: "247",
+      subsection: "3",
+      referenceType: "article",
+    });
+  });
+
   it("parses law-code-first references with section sign", () => {
     assert.deepEqual(parseLawReference("KAGB § 1"), {
       lawCode: "KAGB",
@@ -163,5 +273,9 @@ describe("parseLawReference", () => {
   it("returns null for unsupported input", () => {
     assert.equal(parseLawReference("not a law reference"), null);
     assert.equal(parseLawReference("Art. 1 BGB"), null);
+    assert.equal(parseLawReference("§ 1 EGBGB"), null);
+    assert.equal(parseLawReference("EGBGB § 1"), null);
+    assert.equal(parseLawReference("EGBGB 1"), null);
+    assert.equal(parseLawReference("1 EGBGB"), null);
   });
 });

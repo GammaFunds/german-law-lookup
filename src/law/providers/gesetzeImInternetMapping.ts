@@ -10,6 +10,7 @@ const supportedLaws: Record<string, {
   displayLawCode?: string;
   referenceType?: "section" | "article";
   exampleSection?: string;
+  exampleInputs?: string[];
 }> = {
   AO: {
     path: "ao_1977",
@@ -54,6 +55,18 @@ const supportedLaws: Record<string, {
     path: "estg",
     lawTitle: "Einkommensteuergesetz",
     displayLawCode: "EStG",
+  },
+  EGBGB: {
+    path: "bgbeg",
+    lawTitle: "Einführungsgesetz zum Bürgerlichen Gesetzbuche",
+    displayLawCode: "EGBGB",
+    referenceType: "article",
+    exampleInputs: [
+      "Art. 1 EGBGB",
+      "EGBGB Art. 1",
+      "Art. 229 § 6 EGBGB",
+      "EGBGB Artikel 246a § 1",
+    ],
   },
   FAMFG: {
     path: "famfg",
@@ -265,7 +278,8 @@ export function getSupportedGesetzeImInternetLaws(): SupportedGesetzeImInternetL
         lawTitle: law.lawTitle,
         referenceType,
         exampleInputs:
-          referenceType === "article"
+          law.exampleInputs
+          ?? (referenceType === "article"
             ? [
                 `Art. ${exampleSection} ${displayLawCode}`,
                 `${displayLawCode} Art. ${exampleSection}`,
@@ -277,7 +291,7 @@ export function getSupportedGesetzeImInternetLaws(): SupportedGesetzeImInternetL
                 `${displayLawCode} § ${exampleSection}`,
                 `${exampleSection} ${displayLawCode}`,
                 `${displayLawCode} ${exampleSection}`,
-              ],
+              ]),
       };
     })
     .sort((left, right) => left.displayLawCode.localeCompare(right.displayLawCode, "de"));
@@ -291,6 +305,25 @@ export function buildGesetzeImInternetSectionUrl(
   const referenceType = normalizeReferenceType(reference.referenceType);
   if (!law || !/^\d+[a-z]?$/i.test(reference.section)) {
     return null;
+  }
+
+  if (reference.lawCode.toUpperCase() === "EGBGB") {
+    const subsection = reference.subsection?.trim();
+    if (referenceType !== "article") {
+      return null;
+    }
+
+    const article = reference.section.toLowerCase();
+    if (!subsection) {
+      return new URL(`/${law.path}/BJNR006049896.html`, baseUrl).toString();
+    }
+
+    if (!/^\d+[a-z]?$/i.test(subsection)) {
+      return null;
+    }
+
+    const normalizedSubsection = subsection.toLowerCase();
+    return new URL(`/${law.path}/art_${article}__${normalizedSubsection}.html`, baseUrl).toString();
   }
 
   const supportedReferenceType = law.referenceType ?? "section";
@@ -333,6 +366,10 @@ export function extractGesetzeImInternetPlainText(html: string): string {
   return normalizeText(stripTags(withLineBreaks));
 }
 
+export function canMapGesetzeImInternetReference(reference: LawReference, html: string): boolean {
+  return htmlForReference(reference, html) !== null;
+}
+
 export function mapGesetzeImInternetToLawSection(params: {
   reference: LawReference;
   html: string;
@@ -346,6 +383,8 @@ export function mapGesetzeImInternetToLawSection(params: {
     throw new Error(`Unsupported law code: ${params.reference.lawCode}`);
   }
 
+  const referenceHtml = htmlForReference(params.reference, params.html) ?? params.html;
+
   return {
     providerId: params.providerId,
     providerLabel: params.providerLabel,
@@ -354,13 +393,47 @@ export function mapGesetzeImInternetToLawSection(params: {
     lawTitle,
     section: params.reference.section,
     referenceType: normalizeReferenceType(params.reference.referenceType),
-    heading: extractGesetzeImInternetHeading(params.html),
-    text: extractGesetzeImInternetPlainText(params.html),
+    subsection: params.reference.subsection,
+    heading: extractGesetzeImInternetHeading(referenceHtml),
+    text: extractGesetzeImInternetPlainText(referenceHtml),
     retrievedAt: params.retrievedAt,
     cacheStatus: "live",
     isOfficialSource: true,
     isAuthoritativeText: false,
   };
+}
+
+function htmlForReference(reference: LawReference, html: string): string | null {
+  if (isEgbgbPureArticleReference(reference)) {
+    return extractEgbgbPureArticleHtml(html, reference.section);
+  }
+
+  return html;
+}
+
+function isEgbgbPureArticleReference(reference: LawReference): boolean {
+  return reference.lawCode.toUpperCase() === "EGBGB"
+    && normalizeReferenceType(reference.referenceType) === "article"
+    && !reference.subsection;
+}
+
+function extractEgbgbPureArticleHtml(html: string, article: string): string | null {
+  const normalizedArticle = article.trim().toLowerCase();
+
+  for (const normHtml of findElementContentsByClass(html, "jnnorm")) {
+    const headerMatch = normHtml.match(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]>/i);
+    if (!headerMatch) {
+      continue;
+    }
+
+    const firstHeaderSpan = headerMatch[1].match(/<span\b[^>]*>([\s\S]*?)<\/span>/i)?.[1];
+    const headerText = normalizeText(stripTags(firstHeaderSpan ?? headerMatch[1])).toLowerCase();
+    if (headerText === `art ${normalizedArticle}`) {
+      return normHtml;
+    }
+  }
+
+  return null;
 }
 
 function extractMainLawContent(html: string): string {

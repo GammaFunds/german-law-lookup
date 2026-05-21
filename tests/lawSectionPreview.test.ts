@@ -65,4 +65,52 @@ describe("lawSectionPreview", () => {
       "Cache: cached.",
     ]);
   });
+
+  it("uses Art. labels for EGBGB pure article previews", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html",
+      lawCode: "EGBGB",
+      lawTitle: "Einführungsgesetz zum Bürgerlichen Gesetzbuche",
+      section: "1",
+      referenceType: "article",
+      text: "Das Bürgerliche Gesetzbuch tritt am 1. Januar 1900 in Kraft.",
+      retrievedAt: "2026-05-21T12:34:56.000Z",
+      cacheStatus: "cached",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.equal(preview.title, "Art. 1 EGBGB");
+    assert.deepEqual(preview.metadataLines, [
+      "Quelle: Gesetze im Internet, EGBGB, Art. 1, abgerufen am 2026-05-21.",
+      "Cache: cached.",
+    ]);
+  });
+
+  it("uses combined article-section labels for EGBGB previews", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/bgbeg/art_229__6.html",
+      lawCode: "EGBGB",
+      lawTitle: "Einführungsgesetz zum Bürgerlichen Gesetzbuche",
+      section: "229",
+      subsection: "6",
+      referenceType: "article",
+      heading: "Überleitungsvorschrift",
+      text: "Diese Vorschrift gilt fort.",
+      retrievedAt: "2026-05-21T12:34:56.000Z",
+      cacheStatus: "cached",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.equal(preview.title, "Art. 229 § 6 EGBGB – Überleitungsvorschrift");
+    assert.deepEqual(preview.metadataLines, [
+      "Quelle: Gesetze im Internet, EGBGB, Art. 229 § 6, abgerufen am 2026-05-21.",
+      "Cache: cached.",
+    ]);
+  });
 });

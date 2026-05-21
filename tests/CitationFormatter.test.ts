@@ -124,4 +124,52 @@ describe("formatLawSectionAsMarkdown", () => {
     );
     assert.doesNotMatch(markdown, /§ 1 GG/);
   });
+
+  it("formats EGBGB pure article references with Art. labels", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "EGBGB",
+      lawTitle: "Einführungsgesetz zum Bürgerlichen Gesetzbuche",
+      section: "1",
+      referenceType: "article",
+      text: "Das Bürgerliche Gesetzbuch tritt am 1. Januar 1900 in Kraft.",
+      retrievedAt: "2026-05-21T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.match(markdown, /^> \*\*Art\. 1 EGBGB\*\*/m);
+    assert.match(
+      markdown,
+      /^Quelle: Gesetze im Internet, EGBGB, Art\. 1, abgerufen am 2026-05-21\.$/m,
+    );
+    assert.doesNotMatch(markdown, /§ 1 EGBGB/);
+  });
+
+  it("formats EGBGB article-section references with Art. and § labels", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "EGBGB",
+      lawTitle: "Einführungsgesetz zum Bürgerlichen Gesetzbuche",
+      section: "229",
+      subsection: "6",
+      referenceType: "article",
+      heading: "Überleitungsvorschrift",
+      text: "Diese Vorschrift gilt fort.",
+      retrievedAt: "2026-05-21T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.match(markdown, /^> \*\*Art\. 229 § 6 EGBGB – Überleitungsvorschrift\*\*/m);
+    assert.match(
+      markdown,
+      /^Quelle: Gesetze im Internet, EGBGB, Art\. 229 § 6, abgerufen am 2026-05-21\.$/m,
+    );
+    assert.doesNotMatch(markdown, /§ 229 EGBGB/);
+  });
 });

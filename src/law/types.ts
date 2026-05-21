@@ -16,6 +16,7 @@ export interface LawSection {
   lawTitle: string;
   section: string;
   referenceType?: LawReferenceType;
+  subsection?: string;
   heading?: string;
   text: string;
   retrievedAt: string;
