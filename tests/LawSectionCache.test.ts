@@ -29,6 +29,26 @@ describe("lawSectionCacheKey", () => {
     );
     assert.equal(lawSectionCacheKey({ lawCode: "GG", section: "1" }), "GG:1");
   });
+
+  it("distinguishes pure article and article-section cache keys", () => {
+    assert.equal(
+      lawSectionCacheKey({
+        lawCode: "EGBGB",
+        section: "1",
+        referenceType: "article",
+      }),
+      "EGBGB:art:1",
+    );
+    assert.equal(
+      lawSectionCacheKey({
+        lawCode: "EGBGB",
+        section: "229",
+        subsection: "6",
+        referenceType: "article",
+      }),
+      "EGBGB:art:229:sec:6",
+    );
+  });
 });
 
 describe("CachedLawProvider", () => {

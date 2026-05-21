@@ -22,7 +22,12 @@ export interface CachedLawProviderOptions {
 export function lawSectionCacheKey(reference: LawReference): string {
   const lawCode = reference.lawCode.trim().toUpperCase();
   const section = reference.section.trim().toLowerCase();
+  const subsection = reference.subsection?.trim().toLowerCase();
   if (normalizeReferenceType(reference.referenceType) === "article") {
+    if (subsection) {
+      return `${lawCode}:art:${section}:sec:${subsection}`;
+    }
+
     return `${lawCode}:art:${section}`;
   }
 

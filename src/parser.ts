@@ -54,6 +54,25 @@ const explicitSpacedSectionFirstPattern = new RegExp(
   "iu",
 );
 
+const egbgbArticlePattern = sectionPattern;
+const egbgbSubsectionPattern = sectionPattern;
+const egbgbArticleSectionFirstPattern = new RegExp(
+  String.raw`^${articleMarkerPattern}\s*(${egbgbArticlePattern})\s+§\s*(${egbgbSubsectionPattern})\s+(EGBGB)$`,
+  "iu",
+);
+const egbgbLawFirstArticleSectionPattern = new RegExp(
+  String.raw`^(EGBGB)\s+${articleMarkerPattern}\s*(${egbgbArticlePattern})\s+§\s*(${egbgbSubsectionPattern})$`,
+  "iu",
+);
+const egbgbArticleFirstPattern = new RegExp(
+  String.raw`^${articleMarkerPattern}\s*(${egbgbArticlePattern})\s+(EGBGB)$`,
+  "iu",
+);
+const egbgbLawFirstArticlePattern = new RegExp(
+  String.raw`^(EGBGB)\s+${articleMarkerPattern}\s*(${egbgbArticlePattern})$`,
+  "iu",
+);
+
 export function parseLawReference(input: string): ParsedLawReference | null {
   const normalized = input.trim().replace(/\s+/g, " ");
   if (!normalized) {
@@ -78,6 +97,44 @@ export function parseLawReference(input: string): ParsedLawReference | null {
     };
   }
 
+  const egbgbArticleSectionFirstMatch = normalized.match(egbgbArticleSectionFirstPattern);
+  if (egbgbArticleSectionFirstMatch) {
+    return {
+      lawCode: "EGBGB",
+      section: egbgbArticleSectionFirstMatch[1],
+      subsection: egbgbArticleSectionFirstMatch[2],
+      referenceType: "article",
+    };
+  }
+
+  const egbgbLawFirstArticleSectionMatch = normalized.match(egbgbLawFirstArticleSectionPattern);
+  if (egbgbLawFirstArticleSectionMatch) {
+    return {
+      lawCode: "EGBGB",
+      section: egbgbLawFirstArticleSectionMatch[2],
+      subsection: egbgbLawFirstArticleSectionMatch[3],
+      referenceType: "article",
+    };
+  }
+
+  const egbgbArticleFirstMatch = normalized.match(egbgbArticleFirstPattern);
+  if (egbgbArticleFirstMatch) {
+    return {
+      lawCode: "EGBGB",
+      section: egbgbArticleFirstMatch[1],
+      referenceType: "article",
+    };
+  }
+
+  const egbgbLawFirstArticleMatch = normalized.match(egbgbLawFirstArticlePattern);
+  if (egbgbLawFirstArticleMatch) {
+    return {
+      lawCode: "EGBGB",
+      section: egbgbLawFirstArticleMatch[2],
+      referenceType: "article",
+    };
+  }
+
   const explicitSpacedLawFirstMatch = normalized.match(explicitSpacedLawFirstPattern);
   if (explicitSpacedLawFirstMatch) {
     return {
@@ -96,6 +153,10 @@ export function parseLawReference(input: string): ParsedLawReference | null {
 
   const lawFirstMatch = normalized.match(lawFirstPattern);
   if (lawFirstMatch) {
+    if (lawFirstMatch[1].toUpperCase() === "EGBGB") {
+      return null;
+    }
+
     return {
       lawCode: lawFirstMatch[1].toUpperCase(),
       section: lawFirstMatch[2],
@@ -104,6 +165,10 @@ export function parseLawReference(input: string): ParsedLawReference | null {
 
   const sectionFirstMatch = normalized.match(sectionFirstPattern);
   if (sectionFirstMatch) {
+    if (sectionFirstMatch[2].toUpperCase() === "EGBGB") {
+      return null;
+    }
+
     return {
       lawCode: sectionFirstMatch[2].toUpperCase(),
       section: sectionFirstMatch[1],

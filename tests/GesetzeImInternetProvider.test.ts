@@ -95,6 +95,76 @@ const ggArt1HtmlFixture = `
 </body>
 </html>`;
 
+const egbgbArt229Sec1HtmlFixture = `
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
+<head>
+  <title>Art 229 § 1 EGBGB - Einzelnorm</title>
+</head>
+<body>
+  <div class="jnheader">
+    <h1>Einführungsgesetz zum Bürgerlichen Gesetzbuche<br />
+      <span class="jnenbez">Art 229 § 1</span>&#160;<span class="jnentitel">Überleitungsvorschrift zum Gesetz zur Beschleunigung fälliger Zahlungen</span>
+    </h1>
+  </div>
+  <div class="jnhtml">
+    <div class="jurAbsatz">(1) § 284 Abs. 3 des Bürgerlichen Gesetzbuchs in der seit dem 1. Mai 2000 geltenden Fassung gilt auch für Geldforderungen, die vor diesem Zeitpunkt entstanden sind.</div>
+  </div>
+</body>
+</html>`;
+
+const egbgbFullHtmlFixture = `
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
+<head>
+  <title>BGBEG - Einführungsgesetz zum Bürgerlichen Gesetzbuche</title>
+</head>
+<body>
+  <div class="jnnorm" id="BJNR006049896">
+    <div class="jnheader">
+      <h1><span class="jnlangue">Einführungsgesetz zum Bürgerlichen Gesetzbuche</span></h1>
+    </div>
+  </div>
+  <div class="jnnorm" id="BJNR006049896BJNG030900377" title="Gliederung">
+    <div class="jnheader">
+      <h2><span>Art 1</span><br /><span></span></h2>
+    </div>
+    <div>
+      <div class="jnhtml">
+        <div>
+          <div class="jurAbsatz">(1) Das Bürgerliche Gesetzbuch tritt am 1. Januar 1900 gleichzeitig mit weiteren Gesetzen in Kraft.</div>
+          <div class="jurAbsatz">(2) Landesgesetzliche Vorschriften bleiben in Kraft, soweit die Regelung vorbehalten ist.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jnnorm" id="BJNR006049896BJNG031000377" title="Gliederung">
+    <div class="jnheader">
+      <h2><span>Art 2</span><br /><span></span></h2>
+    </div>
+    <div>
+      <div class="jnhtml">
+        <div>
+          <div class="jurAbsatz">Gesetz im Sinne des Bürgerlichen Gesetzbuchs und dieses Gesetzes ist jede Rechtsnorm.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jnnorm" id="BJNR006049896BJNG031108360" title="Gliederung">
+    <div class="jnheader">
+      <h2><span>Art 3</span><br /><span>Anwendungsbereich; Verhältnis zu Regelungen der Europäischen Union</span></h2>
+    </div>
+    <div>
+      <div class="jnhtml">
+        <div>
+          <div class="jurAbsatz">Soweit nicht unmittelbar anwendbare Regelungen der Europäischen Union maßgeblich sind, bestimmt sich das anzuwendende Recht nach diesem Kapitel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
 const hgb1HtmlFixture = makeSectionHtmlFixture({
   lawTitle: "Handelsgesetzbuch",
   lawCode: "HGB",
@@ -169,6 +239,7 @@ describe("GesetzeImInternet mapping helpers", () => {
     const cases: Array<{
       lawCode: string;
       section: string;
+      subsection?: string;
       referenceType?: LawReference["referenceType"];
       expectedUrl: string;
     }> = [
@@ -180,6 +251,40 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "BGB", section: "823", expectedUrl: "https://www.gesetze-im-internet.de/bgb/__823.html" },
       { lawCode: "BETRVG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/betrvg/__1.html" },
       { lawCode: "BURLG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/burlg/__1.html" },
+      {
+        lawCode: "EGBGB",
+        section: "1",
+        referenceType: "article",
+        expectedUrl: "https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html",
+      },
+      {
+        lawCode: "EGBGB",
+        section: "229",
+        subsection: "6",
+        referenceType: "article",
+        expectedUrl: "https://www.gesetze-im-internet.de/bgbeg/art_229__6.html",
+      },
+      {
+        lawCode: "EGBGB",
+        section: "229",
+        subsection: "67",
+        referenceType: "article",
+        expectedUrl: "https://www.gesetze-im-internet.de/bgbeg/art_229__67.html",
+      },
+      {
+        lawCode: "EGBGB",
+        section: "246a",
+        subsection: "1",
+        referenceType: "article",
+        expectedUrl: "https://www.gesetze-im-internet.de/bgbeg/art_246a__1.html",
+      },
+      {
+        lawCode: "EGBGB",
+        section: "247",
+        subsection: "3",
+        referenceType: "article",
+        expectedUrl: "https://www.gesetze-im-internet.de/bgbeg/art_247__3.html",
+      },
       { lawCode: "ESTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/estg/__1.html" },
       { lawCode: "FAMFG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/famfg/__1.html" },
       { lawCode: "FGO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/fgo/__1.html" },
@@ -227,6 +332,7 @@ describe("GesetzeImInternet mapping helpers", () => {
         buildGesetzeImInternetSectionUrl({
           lawCode: testCase.lawCode,
           section: testCase.section,
+          subsection: testCase.subsection,
           referenceType: testCase.referenceType as LawReference["referenceType"],
         }),
         testCase.expectedUrl,
@@ -315,6 +421,62 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.equal(section.section, "1");
     assert.equal(section.sourceUrl, "https://www.gesetze-im-internet.de/gg/art_1.html");
     assert.match(section.text, /^\(1\) Die Würde des Menschen ist unantastbar\./);
+  });
+
+  it("maps EGBGB Art. 1 from the official full-law HTML into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "EGBGB", section: "1", referenceType: "article" },
+      html: egbgbFullHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-21T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "EGBGB");
+    assert.equal(section.lawTitle, "Einführungsgesetz zum Bürgerlichen Gesetzbuche");
+    assert.equal(section.referenceType, "article");
+    assert.equal(section.section, "1");
+    assert.equal(section.subsection, undefined);
+    assert.equal(section.sourceUrl, "https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html");
+    assert.match(section.text, /^\(1\) Das Bürgerliche Gesetzbuch tritt am 1\. Januar 1900/);
+    assert.match(section.text, /\(2\) Landesgesetzliche Vorschriften bleiben in Kraft/);
+    assert.doesNotMatch(section.text, /jede Rechtsnorm/);
+  });
+
+  it("maps titled EGBGB pure articles from the official full-law HTML", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "EGBGB", section: "3", referenceType: "article" },
+      html: egbgbFullHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-21T00:00:00.000Z",
+    });
+
+    assert.equal(section.section, "3");
+    assert.match(section.text, /^Soweit nicht unmittelbar anwendbare Regelungen/);
+    assert.doesNotMatch(section.text, /Das Bürgerliche Gesetzbuch tritt/);
+  });
+
+  it("maps EGBGB Art. 229 § 1 into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "EGBGB", section: "229", subsection: "1", referenceType: "article" },
+      html: egbgbArt229Sec1HtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/bgbeg/art_229__1.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-21T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "EGBGB");
+    assert.equal(section.lawTitle, "Einführungsgesetz zum Bürgerlichen Gesetzbuche");
+    assert.equal(section.referenceType, "article");
+    assert.equal(section.section, "229");
+    assert.equal(section.subsection, "1");
+    assert.equal(section.sourceUrl, "https://www.gesetze-im-internet.de/bgbeg/art_229__1.html");
+    assert.equal(section.heading, "Überleitungsvorschrift zum Gesetz zur Beschleunigung fälliger Zahlungen");
+    assert.match(section.text, /^\(1\) § 284 Abs\. 3 des Bürgerlichen Gesetzbuchs/);
   });
 
   it("preserves original reference section while mapping LawSection", () => {
@@ -444,6 +606,14 @@ describe("GesetzeImInternet mapping helpers", () => {
       "GG Art. 1",
       "Artikel 1 GG",
       "GG Artikel 1",
+    ]);
+
+    assert.equal(byCode.get("EGBGB")?.referenceType, "article");
+    assert.deepEqual(byCode.get("EGBGB")?.exampleInputs, [
+      "Art. 1 EGBGB",
+      "EGBGB Art. 1",
+      "Art. 229 § 6 EGBGB",
+      "EGBGB Artikel 246a § 1",
     ]);
 
     assert.equal(byCode.get("SGB VI")?.referenceType, "section");
@@ -605,6 +775,72 @@ describe("GesetzeImInternetProvider", () => {
     assert.equal(section?.heading, undefined);
     assert.match(section?.text ?? "", /^\(1\) Die Würde des Menschen ist unantastbar\./);
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/gg/art_1.html"]);
+  });
+
+  it("resolves EGBGB Art. 229 § 1 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(egbgbArt229Sec1HtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "EGBGB");
+    assert.equal(section?.lawTitle, "Einführungsgesetz zum Bürgerlichen Gesetzbuche");
+    assert.equal(section?.referenceType, "article");
+    assert.equal(section?.section, "229");
+    assert.equal(section?.subsection, "1");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/bgbeg/art_229__1.html");
+    assert.equal(section?.heading, "Überleitungsvorschrift zum Gesetz zur Beschleunigung fälliger Zahlungen");
+    assert.match(section?.text ?? "", /^\(1\) § 284 Abs\. 3 des Bürgerlichen Gesetzbuchs/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/bgbeg/art_229__1.html"]);
+  });
+
+  it("resolves EGBGB Art. 1 from fixture-backed full-law fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(egbgbFullHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "EGBGB",
+      section: "1",
+      referenceType: "article",
+    });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "EGBGB");
+    assert.equal(section?.lawTitle, "Einführungsgesetz zum Bürgerlichen Gesetzbuche");
+    assert.equal(section?.referenceType, "article");
+    assert.equal(section?.section, "1");
+    assert.equal(section?.subsection, undefined);
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html");
+    assert.match(section?.text ?? "", /^\(1\) Das Bürgerliche Gesetzbuch tritt am 1\. Januar 1900/);
+    assert.doesNotMatch(section?.text ?? "", /jede Rechtsnorm/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/bgbeg/BJNR006049896.html"]);
+  });
+
+  it("returns null when an EGBGB pure article is absent from the full-law HTML", async () => {
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => (
+      textResponse(egbgbFullHtmlFixture)
+    ));
+
+    assert.equal(
+      await provider.getSection({
+        lawCode: "EGBGB",
+        section: "999",
+        referenceType: "article",
+      }),
+      null,
+    );
   });
 
   it("resolves representative verified mapped laws from fixtures", async () => {
