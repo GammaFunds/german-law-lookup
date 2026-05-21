@@ -202,6 +202,14 @@ const kagb1HtmlFixture = makeSectionHtmlFixture({
   text: "Dieses Gesetz gilt für Investmentvermögen und deren Verwaltungsgesellschaften.",
 });
 
+const owig1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Gesetz über Ordnungswidrigkeiten (OWiG)",
+  lawCode: "OWiG",
+  section: "1",
+  heading: "Begriffsbestimmung",
+  text: "(1) Eine Ordnungswidrigkeit ist eine rechtswidrige und vorwerfbare Handlung, die den Tatbestand eines Gesetzes verwirklicht.",
+});
+
 const gwg10HtmlFixture = makeSectionHtmlFixture({
   lawTitle: "Geldwäschegesetz (GwG)",
   lawCode: "GwG",
@@ -299,6 +307,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "KAGB", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kagb/__1.html" },
       { lawCode: "KSCHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kschg/__1.html" },
       { lawCode: "KSTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kstg_1977/__1.html" },
+      { lawCode: "OWIG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/owig_1968/__1.html" },
       { lawCode: "PAUSWG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/pauswg/__1.html" },
       { lawCode: "SGB I", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_1/__1.html" },
       { lawCode: "SGB II", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_2/__1.html" },
@@ -505,6 +514,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "AKTG", expectedDisplayLawCode: "AktG" },
       { lawCode: "ESTG", expectedDisplayLawCode: "EStG" },
       { lawCode: "USTG", expectedDisplayLawCode: "UStG" },
+      { lawCode: "OWIG", expectedDisplayLawCode: "OWiG" },
     ];
 
     for (const testCase of cases) {
@@ -614,6 +624,14 @@ describe("GesetzeImInternet mapping helpers", () => {
       "EGBGB Art. 1",
       "Art. 229 § 6 EGBGB",
       "EGBGB Artikel 246a § 1",
+    ]);
+
+    assert.equal(byCode.get("OWiG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("OWiG")?.exampleInputs, [
+      "§ 1 OWiG",
+      "OWiG § 1",
+      "1 OWiG",
+      "OWiG 1",
     ]);
 
     assert.equal(byCode.get("SGB VI")?.referenceType, "section");
@@ -889,6 +907,15 @@ describe("GesetzeImInternetProvider", () => {
         expectedLawTitle: "Kapitalanlagegesetzbuch",
         expectedHeading: "",
         expectedUrl: "https://www.gesetze-im-internet.de/kagb/__1.html",
+      },
+      {
+        lawCode: "OWIG",
+        section: "1",
+        fixture: owig1HtmlFixture,
+        expectedLawCode: "OWiG",
+        expectedLawTitle: "Gesetz über Ordnungswidrigkeiten",
+        expectedHeading: "Begriffsbestimmung",
+        expectedUrl: "https://www.gesetze-im-internet.de/owig_1968/__1.html",
       },
       {
         lawCode: "GWG",

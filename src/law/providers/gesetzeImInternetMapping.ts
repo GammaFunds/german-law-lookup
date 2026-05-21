@@ -129,6 +129,11 @@ const supportedLaws: Record<string, {
     lawTitle: "Körperschaftsteuergesetz",
     displayLawCode: "KStG",
   },
+  OWIG: {
+    path: "owig_1968",
+    lawTitle: "Gesetz über Ordnungswidrigkeiten",
+    displayLawCode: "OWiG",
+  },
   PAUSWG: {
     path: "pauswg",
     lawTitle: "Personalausweisgesetz",
