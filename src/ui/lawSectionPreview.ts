@@ -18,16 +18,31 @@ export function buildLawSectionPreviewModel(
   const heading = section.heading ? ` – ${section.heading}` : "";
   const includeMetadataFooter = options.includeMetadataFooter !== false;
   const referenceLabel = formatReferenceLabel(section);
-  const metadataLines = includeMetadataFooter
-    ? [
-        `Quelle: ${section.providerLabel}, ${section.lawCode}, ${referenceLabel}, abgerufen am ${section.retrievedAt.slice(0, 10)}.`,
-        `Cache: ${section.cacheStatus}.`,
-      ]
-    : [];
+  const metadataLines = buildMetadataLines(section, referenceLabel, includeMetadataFooter);
 
   return {
     title: `${referenceLabel} ${section.lawCode}${heading}`,
     paragraphs: section.text.split("\n"),
     metadataLines,
   };
+}
+
+function buildMetadataLines(
+  section: LawSection,
+  referenceLabel: string,
+  includeMetadataFooter: boolean,
+): string[] {
+  const lines: string[] = [];
+  if (section.sourceVariant === "translation-en") {
+    lines.push("Textvariante: Englischer Gesetzestext von Gesetze im Internet (nicht amtlich).");
+  }
+
+  if (includeMetadataFooter) {
+    lines.push(
+      `Quelle: ${section.providerLabel}, ${section.lawCode}, ${referenceLabel}, abgerufen am ${section.retrievedAt.slice(0, 10)}.`,
+      `Cache: ${section.cacheStatus}.`,
+    );
+  }
+
+  return lines;
 }

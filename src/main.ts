@@ -11,7 +11,7 @@ import {
   getSupportedGesetzeImInternetLaws,
   type SupportedGesetzeImInternetLaw,
 } from "./law/providers/gesetzeImInternetMapping";
-import type { LawSection } from "./law/types";
+import type { LawSection, LawSourceVariant } from "./law/types";
 import { getUiStrings, type UiStrings } from "./ui/i18n";
 import { LawLookupModal } from "./ui/LawLookupModal";
 
@@ -19,6 +19,7 @@ interface DeLawPluginSettings {
   enableMockLawProvider: boolean;
   enableLawSectionCache: boolean;
   lawSectionCacheTtlDays: number | null;
+  defaultLawSourceVariant: LawSourceVariant;
   showInsertedSourceMetadata: boolean;
 }
 
@@ -30,6 +31,7 @@ const DEFAULT_SETTINGS: DeLawPluginSettings = {
   enableMockLawProvider: false,
   enableLawSectionCache: true,
   lawSectionCacheTtlDays: null,
+  defaultLawSourceVariant: "official-de",
   showInsertedSourceMetadata: true,
 };
 
@@ -52,6 +54,8 @@ export default class DeLawPlugin extends Plugin {
           this.app,
           this.providerRegistry,
           {
+            getDefaultLawSourceVariant: () =>
+              this.settings.defaultLawSourceVariant,
             getShowInsertedSourceMetadata: () =>
               this.settings.showInsertedSourceMetadata,
             setShowInsertedSourceMetadata: async (value) => {
@@ -100,6 +104,10 @@ export default class DeLawPlugin extends Plugin {
       enableMockLawProvider: storedSettings?.enableMockLawProvider === true,
       enableLawSectionCache: storedSettings?.enableLawSectionCache !== false,
       lawSectionCacheTtlDays: normalizeTtlDays(storedSettings?.lawSectionCacheTtlDays),
+      defaultLawSourceVariant:
+        storedSettings?.defaultLawSourceVariant === "translation-en"
+          ? "translation-en"
+          : "official-de",
       showInsertedSourceMetadata:
         storedSettings?.showInsertedSourceMetadata !== false,
     };
@@ -154,6 +162,21 @@ class DeLawSettingsTab extends PluginSettingTab {
           .onChange(async (value) => {
             await this.plugin.updateSettings({ enableLawSectionCache: value });
             this.display();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName(ui.defaultLawTextSource)
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption("official-de", ui.germanOfficialText)
+          .addOption("translation-en", ui.englishTranslationWhenAvailable)
+          .setValue(settings.defaultLawSourceVariant)
+          .onChange(async (value) => {
+            await this.plugin.updateSettings({
+              defaultLawSourceVariant:
+                value === "translation-en" ? "translation-en" : "official-de",
+            });
           });
       });
 

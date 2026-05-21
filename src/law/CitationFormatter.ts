@@ -20,6 +20,10 @@ export function formatLawSectionAsMarkdown(
     ...section.text.split("\n").map((line) => `> ${line}`),
   ];
 
+  if (section.sourceVariant === "translation-en") {
+    lines.push("", "Textvariante: Englischer Gesetzestext von Gesetze im Internet (nicht amtlich).");
+  }
+
   if (includeMetadataFooter) {
     lines.push(
       "",

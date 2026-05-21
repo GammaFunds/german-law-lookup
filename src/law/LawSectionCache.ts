@@ -1,7 +1,7 @@
 import { canonicalDisplayLawCode } from "./displayLawCode";
 import { normalizeReferenceType } from "./referenceLabel";
 import type { LawProvider } from "./LawProvider";
-import type { LawReference, LawSection } from "./types";
+import type { LawReference, LawSection, LawSourceVariant } from "./types";
 
 export interface LawSectionCache {
   get(reference: LawReference): Promise<LawSection | null>;
@@ -19,7 +19,15 @@ export interface CachedLawProviderOptions {
   now?: () => Date;
 }
 
+export function normalizeLawSourceVariant(sourceVariant?: LawSourceVariant): LawSourceVariant {
+  return sourceVariant === "translation-en" ? "translation-en" : "official-de";
+}
+
 export function lawSectionCacheKey(reference: LawReference): string {
+  return `${legacyLawSectionCacheKey(reference)}:${normalizeLawSourceVariant(reference.sourceVariant)}`;
+}
+
+function legacyLawSectionCacheKey(reference: LawReference): string {
   const lawCode = reference.lawCode.trim().toUpperCase();
   const section = reference.section.trim().toLowerCase();
   const subsection = reference.subsection?.trim().toLowerCase();
@@ -34,11 +42,31 @@ export function lawSectionCacheKey(reference: LawReference): string {
   return `${lawCode}:${section}`;
 }
 
+function cacheKeysForRead(reference: LawReference): string[] {
+  const key = lawSectionCacheKey(reference);
+  if (normalizeLawSourceVariant(reference.sourceVariant) === "translation-en") {
+    return [
+      key,
+      lawSectionCacheKey({ ...reference, sourceVariant: "official-de" }),
+      legacyLawSectionCacheKey(reference),
+    ];
+  }
+
+  return [key, legacyLawSectionCacheKey(reference)];
+}
+
 export class InMemoryLawSectionCache implements LawSectionCache {
   private readonly entries = new Map<string, LawSection>();
 
   async get(reference: LawReference): Promise<LawSection | null> {
-    return cloneLawSection(this.entries.get(lawSectionCacheKey(reference)) ?? null);
+    for (const key of cacheKeysForRead(reference)) {
+      const section = this.entries.get(key);
+      if (section) {
+        return cloneLawSection(section);
+      }
+    }
+
+    return null;
   }
 
   async set(section: LawSection): Promise<void> {
@@ -51,7 +79,14 @@ export class StoredLawSectionCache implements LawSectionCache {
 
   async get(reference: LawReference): Promise<LawSection | null> {
     const entries = await this.storage.load();
-    return cloneLawSection(entries?.[lawSectionCacheKey(reference)] ?? null);
+    for (const key of cacheKeysForRead(reference)) {
+      const section = entries?.[key];
+      if (section) {
+        return cloneLawSection(section);
+      }
+    }
+
+    return null;
   }
 
   async set(section: LawSection): Promise<void> {
