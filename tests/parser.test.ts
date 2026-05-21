@@ -64,6 +64,37 @@ describe("parseLawReference", () => {
     });
   });
 
+  it("parses explicit spaced SGB law-code-first references", () => {
+    assert.deepEqual(parseLawReference("SGB V § 1"), {
+      lawCode: "SGB V",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("SGB III § 1"), {
+      lawCode: "SGB III",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("SGB IX 1"), {
+      lawCode: "SGB IX",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("SGB X 1"), {
+      lawCode: "SGB X",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("SGB XIV 1"), {
+      lawCode: "SGB XIV",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("SGB I 1"), {
+      lawCode: "SGB I",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("SGB II 1"), {
+      lawCode: "SGB II",
+      section: "1",
+    });
+  });
+
   it("parses section-first references with section sign", () => {
     assert.deepEqual(parseLawReference("§ 823 BGB"), {
       lawCode: "BGB",
@@ -72,6 +103,37 @@ describe("parseLawReference", () => {
     assert.deepEqual(parseLawReference("§ 242 StGB"), {
       lawCode: "STGB",
       section: "242",
+    });
+  });
+
+  it("parses explicit spaced SGB section-first references", () => {
+    assert.deepEqual(parseLawReference("§ 1 SGB V"), {
+      lawCode: "SGB V",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("§ 1 SGB III"), {
+      lawCode: "SGB III",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 SGB IX"), {
+      lawCode: "SGB IX",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 SGB X"), {
+      lawCode: "SGB X",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 SGB XIV"), {
+      lawCode: "SGB XIV",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 SGB I"), {
+      lawCode: "SGB I",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 SGB II"), {
+      lawCode: "SGB II",
+      section: "1",
     });
   });
 
