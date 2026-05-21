@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP",
-    "last_updated": "2026-05-20",
-    "summary": "Stable MVP validated in Obsidian runtime: lookup, rendered preview, insertion, metadata toggle, local cache settings, supported-law diagnostics with example chips, expanded explicit Gesetze-im-Internet mappings, StGB canonical display, and explicit GG article-reference support all work. Tests and production build pass."
+    "phase": "Stable MVP + full explicit SGB support",
+    "last_updated": "2026-05-21",
+    "summary": "Stable MVP remains validated. Full explicit SGB lookup support was added and committed: SGB I, SGB II, SGB III, SGB IV, SGB V, SGB VI, SGB VII, SGB VIII, SGB IX, SGB X, SGB XI, SGB XII, and SGB XIV are supported via explicit parser entries and verified Gesetze-im-Internet mappings. SGB IX uses the special official path sgb_9_2018. SGB XIII is intentionally unsupported. Obsidian runtime, tests, and production build were validated."
   },
   "blockers": [
     {
@@ -36,7 +36,11 @@
       "component": "Architecture",
       "status": "open",
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
-    }
+    },
+    "EGBGB remains unsupported pending explicit verified mapping.",
+    "OWiG remains unsupported pending explicit verified mapping.",
+    "KWG remains unsupported pending explicit verified mapping.",
+    "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes."
   ],
   "tasks": [
     {
@@ -352,6 +356,20 @@
       "date": "2026-05-20",
       "status": "accepted",
       "notes": "Gesetze im Internet extraction must prefer actual norm paragraph blocks and exclude page chrome, navigation, footer, print links, and script/style/comment fragments from LawSection.text."
+    }
+  ],
+  "completed": [
+    {
+      "date": "2026-05-21",
+      "title": "Add full explicit SGB lookup support",
+      "commit": "3c643e4",
+      "details": [
+        "Added explicit parser support for all supported SGB books with spaced law codes.",
+        "Added verified Gesetze-im-Internet mappings for SGB I, II, III, IV, V, VI, VII, VIII, IX, X, XI, XII, XIV.",
+        "Handled SGB IX via official sgb_9_2018 path.",
+        "Updated supported-law diagnostics and tests.",
+        "Validated Obsidian runtime, npm test, and npm run build."
+      ]
     }
   ]
 }
