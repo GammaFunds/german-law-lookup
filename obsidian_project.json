@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + full SGB and EGBGB support",
+    "phase": "Stable MVP + full SGB, EGBGB, and OWiG support",
     "last_updated": "2026-05-21",
-    "summary": "Stable MVP remains validated. Full explicit SGB lookup support is implemented and committed. EGBGB article lookup support is implemented and runtime-validated: pure EGBGB articles such as Art. 1 EGBGB and EGBGB Art. 1 work, and EGBGB article-subsection references such as Art. 229 § 6 EGBGB and EGBGB Artikel 246a § 1 work. EGBGB uses referenceType article with optional subsection; pure articles are resolved through the official full-law HTML, while article-subsection references use the bgbeg/art_<article>__<subsection>.html structure. Tests and production build pass."
+    "summary": "Stable MVP remains validated. Full SGB and EGBGB support are implemented and committed. OWiG lookup support is now implemented, runtime-validated, tested, built, and committed. OWiG resolves through the explicit Gesetze-im-Internet mapping owig_1968 and supports the standard section reference forms OWiG § 1, § 1 OWiG, OWiG 1, and 1 OWiG. Remaining open law-code follow-ups are KWG and FreizügG/EU. English UX and optional English translations are now identified as separate future architecture blocks."
   },
   "blockers": [
     {
@@ -37,9 +37,10 @@
       "status": "open",
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
     },
-    "OWiG remains unsupported pending explicit verified mapping.",
     "KWG remains unsupported pending explicit verified mapping.",
-    "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes."
+    "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
+    "English UX is not implemented yet.",
+    "English law-text translations are not implemented yet and require separate provider/source handling."
   ],
   "tasks": [
     {
@@ -380,6 +381,17 @@
         "Modelled EGBGB as referenceType article with optional subsection.",
         "Resolved pure EGBGB articles through the official full-law HTML because bgbeg/art_1.html returns 404.",
         "Kept EGBGB §-only forms unsupported: § 1 EGBGB, EGBGB § 1, EGBGB 1, 1 EGBGB.",
+        "Validated Obsidian runtime, npm test, and npm run build."
+      ]
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Add OWiG lookup support",
+      "commit": "1ebe92b",
+      "details": [
+        "Added explicit Gesetze-im-Internet mapping OWIG -> owig_1968 with canonical display OWiG.",
+        "Confirmed existing parser supports OWiG § 1, § 1 OWiG, OWiG 1, and 1 OWiG without parser changes.",
+        "Updated supported-law diagnostics so OWiG is no longer listed as an unsupported follow-up.",
         "Validated Obsidian runtime, npm test, and npm run build."
       ]
     }
