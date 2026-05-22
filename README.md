@@ -1,4 +1,4 @@
-# Obsidian DE Law
+# German Law Lookup
 
 Look up German federal law references in Obsidian, preview German or published English law text, and insert the formatted result into the active note.
 
@@ -55,7 +55,7 @@ NeuRIS is tracked as a future strategic provider once its public API, schema, an
 For manual installation, copy the release files into:
 
 ```text
-<your-vault>/.obsidian/plugins/obsidian-de-law/
+<your-vault>/.obsidian/plugins/german-law-lookup/
 ```
 
 Required release files:
@@ -64,7 +64,7 @@ Required release files:
 - `main.js`
 - `styles.css`
 
-Then reload Obsidian and enable **Obsidian DE Law** under **Settings → Community plugins**.
+Then reload Obsidian and enable **German Law Lookup** under **Settings → Community plugins**.
 
 ## Usage
 
