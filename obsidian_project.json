@@ -584,5 +584,12 @@
         "Validated npm test and npm run build before commit."
       ]
     }
-  ]
+  ],
+  "verification": {
+    "last_known_head": "351e719",
+    "last_known_head_message": "Record FreizügG EU lookup support",
+    "last_test_result": "149 pass, 0 fail",
+    "last_build_result": "npm run build successful",
+    "last_git_status": "clean"
+  }
 }
