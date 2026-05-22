@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + comprehensive federal law and official English text coverage",
+    "phase": "Stable MVP finalized with deferred future provider work",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, GWB, BVerfGG, and FreizügG/EU support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, pure EGBGB articles, and FreizügG/EU when available, otherwise falling back to German official text. The plugin never generates translations. SGB V English text remains intentionally unconfigured for general lookup because the verified official English HTML is partial and starts at Section 64e."
+    "summary": "Stable MVP is runtime-validated, tested, built, and committed. No open blockers remain. Gesetze im Internet HTML is the validated official runtime provider path, Gesetze im Internet XML access is technically validated and tracked only as optional future robustness work, and NeuRIS is deferred as a strategic future provider until API stability and coverage are sufficiently mature. The plugin UI follows the Obsidian interface language, law text source remains independent and defaults to German official text, English law text remains explicit opt-in, and the plugin never generates translations."
   },
   "blockers": [
     {
@@ -640,11 +640,24 @@
         "Kept validated Gesetze im Internet XML access as optional robustness path.",
         "Added T-036 to revisit NeuRIS after API stabilization without changing runtime/provider code."
       ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Finalize Stable MVP project-log state",
+      "commit": null,
+      "details": [
+        "Synchronized verification.last_known_head with HEAD 6ecc76c Defer NeuRIS provider validation.",
+        "Recorded that no open blockers remain.",
+        "Recorded GiI HTML as the validated official runtime provider path.",
+        "Recorded GiI XML as validated but optional future robustness work.",
+        "Recorded NeuRIS as deferred strategic future provider work.",
+        "Kept T-035 and T-036 as the only open future tasks."
+      ]
     }
   ],
   "verification": {
-    "last_known_head": "857bb64",
-    "last_known_head_message": "Record final verification checkpoint",
+    "last_known_head": "6ecc76c",
+    "last_known_head_message": "Defer NeuRIS provider validation",
     "last_test_result": "149 pass, 0 fail",
     "last_build_result": "npm run build successful",
     "last_git_status": "clean"
