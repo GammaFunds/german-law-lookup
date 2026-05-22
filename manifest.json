@@ -3,9 +3,8 @@
   "name": "Obsidian DE Law",
   "version": "0.1.0",
   "minAppVersion": "1.8.0",
-  "description": "Look up German law references from Obsidian.",
+  "description": "Look up German federal law references in Obsidian and insert formatted law text into notes.",
   "author": "",
   "authorUrl": "",
   "isDesktopOnly": false
 }
-
