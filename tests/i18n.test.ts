@@ -23,7 +23,7 @@ describe("ui i18n", () => {
     );
     assert.equal(
       getUiStrings("de").unsupportedCandidatesNote,
-      "FreizügG/EU bleibt vorerst ein Follow-up; SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
+      "SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
     );
   });
 
@@ -44,7 +44,7 @@ describe("ui i18n", () => {
     );
     assert.equal(
       getUiStrings("en").unsupportedCandidatesNote,
-      "FreizügG/EU remains a follow-up for now; SGB XIII is intentionally not supported as a current SGB book.",
+      "SGB XIII is intentionally not supported as a current SGB book.",
     );
   });
 

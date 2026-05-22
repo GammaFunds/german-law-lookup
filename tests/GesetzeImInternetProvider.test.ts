@@ -221,6 +221,23 @@ const englishBverfggHtmlFixture = `
 </body>
 </html>`;
 
+const englishFreizuegGEuHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>Act on the General Freedom of Movement for EU Citizens</div>
+  <div>Freedom of Movement Act/EU</div>
+  <div>table of contents</div>
+  <div>Section 1</div>
+  <div>Scope</div>
+  <div>This Act regulates entry into and residence in the federal territory by nationals of other member states of the European Union (EU citizens) and their dependants.</div>
+  <div>table of contents</div>
+  <div>Section 2</div>
+  <div>Right of entry and residence</div>
+  <div>(1) EU citizens and their dependants entitled to freedom of movement shall have the right to enter and reside in the federal territory pursuant to this Act.</div>
+</body>
+</html>`;
+
 const englishHgbHtmlFixture = makeEnglishSectionTranslationFixture({
   documentTitle: "Commercial Code",
   previousSection: "0",
@@ -582,6 +599,14 @@ const bverfgg1HtmlFixture = `
 </body>
 </html>`;
 
+const freizuegGEu1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Gesetz über die allgemeine Freizügigkeit von Unionsbürgern (Freizügigkeitsgesetz/EU - FreizügG/EU)",
+  lawCode: "FreizügG/EU",
+  section: "1",
+  heading: "Anwendungsbereich; Begriffsbestimmungen",
+  text: "(1) Dieses Gesetz regelt die Einreise und den Aufenthalt von Unionsbürgern, Staatsangehörigen der EWR-Staaten und ihren Familienangehörigen.",
+});
+
 const gwg10HtmlFixture = makeSectionHtmlFixture({
   lawTitle: "Geldwäschegesetz (GwG)",
   lawCode: "GwG",
@@ -717,6 +742,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       },
       { lawCode: "ESTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/estg/__1.html" },
       { lawCode: "FAMFG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/famfg/__1.html" },
+      { lawCode: "FREIZÜGG/EU", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/freiz_gg_eu_2004/__1.html" },
       { lawCode: "FGO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/fgo/__1.html" },
       { lawCode: "GEWSTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gewstg/__1.html" },
       { lawCode: "GG", section: "1", referenceType: "article", expectedUrl: "https://www.gesetze-im-internet.de/gg/art_1.html" },
@@ -908,6 +934,14 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_famfg/englisch_famfg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "FREIZÜGG/EU",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_freiz_gg_eu/englisch_freiz_gg_eu.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -1187,6 +1221,22 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.match(section.text, /\(3\) The Federal Constitutional Court shall establish its Rules of Procedure/);
   });
 
+  it("maps FreizügG/EU § 1 English translation into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "FREIZÜGG/EU", section: "1", sourceVariant: "translation-en" },
+      html: englishFreizuegGEuHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_freiz_gg_eu/englisch_freiz_gg_eu.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "FreizügG/EU");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, "Scope");
+    assert.match(section.text, /^This Act regulates entry into and residence in the federal territory/);
+  });
+
   it("maps AGG and GWB English translations into LawSection", () => {
     const aggSection = mapGesetzeImInternetToLawSection({
       reference: { lawCode: "AGG", section: "1", sourceVariant: "translation-en" },
@@ -1411,6 +1461,15 @@ describe("GesetzeImInternet mapping helpers", () => {
       "BDSG § 1",
       "1 BDSG",
       "BDSG 1",
+    ]);
+
+    assert.equal(byCode.get("FreizügG/EU")?.displayLawCode, "FreizügG/EU");
+    assert.equal(byCode.get("FreizügG/EU")?.referenceType, "section");
+    assert.deepEqual(byCode.get("FreizügG/EU")?.exampleInputs, [
+      "§ 1 FreizügG/EU",
+      "FreizügG/EU § 1",
+      "1 FreizügG/EU",
+      "FreizügG/EU 1",
     ]);
 
     assert.equal(byCode.get("BVerfGG")?.displayLawCode, "BVerfGG");
@@ -1688,6 +1747,24 @@ describe("GesetzeImInternetProvider", () => {
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/bverfgg/__1.html"]);
   });
 
+  it("resolves FreizügG/EU § 1 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(freizuegGEu1HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "FREIZÜGG/EU", section: "1" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "FreizügG/EU");
+    assert.equal(section?.lawTitle, "Gesetz über die allgemeine Freizügigkeit von Unionsbürgern");
+    assert.equal(section?.heading, "Anwendungsbereich; Begriffsbestimmungen");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/freiz_gg_eu_2004/__1.html");
+    assert.match(section?.text ?? "", /^\(1\) Dieses Gesetz regelt die Einreise und den Aufenthalt/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/freiz_gg_eu_2004/__1.html"]);
+  });
+
   it("resolves SGB V § 1 from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1897,6 +1974,28 @@ describe("GesetzeImInternetProvider", () => {
     ]);
   });
 
+  it("resolves FreizügG/EU § 1 English translation from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishFreizuegGEuHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "FREIZÜGG/EU",
+      section: "1",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "FreizügG/EU");
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, "Scope");
+    assert.match(section?.text ?? "", /^This Act regulates entry into and residence in the federal territory/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_freiz_gg_eu/englisch_freiz_gg_eu.html",
+    ]);
+  });
+
   it("resolves additional verified English section translations from fixture-backed fetches", async () => {
     const cases: Array<{
       lawCode: string;
@@ -1917,6 +2016,15 @@ describe("GesetzeImInternetProvider", () => {
         expectedHeading: undefined,
         expectedTextStart: /^\(1\) The Civil Code enters into force on January 1st, 1900/,
         expectedUrl: "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+      },
+      {
+        lawCode: "FREIZÜGG/EU",
+        section: "1",
+        fixture: englishFreizuegGEuHtmlFixture,
+        expectedLawCode: "FreizügG/EU",
+        expectedHeading: "Scope",
+        expectedTextStart: /^This Act regulates entry into and residence in the federal territory/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_freiz_gg_eu/englisch_freiz_gg_eu.html",
       },
       {
         lawCode: "BVERFGG",
@@ -2485,6 +2593,19 @@ describe("GesetzeImInternetProvider", () => {
       officialUrl: string;
       officialFixture: string;
     }> = [
+      {
+        lawCode: "FREIZÜGG/EU",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_freiz_gg_eu/englisch_freiz_gg_eu.html",
+        translationFixture: englishFreizuegGEuHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/freiz_gg_eu_2004/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz über die allgemeine Freizügigkeit von Unionsbürgern",
+          lawCode: "FreizügG/EU",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
       {
         lawCode: "EGBGB",
         referenceType: "article" as const,
