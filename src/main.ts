@@ -12,7 +12,11 @@ import {
   type SupportedGesetzeImInternetLaw,
 } from "./law/providers/gesetzeImInternetMapping";
 import type { LawSection, LawSourceVariant } from "./law/types";
-import { getUiStrings, type UiStrings } from "./ui/i18n";
+import {
+  defaultLawSourceVariantForLanguage,
+  getUiStrings,
+  type UiStrings,
+} from "./ui/i18n";
 import { LawLookupModal } from "./ui/LawLookupModal";
 
 interface DeLawPluginSettings {
@@ -104,10 +108,10 @@ export default class DeLawPlugin extends Plugin {
       enableMockLawProvider: storedSettings?.enableMockLawProvider === true,
       enableLawSectionCache: storedSettings?.enableLawSectionCache !== false,
       lawSectionCacheTtlDays: normalizeTtlDays(storedSettings?.lawSectionCacheTtlDays),
-      defaultLawSourceVariant:
-        storedSettings?.defaultLawSourceVariant === "translation-en"
-          ? "translation-en"
-          : "official-de",
+      defaultLawSourceVariant: defaultLawSourceVariantForLanguage(
+        safeGetObsidianLanguage(),
+        storedSettings?.defaultLawSourceVariant,
+      ),
       showInsertedSourceMetadata:
         storedSettings?.showInsertedSourceMetadata !== false,
     };
