@@ -223,4 +223,26 @@ describe("formatLawSectionAsMarkdown", () => {
     assert.doesNotMatch(markdown, /^Quelle:/m);
     assert.doesNotMatch(markdown, /^Cache:/m);
   });
+
+  it("does not add a translation notice for official-de fallback content", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "StGB",
+      lawTitle: "Strafgesetzbuch",
+      section: "999",
+      sourceVariant: "official-de",
+      heading: "Deutsche Ersatznorm",
+      text: "Deutscher amtlicher Ersatztext.",
+      retrievedAt: "2026-05-22T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.doesNotMatch(
+      markdown,
+      /^Textvariante: Englischer Gesetzestext von Gesetze im Internet \(nicht amtlich\)\.$/m,
+    );
+  });
 });
