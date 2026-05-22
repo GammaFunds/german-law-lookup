@@ -354,6 +354,19 @@
       "date": "2026-05-20",
       "status": "accepted",
       "notes": "Gesetze im Internet extraction must prefer actual norm paragraph blocks and exclude page chrome, navigation, footer, print links, and script/style/comment fragments from LawSection.text."
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Do not add general SGB V English law text support",
+      "details": [
+        "Verified official German SGB V § 1 path: sgb_5/__1.html.",
+        "Verified official English SGB V HTML path: englisch_sgb_5/englisch_sgb_5.html.",
+        "Did not add SGB V translation-en mapping because the official English HTML is partial and visibly starts at Section 64e, not Section 1.",
+        "SGB V § 1 with English toggle enabled therefore correctly falls back to official-de.",
+        "The plugin still never generates translations.",
+        "No code changes were made.",
+        "Validated git diff --check, npm test, and npm run build."
+      ]
     }
   ],
   "completed": [
