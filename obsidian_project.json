@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + broad official English law text coverage",
+    "phase": "Stable MVP + comprehensive federal law and official English text coverage",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, GWB, and BVerfGG support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text now covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, and pure EGBGB articles when available, otherwise falling back to German official text. The plugin never generates translations. Remaining special follow-ups include FreizügG/EU and SGB V English text after renewed source verification."
+    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, GWB, BVerfGG, and FreizügG/EU support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, pure EGBGB articles, and FreizügG/EU when available, otherwise falling back to German official text. The plugin never generates translations. SGB V English text remains intentionally unconfigured for general lookup because the verified official English HTML is partial and starts at Section 64e."
   },
   "blockers": [
     {
@@ -37,8 +37,8 @@
       "status": "open",
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
     },
-    "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
-    "Additional official English law text sources beyond BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, and pure EGBGB articles remain future work."
+    "Additional official English law text sources beyond BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, and pure EGBGB articles remain future work.",
+    "SGB V English text remains intentionally unconfigured for general lookup because the verified official English HTML is partial and starts at Section 64e, not Section 1."
   ],
   "tasks": [
     {
@@ -565,6 +565,23 @@
         "Kept official-de as the default law text source.",
         "Made no toggle, cache, UI, or preview/insert format changes.",
         "Validated Obsidian runtime, npm test, and npm run build before commit."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Add FreizügG EU lookup support",
+      "commit": "98d70fb",
+      "details": [
+        "Added explicit Gesetze-im-Internet official-de mapping for FreizügG/EU.",
+        "Added official Gesetze-im-Internet English law text configuration for FreizügG/EU.",
+        "Verified official-de path freiz_gg_eu_2004/__1.html.",
+        "Verified English paths englisch_freiz_gg_eu/index.html and englisch_freiz_gg_eu/englisch_freiz_gg_eu.html.",
+        "Added minimal parser support for the slash law code FreizügG/EU.",
+        "Validated FreizügG/EU § 1, § 1 FreizügG/EU, FreizügG/EU 1, and 1 FreizügG/EU in Obsidian runtime.",
+        "Removed FreizügG/EU from unsupported follow-up diagnostics.",
+        "Kept official-de as the default law text source.",
+        "Kept fallback to German official text when English text is unavailable or not extractable.",
+        "Validated npm test and npm run build before commit."
       ]
     }
   ]
