@@ -145,6 +145,10 @@ describe("parseLawReference", () => {
   });
 
   it("parses law-code-first references with section sign", () => {
+    assert.deepEqual(parseLawReference("BVerfGG § 1"), {
+      lawCode: "BVERFGG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("BDSG § 1"), {
       lawCode: "BDSG",
       section: "1",
@@ -188,6 +192,10 @@ describe("parseLawReference", () => {
   });
 
   it("parses law-code-first references without section sign", () => {
+    assert.deepEqual(parseLawReference("BVerfGG 1"), {
+      lawCode: "BVERFGG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("BDSG 1"), {
       lawCode: "BDSG",
       section: "1",
@@ -262,6 +270,10 @@ describe("parseLawReference", () => {
   });
 
   it("parses section-first references with section sign", () => {
+    assert.deepEqual(parseLawReference("§ 1 BVerfGG"), {
+      lawCode: "BVERFGG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("§ 1 BDSG"), {
       lawCode: "BDSG",
       section: "1",
@@ -356,6 +368,10 @@ describe("parseLawReference", () => {
   });
 
   it("parses section-first references without section sign", () => {
+    assert.deepEqual(parseLawReference("1 BVerfGG"), {
+      lawCode: "BVERFGG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("1 OWiG"), {
       lawCode: "OWIG",
       section: "1",
