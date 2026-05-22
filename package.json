@@ -1,5 +1,5 @@
 {
-  "name": "obsidian-de-law",
+  "name": "german-law-lookup",
   "version": "0.1.0",
   "description": "Minimal Obsidian plugin for looking up German law references.",
   "main": "main.js",
@@ -22,4 +22,3 @@
     "typescript": "^5.7.3"
   }
 }
-
