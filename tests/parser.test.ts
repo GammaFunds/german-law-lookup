@@ -145,6 +145,18 @@ describe("parseLawReference", () => {
   });
 
   it("parses law-code-first references with section sign", () => {
+    assert.deepEqual(parseLawReference("BDSG § 1"), {
+      lawCode: "BDSG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("UWG § 1"), {
+      lawCode: "UWG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("VVG § 1"), {
+      lawCode: "VVG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("AGG § 1"), {
       lawCode: "AGG",
       section: "1",
@@ -176,6 +188,18 @@ describe("parseLawReference", () => {
   });
 
   it("parses law-code-first references without section sign", () => {
+    assert.deepEqual(parseLawReference("BDSG 1"), {
+      lawCode: "BDSG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("UWG 1"), {
+      lawCode: "UWG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("VVG 1"), {
+      lawCode: "VVG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("AGG 1"), {
       lawCode: "AGG",
       section: "1",
@@ -238,6 +262,18 @@ describe("parseLawReference", () => {
   });
 
   it("parses section-first references with section sign", () => {
+    assert.deepEqual(parseLawReference("§ 1 BDSG"), {
+      lawCode: "BDSG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("§ 1 UWG"), {
+      lawCode: "UWG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("§ 1 VVG"), {
+      lawCode: "VVG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("§ 1 AGG"), {
       lawCode: "AGG",
       section: "1",
@@ -265,6 +301,18 @@ describe("parseLawReference", () => {
   });
 
   it("parses explicit spaced SGB section-first references", () => {
+    assert.deepEqual(parseLawReference("1 BDSG"), {
+      lawCode: "BDSG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 UWG"), {
+      lawCode: "UWG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 VVG"), {
+      lawCode: "VVG",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("1 AGG"), {
       lawCode: "AGG",
       section: "1",
