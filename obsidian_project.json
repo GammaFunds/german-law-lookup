@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Beta release packaging ready",
+    "phase": "Beta release ready",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains frozen. GitHub beta release packaging for 0.1.0 is ready. The plugin was renamed to German Law Lookup with plugin id german-law-lookup, README.md and LICENSE are present, manifest metadata is release-ready, tests pass, and production build succeeds. No parser, provider, cache, UI, or runtime behavior changed."
+    "summary": "Stable MVP remains frozen. GitHub beta release 0.1.0 is ready. The plugin name is German Law Lookup, the plugin id is german-law-lookup, the npm package name is german-law-lookup, README.md and LICENSE are present, manifest/package metadata are aligned, tests pass, and production build succeeds. No parser, provider, cache, UI, or runtime behavior changed."
   },
   "blockers": [
     {
@@ -700,11 +700,23 @@
         "Validated npm test and npm run build after rename.",
         "Made no parser, provider, cache, UI, or runtime behavior changes."
       ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Rename npm package for beta release",
+      "commit": "3364667",
+      "details": [
+        "Renamed package.json name from obsidian-de-law to german-law-lookup.",
+        "Updated package-lock.json root package name accordingly.",
+        "Retagged 0.1.0 to the package rename commit.",
+        "Validated npm test and npm run build after package rename.",
+        "Made no parser, provider, cache, UI, or runtime behavior changes."
+      ]
     }
   ],
   "verification": {
-    "last_known_head": "725e5f6",
-    "last_known_head_message": "Rename plugin for beta release",
+    "last_known_head": "3364667",
+    "last_known_head_message": "Rename package for beta release",
     "last_test_result": "149 pass, 0 fail",
     "last_build_result": "npm run build successful",
     "last_git_status": "clean"
