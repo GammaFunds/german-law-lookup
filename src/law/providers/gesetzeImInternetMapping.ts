@@ -27,6 +27,10 @@ const supportedLaws: Record<string, {
     path: "aktg",
     lawTitle: "Aktiengesetz",
     displayLawCode: "AktG",
+    translation: {
+      path: "englisch_aktg/englisch_aktg.html",
+      documentType: "section-full-text",
+    },
   },
   ARBGG: {
     path: "arbgg",
@@ -42,6 +46,10 @@ const supportedLaws: Record<string, {
     path: "aufenthg_2004",
     lawTitle: "Aufenthaltsgesetz",
     displayLawCode: "AufenthG",
+    translation: {
+      path: "englisch_aufenthg/englisch_aufenthg.html",
+      documentType: "section-full-text",
+    },
   },
   BGB: {
     path: "bgb",
@@ -83,6 +91,10 @@ const supportedLaws: Record<string, {
     path: "famfg",
     lawTitle: "Gesetz über das Verfahren in Familiensachen und in den Angelegenheiten der freiwilligen Gerichtsbarkeit",
     displayLawCode: "FamFG",
+    translation: {
+      path: "englisch_famfg/englisch_famfg.html",
+      documentType: "section-full-text",
+    },
   },
   FGO: {
     path: "fgo",
@@ -107,6 +119,10 @@ const supportedLaws: Record<string, {
     path: "gmbhg",
     lawTitle: "Gesetz betreffend die Gesellschaften mit beschränkter Haftung",
     displayLawCode: "GmbHG",
+    translation: {
+      path: "englisch_gmbhg/englisch_gmbhg.html",
+      documentType: "section-full-text",
+    },
   },
   GVG: {
     path: "gvg",
@@ -120,11 +136,19 @@ const supportedLaws: Record<string, {
   HGB: {
     path: "hgb",
     lawTitle: "Handelsgesetzbuch",
+    translation: {
+      path: "englisch_hgb/englisch_hgb.html",
+      documentType: "section-full-text",
+    },
   },
   INSO: {
     path: "inso",
     lawTitle: "Insolvenzordnung",
     displayLawCode: "InsO",
+    translation: {
+      path: "englisch_inso/englisch_inso.html",
+      documentType: "section-full-text",
+    },
   },
   JGG: {
     path: "jgg",

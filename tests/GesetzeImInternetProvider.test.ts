@@ -188,6 +188,66 @@ const englishOwigHtmlFixture = `
 </body>
 </html>`;
 
+const englishHgbHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Commercial Code",
+  previousSection: "0",
+  section: "1",
+  heading: "Merchants by virtue of commercial business operations",
+  text: "(1) A merchant within the meaning of this Code is a person who operates a commercial business.",
+  nextSection: "2",
+  nextHeading: "Commercial register",
+});
+
+const englishGmbhgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Act on Limited Liability Companies",
+  previousSection: "0",
+  section: "1",
+  heading: "Nature and purpose of the company",
+  text: "(1) Limited liability companies may be established for any lawful purpose under this Act by one or more persons.",
+  nextSection: "2",
+  nextHeading: "Articles of association",
+});
+
+const englishAktgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Stock Corporation Act",
+  previousSection: "0",
+  section: "1",
+  heading: "Nature of the stock corporation",
+  text: "(1) The stock corporation is a company with its own legal personality.",
+  nextSection: "2",
+  nextHeading: "Founders",
+});
+
+const englishInsoHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Insolvency Code",
+  previousSection: "0",
+  section: "1",
+  heading: "Objectives of insolvency proceedings",
+  text: "The insolvency proceedings shall serve to satisfy the creditors of a debtor collectively.",
+  nextSection: "2",
+  nextHeading: "Jurisdiction",
+});
+
+const englishAufenthgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Residence Act",
+  previousSection: "0",
+  section: "1",
+  heading: "Purpose of the Act; scope",
+  text: "(1) This Act shall serve to control and limit the influx of foreigners into the Federal Republic of Germany.",
+  nextSection: "2",
+  nextHeading: "Definitions",
+});
+
+const englishFamfgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Act on Proceedings in Family Matters and in Matters of Non-contentious Jurisdiction",
+  previousSection: "0",
+  section: "1",
+  heading: "Scope of application",
+  text: "(1) This Act shall apply to proceedings in family matters and matters of non-contentious jurisdiction.",
+  nextSection: "2",
+  nextHeading: "Local jurisdiction",
+});
+
 const englishGgHtmlFixture = `
 <!DOCTYPE html>
 <html lang="en">
@@ -521,6 +581,54 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_owig/englisch_owig.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "HGB",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_hgb/englisch_hgb.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "GMBHG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_gmbhg/englisch_gmbhg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "AKTG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_aktg/englisch_aktg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "INSO",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_inso/englisch_inso.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "AUFENTHG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_aufenthg/englisch_aufenthg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "FAMFG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_famfg/englisch_famfg.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -1168,6 +1276,85 @@ describe("GesetzeImInternetProvider", () => {
     ]);
   });
 
+  it("resolves additional verified English section translations from fixture-backed fetches", async () => {
+    const cases = [
+      {
+        lawCode: "HGB",
+        section: "1",
+        fixture: englishHgbHtmlFixture,
+        expectedLawCode: "HGB",
+        expectedHeading: "Merchants by virtue of commercial business operations",
+        expectedTextStart: /^\(1\) A merchant within the meaning of this Code/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_hgb/englisch_hgb.html",
+      },
+      {
+        lawCode: "GMBHG",
+        section: "1",
+        fixture: englishGmbhgHtmlFixture,
+        expectedLawCode: "GmbHG",
+        expectedHeading: "Nature and purpose of the company",
+        expectedTextStart: /^\(1\) Limited liability companies may be established/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_gmbhg/englisch_gmbhg.html",
+      },
+      {
+        lawCode: "AKTG",
+        section: "1",
+        fixture: englishAktgHtmlFixture,
+        expectedLawCode: "AktG",
+        expectedHeading: "Nature of the stock corporation",
+        expectedTextStart: /^\(1\) The stock corporation is a company with its own legal personality\./,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_aktg/englisch_aktg.html",
+      },
+      {
+        lawCode: "INSO",
+        section: "1",
+        fixture: englishInsoHtmlFixture,
+        expectedLawCode: "InsO",
+        expectedHeading: "Objectives of insolvency proceedings",
+        expectedTextStart: /^The insolvency proceedings shall serve to satisfy the creditors/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_inso/englisch_inso.html",
+      },
+      {
+        lawCode: "AUFENTHG",
+        section: "1",
+        fixture: englishAufenthgHtmlFixture,
+        expectedLawCode: "AufenthG",
+        expectedHeading: "Purpose of the Act; scope",
+        expectedTextStart: /^\(1\) This Act shall serve to control and limit the influx of foreigners/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_aufenthg/englisch_aufenthg.html",
+      },
+      {
+        lawCode: "FAMFG",
+        section: "1",
+        fixture: englishFamfgHtmlFixture,
+        expectedLawCode: "FamFG",
+        expectedHeading: "Scope of application",
+        expectedTextStart: /^\(1\) This Act shall apply to proceedings in family matters/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_famfg/englisch_famfg.html",
+      },
+    ] as const;
+
+    for (const testCase of cases) {
+      const requestedUrls: string[] = [];
+      const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+        requestedUrls.push(url);
+        return textResponse(testCase.fixture);
+      });
+
+      const section = await provider.getSection({
+        lawCode: testCase.lawCode,
+        section: testCase.section,
+        sourceVariant: "translation-en",
+      });
+
+      assert.equal(section?.lawCode, testCase.expectedLawCode);
+      assert.equal(section?.sourceVariant, "translation-en");
+      assert.equal(section?.heading, testCase.expectedHeading);
+      assert.match(section?.text ?? "", testCase.expectedTextStart);
+      assert.deepEqual(requestedUrls, [testCase.expectedUrl]);
+    }
+  });
+
   it("resolves EGBGB Art. 229 § 1 from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1476,6 +1663,120 @@ describe("GesetzeImInternetProvider", () => {
     ]);
   });
 
+  it("falls back to official German text for additional configured English section sources when the citation is missing", async () => {
+    const cases = [
+      {
+        lawCode: "HGB",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_hgb/englisch_hgb.html",
+        translationFixture: englishHgbHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/hgb/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Handelsgesetzbuch",
+          lawCode: "HGB",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "GMBHG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_gmbhg/englisch_gmbhg.html",
+        translationFixture: englishGmbhgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/gmbhg/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz betreffend die Gesellschaften mit beschränkter Haftung",
+          lawCode: "GmbHG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "AKTG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_aktg/englisch_aktg.html",
+        translationFixture: englishAktgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/aktg/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Aktiengesetz",
+          lawCode: "AktG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "INSO",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_inso/englisch_inso.html",
+        translationFixture: englishInsoHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/inso/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Insolvenzordnung",
+          lawCode: "InsO",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "AUFENTHG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_aufenthg/englisch_aufenthg.html",
+        translationFixture: englishAufenthgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/aufenthg_2004/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Aufenthaltsgesetz",
+          lawCode: "AufenthG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "FAMFG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_famfg/englisch_famfg.html",
+        translationFixture: englishFamfgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/famfg/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz über das Verfahren in Familiensachen und in den Angelegenheiten der freiwilligen Gerichtsbarkeit",
+          lawCode: "FamFG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+    ] as const;
+
+    for (const testCase of cases) {
+      const requestedUrls: string[] = [];
+      const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+        requestedUrls.push(url);
+
+        if (url === testCase.translationUrl) {
+          return textResponse(testCase.translationFixture);
+        }
+
+        if (url === testCase.officialUrl) {
+          return textResponse(testCase.officialFixture);
+        }
+
+        return { ok: false, status: 404, json: async () => ({}), text: async () => "" };
+      });
+
+      const section = await provider.getSection({
+        lawCode: testCase.lawCode,
+        section: "999",
+        sourceVariant: "translation-en",
+      });
+
+      assert.equal(section?.sourceVariant, "official-de");
+      assert.equal(section?.heading, "Deutsche Ersatznorm");
+      assert.match(section?.text ?? "", /^Deutscher amtlicher Ersatztext\.$/);
+      assert.deepEqual(requestedUrls, [
+        testCase.translationUrl,
+        testCase.officialUrl,
+      ]);
+    }
+  });
+
   it("falls back to official German text when the configured English citation is missing", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1632,8 +1933,35 @@ function makeSectionHtmlFixture(params: {
     </h1>
   </div>
   <div class="jnhtml">
-    <div class="jurAbsatz">${params.text}</div>
+  <div class="jurAbsatz">${params.text}</div>
   </div>
+</body>
+</html>`;
+}
+
+function makeEnglishSectionTranslationFixture(params: {
+  documentTitle: string;
+  previousSection: string;
+  section: string;
+  heading: string;
+  text: string;
+  nextSection: string;
+  nextHeading: string;
+}): string {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>${params.documentTitle}</div>
+  <div>table of contents</div>
+  <div>Section ${params.previousSection}</div>
+  <div>table of contents</div>
+  <div>Section ${params.section}</div>
+  <div>${params.heading}</div>
+  <div>${params.text}</div>
+  <div>table of contents</div>
+  <div>Section ${params.nextSection}</div>
+  <div>${params.nextHeading}</div>
 </body>
 </html>`;
 }
