@@ -60,6 +60,15 @@ const supportedLaws: Record<string, {
       documentType: "section-full-text",
     },
   },
+  BDSG: {
+    path: "bdsg_2018",
+    lawTitle: "Bundesdatenschutzgesetz",
+    displayLawCode: "BDSG",
+    translation: {
+      path: "englisch_bdsg/englisch_bdsg.html",
+      documentType: "section-full-text",
+    },
+  },
   BGB: {
     path: "bgb",
     lawTitle: "Bürgerliches Gesetzbuch",
@@ -305,6 +314,10 @@ const supportedLaws: Record<string, {
     path: "stpo",
     lawTitle: "Strafprozeßordnung",
     displayLawCode: "StPO",
+    translation: {
+      path: "englisch_stpo/englisch_stpo.html",
+      documentType: "section-full-text",
+    },
   },
   TZBFG: {
     path: "tzbfg",
@@ -321,10 +334,32 @@ const supportedLaws: Record<string, {
     lawTitle: "Umsatzsteuergesetz",
     displayLawCode: "UStG",
   },
+  UWG: {
+    path: "uwg_2004",
+    lawTitle: "Gesetz gegen den unlauteren Wettbewerb",
+    displayLawCode: "UWG",
+    translation: {
+      path: "englisch_uwg/englisch_uwg.html",
+      documentType: "section-full-text",
+    },
+  },
+  VVG: {
+    path: "vvg_2008",
+    lawTitle: "Gesetz über den Versicherungsvertrag",
+    displayLawCode: "VVG",
+    translation: {
+      path: "englisch_vvg/englisch_vvg.html",
+      documentType: "section-full-text",
+    },
+  },
   VWGO: {
     path: "vwgo",
     lawTitle: "Verwaltungsgerichtsordnung",
     displayLawCode: "VwGO",
+    translation: {
+      path: "englisch_vwgo/englisch_vwgo.html",
+      documentType: "section-full-text",
+    },
   },
   VWVFG: {
     path: "vwvfg",
@@ -339,6 +374,10 @@ const supportedLaws: Record<string, {
   ZPO: {
     path: "zpo",
     lawTitle: "Zivilprozessordnung",
+    translation: {
+      path: "englisch_zpo/englisch_zpo.html",
+      documentType: "section-full-text",
+    },
   },
   ZVG: {
     path: "zvg",

@@ -314,6 +314,66 @@ const englishSgbXivHtmlFixture = makeEnglishSectionTranslationFixture({
   nextHeading: "Persons entitled to social compensation",
 });
 
+const englishZpoHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Code of Civil Procedure",
+  previousSection: "0",
+  section: "1",
+  heading: "Substantive jurisdiction",
+  text: "The substantive jurisdiction of the courts is determined by the Courts Constitution Act.",
+  nextSection: "2",
+  nextHeading: "Significance of the value",
+});
+
+const englishStpo1HtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "German Code of Criminal Procedure",
+  previousSection: "0",
+  section: "1",
+  heading: "Subject-matter jurisdiction",
+  text: "The subject-matter jurisdiction of the courts is determined by the Courts Constitution Act.",
+  nextSection: "2",
+  nextHeading: "Venue",
+});
+
+const englishVwgoHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Code of Administrative Court Procedure",
+  previousSection: "0",
+  section: "1",
+  heading: "Administrative courts",
+  text: "Administrative courts shall have jurisdiction in public-law disputes of a non-constitutional nature unless jurisdiction is explicitly assigned to another court.",
+  nextSection: "2",
+  nextHeading: "Higher administrative courts",
+});
+
+const englishBdsgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Federal Data Protection Act",
+  previousSection: "0",
+  section: "1",
+  heading: "Scope of the Act",
+  text: "(1) This Act shall apply to the processing of personal data by public bodies of the Federation and the Länder and by private bodies under this Act.",
+  nextSection: "2",
+  nextHeading: "Definitions",
+});
+
+const englishUwgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Act against Unfair Competition",
+  previousSection: "0",
+  section: "1",
+  heading: "Purpose of the Act; scope of application",
+  text: "(1) This Act serves to protect competitors, consumers and other market participants against unfair commercial practices.",
+  nextSection: "2",
+  nextHeading: "Definitions",
+});
+
+const englishVvgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Insurance Contract Act 2008",
+  previousSection: "0",
+  section: "1",
+  heading: "Typical contractual duties",
+  text: "Under the insurance contract, the insurer undertakes to cover a specific risk of the policyholder or of a third party by a benefit.",
+  nextSection: "2",
+  nextHeading: "Retroactive insurance",
+});
+
 const englishGgHtmlFixture = `
 <!DOCTYPE html>
 <html lang="en">
@@ -495,6 +555,45 @@ const sgbXIV1HtmlFixture = makeSectionHtmlFixture({
   text: "(1) Die Soziale Entschädigung unterstützt Personen, die durch ein schädigendes Ereignis eine gesundheitliche Schädigung erlitten haben, bei dessen Folgenbewältigung.",
 });
 
+const bdsg1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Bundesdatenschutzgesetz (BDSG)",
+  lawCode: "BDSG",
+  section: "1",
+  heading: "Anwendungsbereich des Gesetzes",
+  text: "(1) Dieses Gesetz gilt für die Verarbeitung personenbezogener Daten durch öffentliche Stellen des Bundes und der Länder sowie nichtöffentliche Stellen nach Maßgabe dieses Gesetzes.",
+});
+
+const uwg1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Gesetz gegen den unlauteren Wettbewerb (UWG)",
+  lawCode: "UWG",
+  section: "1",
+  heading: "Zweck des Gesetzes; Anwendungsbereich",
+  text: "(1) Dieses Gesetz dient dem Schutz der Mitbewerber, der Verbraucher sowie der sonstigen Marktteilnehmer vor unlauteren geschäftlichen Handlungen.",
+});
+
+const vvg1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Gesetz über den Versicherungsvertrag (Versicherungsvertragsgesetz - VVG)",
+  lawCode: "VVG",
+  section: "1",
+  heading: "Vertragstypische Pflichten",
+  text: "Der Versicherer verpflichtet sich mit dem Versicherungsvertrag, ein bestimmtes Risiko des Versicherungsnehmers oder eines Dritten durch eine Leistung abzusichern.",
+});
+
+const stpo1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Strafprozeßordnung",
+  lawCode: "StPO",
+  section: "1",
+  heading: "Sachliche Zuständigkeit",
+  text: "Die sachliche Zuständigkeit der Gerichte wird durch das Gerichtsverfassungsgesetz bestimmt.",
+});
+
+const vwgo1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Verwaltungsgerichtsordnung",
+  lawCode: "VwGO",
+  section: "1",
+  text: "Die Verwaltungsgerichtsbarkeit wird durch unabhängige, von den Verwaltungsbehörden getrennte Gerichte ausgeübt.",
+});
+
 const genericHeadingFixture = makeSectionHtmlFixture({
   lawTitle: "Beispielgesetz",
   lawCode: "BspG",
@@ -518,6 +617,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "ARBGG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/arbgg/__1.html" },
       { lawCode: "ASYLG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/asylvfg_1992/__1.html" },
       { lawCode: "AUFENTHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/aufenthg_2004/__1.html" },
+      { lawCode: "BDSG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/bdsg_2018/__1.html" },
       { lawCode: "BGB", section: "823", expectedUrl: "https://www.gesetze-im-internet.de/bgb/__823.html" },
       { lawCode: "BETRVG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/betrvg/__1.html" },
       { lawCode: "BURLG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/burlg/__1.html" },
@@ -593,6 +693,8 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "TZBFG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/tzbfg/__1.html" },
       { lawCode: "UMWG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/umwg_1995/__1.html" },
       { lawCode: "USTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/ustg_1980/__1.html" },
+      { lawCode: "UWG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/uwg_2004/__1.html" },
+      { lawCode: "VVG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/vvg_2008/__1.html" },
       { lawCode: "VWGO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/vwgo/__1.html" },
       { lawCode: "VWVFG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/vwvfg/__1.html" },
       { lawCode: "WPHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/wphg/__1.html" },
@@ -716,6 +818,14 @@ describe("GesetzeImInternet mapping helpers", () => {
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
+        lawCode: "BDSG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_bdsg/englisch_bdsg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
         lawCode: "FAMFG",
         section: "1",
         sourceVariant: "translation-en",
@@ -745,6 +855,46 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_sgb_14/englisch_sgb_14.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "STPO",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_stpo/englisch_stpo.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "UWG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_uwg/englisch_uwg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "VVG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_vvg/englisch_vvg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "VWGO",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_vwgo/englisch_vwgo.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "ZPO",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_zpo/englisch_zpo.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -1084,6 +1234,14 @@ describe("GesetzeImInternet mapping helpers", () => {
       "AGG 1",
     ]);
 
+    assert.equal(byCode.get("BDSG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("BDSG")?.exampleInputs, [
+      "§ 1 BDSG",
+      "BDSG § 1",
+      "1 BDSG",
+      "BDSG 1",
+    ]);
+
     assert.equal(byCode.get("StGB")?.displayLawCode, "StGB");
     assert.equal(byCode.get("StGB")?.referenceType, "section");
     assert.deepEqual(byCode.get("StGB")?.exampleInputs, [
@@ -1244,6 +1402,46 @@ describe("GesetzeImInternet mapping helpers", () => {
       "SGB XIV § 1",
       "1 SGB XIV",
       "SGB XIV 1",
+    ]);
+
+    assert.equal(byCode.get("UWG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("UWG")?.exampleInputs, [
+      "§ 1 UWG",
+      "UWG § 1",
+      "1 UWG",
+      "UWG 1",
+    ]);
+
+    assert.equal(byCode.get("VVG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("VVG")?.exampleInputs, [
+      "§ 1 VVG",
+      "VVG § 1",
+      "1 VVG",
+      "VVG 1",
+    ]);
+
+    assert.equal(byCode.get("VwGO")?.referenceType, "section");
+    assert.deepEqual(byCode.get("VwGO")?.exampleInputs, [
+      "§ 1 VwGO",
+      "VwGO § 1",
+      "1 VwGO",
+      "VwGO 1",
+    ]);
+
+    assert.equal(byCode.get("StPO")?.referenceType, "section");
+    assert.deepEqual(byCode.get("StPO")?.exampleInputs, [
+      "§ 1 StPO",
+      "StPO § 1",
+      "1 StPO",
+      "StPO 1",
+    ]);
+
+    assert.equal(byCode.get("ZPO")?.referenceType, "section");
+    assert.deepEqual(byCode.get("ZPO")?.exampleInputs, [
+      "§ 1 ZPO",
+      "ZPO § 1",
+      "1 ZPO",
+      "ZPO 1",
     ]);
   });
 });
@@ -1540,6 +1738,60 @@ describe("GesetzeImInternetProvider", () => {
         expectedUrl: "https://www.gesetze-im-internet.de/englisch_sgb_14/englisch_sgb_14.html",
       },
       {
+        lawCode: "ZPO",
+        section: "1",
+        fixture: englishZpoHtmlFixture,
+        expectedLawCode: "ZPO",
+        expectedHeading: "Substantive jurisdiction",
+        expectedTextStart: /^The substantive jurisdiction of the courts is determined by the Courts Constitution Act\./,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_zpo/englisch_zpo.html",
+      },
+      {
+        lawCode: "STPO",
+        section: "1",
+        fixture: englishStpo1HtmlFixture,
+        expectedLawCode: "StPO",
+        expectedHeading: "Subject-matter jurisdiction",
+        expectedTextStart: /^The subject-matter jurisdiction of the courts is determined by the Courts Constitution Act\./,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_stpo/englisch_stpo.html",
+      },
+      {
+        lawCode: "VWGO",
+        section: "1",
+        fixture: englishVwgoHtmlFixture,
+        expectedLawCode: "VwGO",
+        expectedHeading: "Administrative courts",
+        expectedTextStart: /^Administrative courts shall have jurisdiction in public-law disputes/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_vwgo/englisch_vwgo.html",
+      },
+      {
+        lawCode: "BDSG",
+        section: "1",
+        fixture: englishBdsgHtmlFixture,
+        expectedLawCode: "BDSG",
+        expectedHeading: "Scope of the Act",
+        expectedTextStart: /^\(1\) This Act shall apply to the processing of personal data/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_bdsg/englisch_bdsg.html",
+      },
+      {
+        lawCode: "UWG",
+        section: "1",
+        fixture: englishUwgHtmlFixture,
+        expectedLawCode: "UWG",
+        expectedHeading: "Purpose of the Act; scope of application",
+        expectedTextStart: /^\(1\) This Act serves to protect competitors, consumers and other market participants/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_uwg/englisch_uwg.html",
+      },
+      {
+        lawCode: "VVG",
+        section: "1",
+        fixture: englishVvgHtmlFixture,
+        expectedLawCode: "VVG",
+        expectedHeading: "Typical contractual duties",
+        expectedTextStart: /^Under the insurance contract, the insurer undertakes to cover a specific risk/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_vvg/englisch_vvg.html",
+      },
+      {
         lawCode: "AGG",
         section: "1",
         fixture: englishAggHtmlFixture,
@@ -1649,6 +1901,15 @@ describe("GesetzeImInternetProvider", () => {
   it("resolves representative verified mapped laws from fixtures", async () => {
     const cases = [
       {
+        lawCode: "BDSG",
+        section: "1",
+        fixture: bdsg1HtmlFixture,
+        expectedLawCode: "BDSG",
+        expectedLawTitle: "Bundesdatenschutzgesetz",
+        expectedHeading: "Anwendungsbereich des Gesetzes",
+        expectedUrl: "https://www.gesetze-im-internet.de/bdsg_2018/__1.html",
+      },
+      {
         lawCode: "HGB",
         section: "1",
         fixture: hgb1HtmlFixture,
@@ -1674,6 +1935,42 @@ describe("GesetzeImInternetProvider", () => {
         expectedLawTitle: "Zivilprozessordnung",
         expectedHeading: "Sachliche Zuständigkeit",
         expectedUrl: "https://www.gesetze-im-internet.de/zpo/__1.html",
+      },
+      {
+        lawCode: "STPO",
+        section: "1",
+        fixture: stpo1HtmlFixture,
+        expectedLawCode: "StPO",
+        expectedLawTitle: "Strafprozeßordnung",
+        expectedHeading: "Sachliche Zuständigkeit",
+        expectedUrl: "https://www.gesetze-im-internet.de/stpo/__1.html",
+      },
+      {
+        lawCode: "VWGO",
+        section: "1",
+        fixture: vwgo1HtmlFixture,
+        expectedLawCode: "VwGO",
+        expectedLawTitle: "Verwaltungsgerichtsordnung",
+        expectedHeading: "",
+        expectedUrl: "https://www.gesetze-im-internet.de/vwgo/__1.html",
+      },
+      {
+        lawCode: "UWG",
+        section: "1",
+        fixture: uwg1HtmlFixture,
+        expectedLawCode: "UWG",
+        expectedLawTitle: "Gesetz gegen den unlauteren Wettbewerb",
+        expectedHeading: "Zweck des Gesetzes; Anwendungsbereich",
+        expectedUrl: "https://www.gesetze-im-internet.de/uwg_2004/__1.html",
+      },
+      {
+        lawCode: "VVG",
+        section: "1",
+        fixture: vvg1HtmlFixture,
+        expectedLawCode: "VVG",
+        expectedLawTitle: "Gesetz über den Versicherungsvertrag",
+        expectedHeading: "Vertragstypische Pflichten",
+        expectedUrl: "https://www.gesetze-im-internet.de/vvg_2008/__1.html",
       },
       {
         lawCode: "VWVFG",
@@ -2020,6 +2317,84 @@ describe("GesetzeImInternetProvider", () => {
         officialFixture: makeSectionHtmlFixture({
           lawTitle: "Sozialgesetzbuch Vierzehntes Buch - Soziale Entschädigung",
           lawCode: "SGB XIV",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "ZPO",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_zpo/englisch_zpo.html",
+        translationFixture: englishZpoHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/zpo/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Zivilprozessordnung",
+          lawCode: "ZPO",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "STPO",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_stpo/englisch_stpo.html",
+        translationFixture: englishStpo1HtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/stpo/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Strafprozeßordnung",
+          lawCode: "StPO",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "VWGO",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_vwgo/englisch_vwgo.html",
+        translationFixture: englishVwgoHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/vwgo/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Verwaltungsgerichtsordnung",
+          lawCode: "VwGO",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "BDSG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_bdsg/englisch_bdsg.html",
+        translationFixture: englishBdsgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/bdsg_2018/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Bundesdatenschutzgesetz",
+          lawCode: "BDSG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "UWG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_uwg/englisch_uwg.html",
+        translationFixture: englishUwgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/uwg_2004/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz gegen den unlauteren Wettbewerb",
+          lawCode: "UWG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "VVG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_vvg/englisch_vvg.html",
+        translationFixture: englishVvgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/vvg_2008/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz über den Versicherungsvertrag",
+          lawCode: "VVG",
           section: "999",
           heading: "Deutsche Ersatznorm",
           text: "Deutscher amtlicher Ersatztext.",
