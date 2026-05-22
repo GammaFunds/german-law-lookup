@@ -304,6 +304,16 @@ const englishGwbHtmlFixture = makeEnglishSectionTranslationFixture({
   nextHeading: "Exempted agreements",
 });
 
+const englishSgbXivHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Social Code Book XIV – Social Compensation",
+  previousSection: "0",
+  section: "1",
+  heading: "Purpose and ambit of social compensation",
+  text: "(1) Social compensation supports people who have suffered damage to their health as a result of an event causing damage for which the state community bears particular responsibility when it comes to dealing with the consequences thereof.",
+  nextSection: "2",
+  nextHeading: "Persons entitled to social compensation",
+});
+
 const englishGgHtmlFixture = `
 <!DOCTYPE html>
 <html lang="en">
@@ -475,6 +485,14 @@ const sgbIX1HtmlFixture = makeSectionHtmlFixture({
   section: "1",
   heading: "Selbstbestimmung und Teilhabe am Leben in der Gesellschaft",
   text: "Menschen mit Behinderungen oder von Behinderung bedrohte Menschen erhalten Leistungen nach diesem Buch.",
+});
+
+const sgbXIV1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Sozialgesetzbuch Vierzehntes Buch - Soziale Entschädigung",
+  lawCode: "SGB XIV",
+  section: "1",
+  heading: "Zweck und Anwendungsbereich der Sozialen Entschädigung",
+  text: "(1) Die Soziale Entschädigung unterstützt Personen, die durch ein schädigendes Ereignis eine gesundheitliche Schädigung erlitten haben, bei dessen Folgenbewältigung.",
 });
 
 const genericHeadingFixture = makeSectionHtmlFixture({
@@ -719,6 +737,14 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_pauswg/englisch_pauswg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "SGB XIV",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_sgb_14/englisch_sgb_14.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -1302,6 +1328,24 @@ describe("GesetzeImInternetProvider", () => {
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/sgb_9_2018/__1.html"]);
   });
 
+  it("resolves SGB XIV § 1 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(sgbXIV1HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "SGB XIV", section: "1" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "SGB XIV");
+    assert.equal(section?.lawTitle, "Sozialgesetzbuch Vierzehntes Buch - Soziale Entschädigung");
+    assert.equal(section?.heading, "Zweck und Anwendungsbereich der Sozialen Entschädigung");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/sgb_14/__1.html");
+    assert.match(section?.text ?? "", /^\(1\) Die Soziale Entschädigung unterstützt Personen/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/sgb_14/__1.html"]);
+  });
+
   it("resolves GG Art. 1 from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1485,6 +1529,15 @@ describe("GesetzeImInternetProvider", () => {
         expectedHeading: "Identification requirement; law on identification documents",
         expectedTextStart: /^\(1\) Germans within the meaning of Article 116 \(1\) of the Basic Law/,
         expectedUrl: "https://www.gesetze-im-internet.de/englisch_pauswg/englisch_pauswg.html",
+      },
+      {
+        lawCode: "SGB XIV",
+        section: "1",
+        fixture: englishSgbXivHtmlFixture,
+        expectedLawCode: "SGB XIV",
+        expectedHeading: "Purpose and ambit of social compensation",
+        expectedTextStart: /^\(1\) Social compensation supports people who have suffered damage to their health/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_sgb_14/englisch_sgb_14.html",
       },
       {
         lawCode: "AGG",
@@ -1954,6 +2007,19 @@ describe("GesetzeImInternetProvider", () => {
         officialFixture: makeSectionHtmlFixture({
           lawTitle: "Personalausweisgesetz",
           lawCode: "PAuswG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "SGB XIV",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_sgb_14/englisch_sgb_14.html",
+        translationFixture: englishSgbXivHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/sgb_14/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Sozialgesetzbuch Vierzehntes Buch - Soziale Entschädigung",
+          lawCode: "SGB XIV",
           section: "999",
           heading: "Deutsche Ersatznorm",
           text: "Deutscher amtlicher Ersatztext.",
