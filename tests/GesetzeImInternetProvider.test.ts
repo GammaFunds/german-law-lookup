@@ -425,6 +425,28 @@ const englishGgTocFirstHtmlFixture = `
 </body>
 </html>`;
 
+const englishEgbgbHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>INTRODUCTORY ACT TO THE CIVIL CODE</div>
+  <div>table of contents</div>
+  <div>Art. 1</div>
+  <div>(1) The Civil Code enters into force on January 1st, 1900, along with a statute concerning amendments to an Act on the Constitution of the Courts, the Code of Civil Procedure and the Code of Insolvency, a Statute on Compulsory Auction and Sequestration, a Code of Registration of Real Property, and a Statute on the Procedure of Non-Contentious Matters.</div>
+  <div>(2) Insofar as, in the Civil Code or in this Act, the regulation is reserved for the Statutes of a Land or insofar as it is ordered, that the provisions of the law of a Land remain unaffected or can be decreed, the existing provisions of the law of the Land will continue to be in force and the Land can decree new statutory provisions.</div>
+  <div>table of contents</div>
+  <div>Art. 2</div>
+  <div>“Statute” under the Civil Code and under this Act means any legal rule.</div>
+  <div>table of contents</div>
+  <div>Art. 3</div>
+  <div>Scope; Relationship with rules of the European Union and with international conventions</div>
+  <div>Unless immediately applicable rules of the European Union in their respective pertaining version are relevant, the applicable law is to be determined by the provisions of this chapter.</div>
+  <div>table of contents</div>
+  <div>Art. 48</div>
+  <div>Choice of a name obtained in another Member State of the European Union</div>
+</body>
+</html>`;
+
 const egbgbArt229Sec1HtmlFixture = `
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
@@ -872,6 +894,15 @@ describe("GesetzeImInternet mapping helpers", () => {
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
+        lawCode: "EGBGB",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
         lawCode: "FAMFG",
         section: "1",
         sourceVariant: "translation-en",
@@ -1063,6 +1094,48 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.match(section.text, /\(3\) The following basic rights shall bind/);
   });
 
+  it("maps EGBGB Art. 1 English translation from the official article HTML into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: {
+        lawCode: "EGBGB",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      },
+      html: englishEgbgbHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "EGBGB");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, undefined);
+    assert.match(section.text, /^\(1\) The Civil Code enters into force on January 1st, 1900/);
+    assert.match(section.text, /\(2\) Insofar as, in the Civil Code or in this Act/);
+    assert.doesNotMatch(section.text, /any legal rule/);
+  });
+
+  it("maps titled EGBGB English article translations from the official article HTML", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: {
+        lawCode: "EGBGB",
+        section: "3",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      },
+      html: englishEgbgbHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.heading, "Scope; Relationship with rules of the European Union and with international conventions");
+    assert.match(section.text, /^Unless immediately applicable rules of the European Union/);
+  });
+
   it("maps StGB § 242 English translation into LawSection", () => {
     const section = mapGesetzeImInternetToLawSection({
       reference: { lawCode: "STGB", section: "242", sourceVariant: "translation-en" },
@@ -1175,6 +1248,26 @@ describe("GesetzeImInternet mapping helpers", () => {
 
     assert.equal(section.heading, "Human dignity");
     assert.match(section.text, /^\(1\) Human dignity shall be inviolable\./);
+  });
+
+  it("skips the TOC match before extracting the real EGBGB English article", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: {
+        lawCode: "EGBGB",
+        section: "1",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+      },
+      html: englishEgbgbHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.heading, undefined);
+    assert.match(section.text, /^\(1\) The Civil Code enters into force on January 1st, 1900/);
+    assert.doesNotMatch(section.text, /Choice of a name obtained in another Member State/);
   });
 
   it("skips the TOC match and keeps heading undefined for BVerfGG English section text", () => {
@@ -1715,6 +1808,29 @@ describe("GesetzeImInternetProvider", () => {
     ]);
   });
 
+  it("resolves EGBGB Art. 1 English translation from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishEgbgbHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "EGBGB",
+      section: "1",
+      referenceType: "article",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "EGBGB");
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, undefined);
+    assert.match(section?.text ?? "", /^\(1\) The Civil Code enters into force on January 1st, 1900/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+    ]);
+  });
+
   it("resolves StGB § 242 English translation from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1782,7 +1898,26 @@ describe("GesetzeImInternetProvider", () => {
   });
 
   it("resolves additional verified English section translations from fixture-backed fetches", async () => {
-    const cases = [
+    const cases: Array<{
+      lawCode: string;
+      section: string;
+      referenceType?: LawReference["referenceType"];
+      fixture: string;
+      expectedLawCode: string;
+      expectedHeading?: string;
+      expectedTextStart: RegExp;
+      expectedUrl: string;
+    }> = [
+      {
+        lawCode: "EGBGB",
+        section: "1",
+        referenceType: "article" as const,
+        fixture: englishEgbgbHtmlFixture,
+        expectedLawCode: "EGBGB",
+        expectedHeading: undefined,
+        expectedTextStart: /^\(1\) The Civil Code enters into force on January 1st, 1900/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+      },
       {
         lawCode: "BVERFGG",
         section: "1",
@@ -1945,7 +2080,7 @@ describe("GesetzeImInternetProvider", () => {
         expectedTextStart: /^Agreements between undertakings, decisions by associations of undertakings/,
         expectedUrl: "https://www.gesetze-im-internet.de/englisch_gwb/englisch_gwb.html",
       },
-    ] as const;
+    ];
 
     for (const testCase of cases) {
       const requestedUrls: string[] = [];
@@ -1957,6 +2092,7 @@ describe("GesetzeImInternetProvider", () => {
       const section = await provider.getSection({
         lawCode: testCase.lawCode,
         section: testCase.section,
+        referenceType: testCase.referenceType,
         sourceVariant: "translation-en",
       });
 
@@ -2340,7 +2476,30 @@ describe("GesetzeImInternetProvider", () => {
   });
 
   it("falls back to official German text for additional configured English section sources when the citation is missing", async () => {
-    const cases = [
+    const cases: Array<{
+      lawCode: string;
+      referenceType?: LawReference["referenceType"];
+      subsection?: string;
+      translationUrl: string;
+      translationFixture: string;
+      officialUrl: string;
+      officialFixture: string;
+    }> = [
+      {
+        lawCode: "EGBGB",
+        referenceType: "article" as const,
+        subsection: "6",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_egbgb/englisch_egbgb.html",
+        translationFixture: englishEgbgbHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/bgbeg/art_229__6.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Einführungsgesetz zum Bürgerlichen Gesetzbuche",
+          lawCode: "EGBGB",
+          section: "229",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
       {
         lawCode: "BVERFGG",
         translationUrl: "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
@@ -2575,7 +2734,7 @@ describe("GesetzeImInternetProvider", () => {
           text: "Deutscher amtlicher Ersatztext.",
         }),
       },
-    ] as const;
+    ];
 
     for (const testCase of cases) {
       const requestedUrls: string[] = [];
@@ -2595,7 +2754,9 @@ describe("GesetzeImInternetProvider", () => {
 
       const section = await provider.getSection({
         lawCode: testCase.lawCode,
-        section: "999",
+        section: testCase.lawCode === "EGBGB" ? "229" : "999",
+        subsection: testCase.subsection,
+        referenceType: testCase.referenceType,
         sourceVariant: "translation-en",
       });
 

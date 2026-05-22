@@ -113,6 +113,10 @@ const supportedLaws: Record<string, {
       "Art. 229 § 6 EGBGB",
       "EGBGB Artikel 246a § 1",
     ],
+    translation: {
+      path: "englisch_egbgb/englisch_egbgb.html",
+      documentType: "article-full-text",
+    },
   },
   FAMFG: {
     path: "famfg",
@@ -688,19 +692,28 @@ function extractEnglishArticleTranslation(
   lines: string[],
 ): { heading?: string; text: string } | null {
   const normalizedArticle = article.trim().toLowerCase();
+  const paragraphStartPattern = /^(?:\(\d+[a-z]?\)|\d+\.)\s+/i;
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
-    const match = line.match(/^Article\s+(\d+[a-z]?)$/i);
+    const match = line.match(/^(?:Article|Art\.?)\s+(\d+[a-z]?)$/i);
     if (!match || match[1].toLowerCase() !== normalizedArticle) {
       continue;
     }
 
     const rawHeading = lines[index + 1];
+    const candidateHeading = rawHeading && !paragraphStartPattern.test(rawHeading)
+      ? rawHeading
+      : undefined;
     const heading = rawHeading?.startsWith("[") && rawHeading.endsWith("]")
       ? rawHeading.slice(1, -1)
-      : rawHeading;
-    const textLines = collectTranslationTextLines(lines, index + 2, /^Article\s+\d+[a-z]?$/i);
+      : candidateHeading;
+    const textStartIndex = candidateHeading ? index + 2 : index + 1;
+    const textLines = collectTranslationTextLines(
+      lines,
+      textStartIndex,
+      /^(?:Article|Art\.?)\s+\d+[a-z]?$/i,
+    );
     if (textLines.length === 0) {
       continue;
     }
