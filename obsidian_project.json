@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + high-value official English law text coverage",
+    "phase": "Stable MVP + broad official English law text coverage",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, GWB, and BVerfGG support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text now covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, and BVerfGG when available, otherwise falling back to German official text. The plugin never generates translations. Remaining special follow-ups include FreizügG/EU, EGBGB English text, and SGB V English text after renewed source verification."
+    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, GWB, and BVerfGG support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text now covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, and pure EGBGB articles when available, otherwise falling back to German official text. The plugin never generates translations. Remaining special follow-ups include FreizügG/EU and SGB V English text after renewed source verification."
   },
   "blockers": [
     {
@@ -38,7 +38,7 @@
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
     },
     "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
-    "Additional official English law text sources beyond BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, and BVerfGG remain future work."
+    "Additional official English law text sources beyond BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, SGB XIV, ZPO, StPO, VwGO, BDSG, UWG, VVG, BVerfGG, and pure EGBGB articles remain future work."
   ],
   "tasks": [
     {
@@ -534,6 +534,22 @@
         "Kept heading-based English extraction and TOC-skip behavior intact.",
         "Kept official-de as the default law text source.",
         "Kept fallback to German official text when English text is unavailable or not extractable.",
+        "Made no toggle, cache, UI, or preview/insert format changes.",
+        "Validated Obsidian runtime, npm test, and npm run build before commit."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Add EGBGB English article text support",
+      "commit": "97f203f",
+      "details": [
+        "Added official Gesetze-im-Internet English article text support for pure EGBGB articles.",
+        "Verified English EGBGB path englisch_egbgb/englisch_egbgb.html.",
+        "Mapped EGBGB translation-en as article-full-text.",
+        "Extended English article extraction to support Art. N labels in addition to Article N.",
+        "Supported heading-less article text where Art. N is followed directly by paragraph text.",
+        "Kept Art. 229 § 6 EGBGB on official-de fallback because the verified English HTML does not contain that article-section fundstelle.",
+        "Kept official-de as the default law text source.",
         "Made no toggle, cache, UI, or preview/insert format changes.",
         "Validated Obsidian runtime, npm test, and npm run build before commit."
       ]
