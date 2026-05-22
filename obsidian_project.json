@@ -11,8 +11,8 @@
       "id": "B-001",
       "title": "Primary law data source not yet validated",
       "component": "LawSource",
-      "status": "open",
-      "notes": "Initial target is Gesetze im Internet / official federal law texts. Need technical validation of URL/XML/HTML access pattern before implementing fetcher."
+      "status": "completed",
+      "notes": "Closed after validation. Gesetze im Internet HTML is already runtime-validated as the official federal-law provider path. Technical XML access was validated on 2026-05-22: gii-toc.xml returned 200 application/xml, and bgb/xml.zip, stgb/xml.zip, and gg/xml.zip returned 200 application/zip with GiI norm XML files. XML extractor implementation remains optional future robustness work, not an MVP blocker."
     },
     {
       "id": "B-002",
@@ -90,7 +90,8 @@
       "id": "T-008",
       "title": "Validate Gesetze im Internet XML fallback access",
       "component": "GesetzeImInternetProvider",
-      "status": "open"
+      "status": "completed",
+      "notes": "Validated Gesetze im Internet XML fallback access. gii-toc.xml returned 200 application/xml. bgb/xml.zip, stgb/xml.zip, and gg/xml.zip returned 200 application/zip. BGB xml.zip contained BJNR001950896.xml with GiI norm DTD, BGB metadata, builddate, title, and status/change metadata. No runtime/provider code was changed."
     },
     {
       "id": "T-009",
@@ -269,6 +270,13 @@
       "component": "Settings",
       "status": "completed",
       "notes": "Updated the settings/UI-only diagnostics view to render each supported input form as a compact wrapped chip instead of one joined text string. This improves readability in narrow settings panels while preserving the existing exampleInputs metadata and ordering. Parser behavior, provider behavior, requestUrl transport, cache behavior, lookup flow, preview rendering, and CitationFormatter insertion output remain unchanged."
+    },
+    {
+      "id": "T-035",
+      "title": "Evaluate Gesetze im Internet XML extractor as optional robustness path",
+      "component": "GesetzeImInternetProvider",
+      "status": "open",
+      "notes": "Future optional task. XML access is validated, but the Stable MVP already works through official GiI HTML. Any XML extractor must preserve parser behavior, provider fallback semantics, variant-aware cache keys, preview/insertion output, and no-translation invariants."
     }
   ],
   "architecture": {
@@ -597,6 +605,19 @@
         "Synchronized verification.last_known_head with HEAD 857bb64 Record final verification checkpoint.",
         "Kept NeuRIS validation and GiI XML fallback validation open.",
         "Kept Bundesrecht-only scope and citation metadata issues open."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Validate Gesetze im Internet XML access",
+      "commit": null,
+      "details": [
+        "Validated https://www.gesetze-im-internet.de/gii-toc.xml as 200 application/xml.",
+        "Validated BGB, StGB, and GG xml.zip endpoints as 200 application/zip.",
+        "Inspected BGB XML ZIP and confirmed BJNR001950896.xml with GiI norm DTD and structured BGB metadata.",
+        "Closed B-001 because GiI source access is no longer an MVP blocker.",
+        "Completed T-008 as technical XML fallback access validation.",
+        "Added optional future task T-035 for evaluating an XML extractor without changing current runtime behavior."
       ]
     }
   ],
