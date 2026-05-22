@@ -248,6 +248,26 @@ const englishFamfgHtmlFixture = makeEnglishSectionTranslationFixture({
   nextHeading: "Local jurisdiction",
 });
 
+const englishStagHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Nationality Act",
+  previousSection: "0",
+  section: "1",
+  heading: "Acquisition by birth",
+  text: "Nationality is acquired by birth if one parent has German nationality.",
+  nextSection: "2",
+  nextHeading: "Foundlings",
+});
+
+const englishPauswgHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Act on Identity Cards and Electronic Identification",
+  previousSection: "0",
+  section: "1",
+  heading: "Identification requirement; law on identification documents",
+  text: "(1) Germans within the meaning of Article 116 (1) of the Basic Law are required to possess a valid identity card as soon as they reach the age of 16.",
+  nextSection: "2",
+  nextHeading: "Definitions",
+});
+
 const englishGgHtmlFixture = `
 <!DOCTYPE html>
 <html lang="en">
@@ -629,6 +649,22 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_famfg/englisch_famfg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "STAG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_stag/englisch_stag.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "PAUSWG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_pauswg/englisch_pauswg.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -1332,6 +1368,24 @@ describe("GesetzeImInternetProvider", () => {
         expectedTextStart: /^\(1\) This Act shall apply to proceedings in family matters/,
         expectedUrl: "https://www.gesetze-im-internet.de/englisch_famfg/englisch_famfg.html",
       },
+      {
+        lawCode: "STAG",
+        section: "1",
+        fixture: englishStagHtmlFixture,
+        expectedLawCode: "StAG",
+        expectedHeading: "Acquisition by birth",
+        expectedTextStart: /^Nationality is acquired by birth if one parent has German nationality\./,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_stag/englisch_stag.html",
+      },
+      {
+        lawCode: "PAUSWG",
+        section: "1",
+        fixture: englishPauswgHtmlFixture,
+        expectedLawCode: "PAuswG",
+        expectedHeading: "Identification requirement; law on identification documents",
+        expectedTextStart: /^\(1\) Germans within the meaning of Article 116 \(1\) of the Basic Law/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_pauswg/englisch_pauswg.html",
+      },
     ] as const;
 
     for (const testCase of cases) {
@@ -1738,6 +1792,32 @@ describe("GesetzeImInternetProvider", () => {
         officialFixture: makeSectionHtmlFixture({
           lawTitle: "Gesetz über das Verfahren in Familiensachen und in den Angelegenheiten der freiwilligen Gerichtsbarkeit",
           lawCode: "FamFG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "STAG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_stag/englisch_stag.html",
+        translationFixture: englishStagHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/stag/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Staatsangehörigkeitsgesetz",
+          lawCode: "StAG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "PAUSWG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_pauswg/englisch_pauswg.html",
+        translationFixture: englishPauswgHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/pauswg/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Personalausweisgesetz",
+          lawCode: "PAuswG",
           section: "999",
           heading: "Deutsche Ersatznorm",
           text: "Deutscher amtlicher Ersatztext.",
