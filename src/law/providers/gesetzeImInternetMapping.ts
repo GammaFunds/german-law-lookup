@@ -127,6 +127,15 @@ const supportedLaws: Record<string, {
       documentType: "section-full-text",
     },
   },
+  "FREIZÜGG/EU": {
+    path: "freiz_gg_eu_2004",
+    lawTitle: "Gesetz über die allgemeine Freizügigkeit von Unionsbürgern",
+    displayLawCode: "FreizügG/EU",
+    translation: {
+      path: "englisch_freiz_gg_eu/englisch_freiz_gg_eu.html",
+      documentType: "section-full-text",
+    },
+  },
   FGO: {
     path: "fgo",
     lawTitle: "Finanzgerichtsordnung",

@@ -5,6 +5,9 @@ export type ParsedLawReference = LawReference;
 const lawCodePattern = String.raw`[A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß0-9-]*`;
 const sectionPattern = String.raw`\d+[A-Za-z]?`;
 const articleMarkerPattern = String.raw`(?:Art\.?|Artikel)`;
+const explicitSlashLawCodes = [
+  "FreizügG/EU",
+] as const;
 const explicitSpacedLawCodes = [
   "SGB I",
   "SGB II",
@@ -21,6 +24,9 @@ const explicitSpacedLawCodes = [
   "SGB XIV",
 ] as const;
 const explicitSpacedLawCodePattern = explicitSpacedLawCodes
+  .map((lawCode) => lawCode.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+  .join("|");
+const explicitSlashLawCodePattern = explicitSlashLawCodes
   .map((lawCode) => lawCode.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   .join("|");
 
@@ -51,6 +57,14 @@ const explicitSpacedLawFirstPattern = new RegExp(
 
 const explicitSpacedSectionFirstPattern = new RegExp(
   String.raw`^(?:§\s*)?(${sectionPattern})\s+(${explicitSpacedLawCodePattern})$`,
+  "iu",
+);
+const explicitSlashLawFirstPattern = new RegExp(
+  String.raw`^(${explicitSlashLawCodePattern})\s+(?:§\s*)?(${sectionPattern})$`,
+  "iu",
+);
+const explicitSlashSectionFirstPattern = new RegExp(
+  String.raw`^(?:§\s*)?(${sectionPattern})\s+(${explicitSlashLawCodePattern})$`,
   "iu",
 );
 
@@ -148,6 +162,22 @@ export function parseLawReference(input: string): ParsedLawReference | null {
     return {
       lawCode: explicitSpacedSectionFirstMatch[2].toUpperCase(),
       section: explicitSpacedSectionFirstMatch[1],
+    };
+  }
+
+  const explicitSlashLawFirstMatch = normalized.match(explicitSlashLawFirstPattern);
+  if (explicitSlashLawFirstMatch) {
+    return {
+      lawCode: explicitSlashLawFirstMatch[1].toUpperCase(),
+      section: explicitSlashLawFirstMatch[2],
+    };
+  }
+
+  const explicitSlashSectionFirstMatch = normalized.match(explicitSlashSectionFirstPattern);
+  if (explicitSlashSectionFirstMatch) {
+    return {
+      lawCode: explicitSlashSectionFirstMatch[2].toUpperCase(),
+      section: explicitSlashSectionFirstMatch[1],
     };
   }
 
