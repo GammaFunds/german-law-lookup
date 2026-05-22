@@ -1,3 +1,5 @@
+import type { LawSourceVariant } from "../law/types";
+
 export type UiLanguage = "de" | "en";
 
 export interface UiStrings {
@@ -128,4 +130,15 @@ export function resolveUiLanguage(languageCode: unknown): UiLanguage {
 
 export function getUiStrings(languageCode: unknown): UiStrings {
   return UI_STRINGS[resolveUiLanguage(languageCode)];
+}
+
+export function defaultLawSourceVariantForLanguage(
+  _languageCode: unknown,
+  storedValue?: LawSourceVariant,
+): LawSourceVariant {
+  if (storedValue === "official-de" || storedValue === "translation-en") {
+    return storedValue;
+  }
+
+  return "official-de";
 }

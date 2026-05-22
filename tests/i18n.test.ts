@@ -1,6 +1,10 @@
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { getUiStrings, resolveUiLanguage } from "../src/ui/i18n";
+import {
+  defaultLawSourceVariantForLanguage,
+  getUiStrings,
+  resolveUiLanguage,
+} from "../src/ui/i18n";
 
 describe("ui i18n", () => {
   it("uses German for de locales", () => {
@@ -33,6 +37,45 @@ describe("ui i18n", () => {
     assert.equal(
       getUiStrings("en").useEnglishTranslationWhenAvailable,
       "Show English law text when available",
+    );
+  });
+
+  it("uses official-de when nothing is stored on German locales", () => {
+    assert.equal(defaultLawSourceVariantForLanguage("de"), "official-de");
+    assert.equal(defaultLawSourceVariantForLanguage("de-DE"), "official-de");
+  });
+
+  it("uses official-de when nothing is stored on non-German or unknown locales", () => {
+    assert.equal(defaultLawSourceVariantForLanguage("en"), "official-de");
+    assert.equal(defaultLawSourceVariantForLanguage("fr"), "official-de");
+    assert.equal(defaultLawSourceVariantForLanguage(undefined), "official-de");
+  });
+
+  it("uses official-de for existing plugin data without a stored variant on non-German locales", () => {
+    assert.equal(
+      defaultLawSourceVariantForLanguage("en", undefined),
+      "official-de",
+    );
+  });
+
+  it("uses official-de for existing plugin data without a stored variant on German locales", () => {
+    assert.equal(
+      defaultLawSourceVariantForLanguage("de", undefined),
+      "official-de",
+    );
+  });
+
+  it("keeps a stored official-de value even on non-German locales", () => {
+    assert.equal(
+      defaultLawSourceVariantForLanguage("en", "official-de"),
+      "official-de",
+    );
+  });
+
+  it("keeps a stored translation-en value even on German locales", () => {
+    assert.equal(
+      defaultLawSourceVariantForLanguage("de", "translation-en"),
+      "translation-en",
     );
   });
 });
