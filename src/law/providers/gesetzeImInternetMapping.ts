@@ -32,6 +32,15 @@ const supportedLaws: Record<string, {
       documentType: "section-full-text",
     },
   },
+  AGG: {
+    path: "agg",
+    lawTitle: "Allgemeines Gleichbehandlungsgesetz",
+    displayLawCode: "AGG",
+    translation: {
+      path: "englisch_agg/englisch_agg.html",
+      documentType: "section-full-text",
+    },
+  },
   ARBGG: {
     path: "arbgg",
     lawTitle: "Arbeitsgerichtsgesetz",
@@ -127,6 +136,15 @@ const supportedLaws: Record<string, {
   GVG: {
     path: "gvg",
     lawTitle: "Gerichtsverfassungsgesetz",
+  },
+  GWB: {
+    path: "gwb",
+    lawTitle: "Gesetz gegen Wettbewerbsbeschränkungen",
+    displayLawCode: "GWB",
+    translation: {
+      path: "englisch_gwb/englisch_gwb.html",
+      documentType: "section-full-text",
+    },
   },
   GWG: {
     path: "gwg_2017",

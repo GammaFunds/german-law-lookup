@@ -145,6 +145,14 @@ describe("parseLawReference", () => {
   });
 
   it("parses law-code-first references with section sign", () => {
+    assert.deepEqual(parseLawReference("AGG § 1"), {
+      lawCode: "AGG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("GWB § 1"), {
+      lawCode: "GWB",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("KWG § 1"), {
       lawCode: "KWG",
       section: "1",
@@ -168,6 +176,14 @@ describe("parseLawReference", () => {
   });
 
   it("parses law-code-first references without section sign", () => {
+    assert.deepEqual(parseLawReference("AGG 1"), {
+      lawCode: "AGG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("GWB 1"), {
+      lawCode: "GWB",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("KWG 1"), {
       lawCode: "KWG",
       section: "1",
@@ -222,6 +238,14 @@ describe("parseLawReference", () => {
   });
 
   it("parses section-first references with section sign", () => {
+    assert.deepEqual(parseLawReference("§ 1 AGG"), {
+      lawCode: "AGG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("§ 1 GWB"), {
+      lawCode: "GWB",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("§ 1 KWG"), {
       lawCode: "KWG",
       section: "1",
@@ -241,6 +265,14 @@ describe("parseLawReference", () => {
   });
 
   it("parses explicit spaced SGB section-first references", () => {
+    assert.deepEqual(parseLawReference("1 AGG"), {
+      lawCode: "AGG",
+      section: "1",
+    });
+    assert.deepEqual(parseLawReference("1 GWB"), {
+      lawCode: "GWB",
+      section: "1",
+    });
     assert.deepEqual(parseLawReference("1 KWG"), {
       lawCode: "KWG",
       section: "1",

@@ -95,6 +95,22 @@ const kwg1HtmlFixture = `
 </body>
 </html>`;
 
+const agg1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Allgemeines Gleichbehandlungsgesetz",
+  lawCode: "AGG",
+  section: "1",
+  heading: "Ziel des Gesetzes",
+  text: "Ziel des Gesetzes ist, Benachteiligungen aus Gründen der Rasse oder wegen der ethnischen Herkunft, des Geschlechts, der Religion oder Weltanschauung, einer Behinderung, des Alters oder der sexuellen Identität zu verhindern oder zu beseitigen.",
+});
+
+const gwb1HtmlFixture = makeSectionHtmlFixture({
+  lawTitle: "Gesetz gegen Wettbewerbsbeschränkungen",
+  lawCode: "GWB",
+  section: "1",
+  heading: "Verbot wettbewerbsbeschränkender Vereinbarungen",
+  text: "Vereinbarungen zwischen Unternehmen, Beschlüsse von Unternehmensvereinigungen und aufeinander abgestimmte Verhaltensweisen, die eine Verhinderung, Einschränkung oder Verfälschung des Wettbewerbs bezwecken oder bewirken, sind verboten.",
+});
+
 const ggArt1HtmlFixture = `
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
@@ -266,6 +282,26 @@ const englishPauswgHtmlFixture = makeEnglishSectionTranslationFixture({
   text: "(1) Germans within the meaning of Article 116 (1) of the Basic Law are required to possess a valid identity card as soon as they reach the age of 16.",
   nextSection: "2",
   nextHeading: "Definitions",
+});
+
+const englishAggHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "General Act on Equal Treatment",
+  previousSection: "0",
+  section: "1",
+  heading: "Purpose",
+  text: "The purpose of this Act is to prevent or stop discrimination on the grounds of race or ethnic origin, gender, religion or belief, disability, age or sexual identity.",
+  nextSection: "2",
+  nextHeading: "Scope",
+});
+
+const englishGwbHtmlFixture = makeEnglishSectionTranslationFixture({
+  documentTitle: "Competition Act",
+  previousSection: "0",
+  section: "1",
+  heading: "Prohibition of restraints of competition",
+  text: "Agreements between undertakings, decisions by associations of undertakings and concerted practices which have as their object or effect the prevention, restriction or distortion of competition are prohibited.",
+  nextSection: "2",
+  nextHeading: "Exempted agreements",
 });
 
 const englishGgHtmlFixture = `
@@ -460,6 +496,7 @@ describe("GesetzeImInternet mapping helpers", () => {
     }> = [
       { lawCode: "AO", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/ao_1977/__1.html" },
       { lawCode: "AKTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/aktg/__1.html" },
+      { lawCode: "AGG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/agg/__1.html" },
       { lawCode: "ARBGG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/arbgg/__1.html" },
       { lawCode: "ASYLG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/asylvfg_1992/__1.html" },
       { lawCode: "AUFENTHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/aufenthg_2004/__1.html" },
@@ -506,6 +543,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "GEWSTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gewstg/__1.html" },
       { lawCode: "GG", section: "1", referenceType: "article", expectedUrl: "https://www.gesetze-im-internet.de/gg/art_1.html" },
       { lawCode: "GMBHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gmbhg/__1.html" },
+      { lawCode: "GWB", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gwb/__1.html" },
       { lawCode: "GVG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/gvg/__1.html" },
       { lawCode: "GWG", section: "10", expectedUrl: "https://www.gesetze-im-internet.de/gwg_2017/__10.html" },
       { lawCode: "HGB", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/hgb/__1.html" },
@@ -571,6 +609,14 @@ describe("GesetzeImInternet mapping helpers", () => {
   it("builds verified English translation URLs only for explicitly configured laws", () => {
     assert.equal(
       buildGesetzeImInternetSectionUrl({
+        lawCode: "AGG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_agg/englisch_agg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
         lawCode: "BGB",
         section: "823",
         sourceVariant: "translation-en",
@@ -585,6 +631,14 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_gg/englisch_gg.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "GWB",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_gwb/englisch_gwb.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -821,6 +875,36 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.match(section.text, /\(2\) If the law threatens to impose a regulatory fine/);
   });
 
+  it("maps AGG and GWB English translations into LawSection", () => {
+    const aggSection = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "AGG", section: "1", sourceVariant: "translation-en" },
+      html: englishAggHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_agg/englisch_agg.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(aggSection.lawCode, "AGG");
+    assert.equal(aggSection.sourceVariant, "translation-en");
+    assert.equal(aggSection.heading, "Purpose");
+    assert.match(aggSection.text, /^The purpose of this Act is to prevent or stop discrimination/);
+
+    const gwbSection = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "GWB", section: "1", sourceVariant: "translation-en" },
+      html: englishGwbHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_gwb/englisch_gwb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(gwbSection.lawCode, "GWB");
+    assert.equal(gwbSection.sourceVariant, "translation-en");
+    assert.equal(gwbSection.heading, "Prohibition of restraints of competition");
+    assert.match(gwbSection.text, /^Agreements between undertakings, decisions by associations of undertakings/);
+  });
+
   it("skips a TOC match before extracting the real BGB English section", () => {
     const section = mapGesetzeImInternetToLawSection({
       reference: { lawCode: "BGB", section: "823", sourceVariant: "translation-en" },
@@ -966,6 +1050,14 @@ describe("GesetzeImInternet mapping helpers", () => {
       "BGB 823",
     ]);
 
+    assert.equal(byCode.get("AGG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("AGG")?.exampleInputs, [
+      "§ 1 AGG",
+      "AGG § 1",
+      "1 AGG",
+      "AGG 1",
+    ]);
+
     assert.equal(byCode.get("StGB")?.displayLawCode, "StGB");
     assert.equal(byCode.get("StGB")?.referenceType, "section");
     assert.deepEqual(byCode.get("StGB")?.exampleInputs, [
@@ -1038,6 +1130,14 @@ describe("GesetzeImInternet mapping helpers", () => {
       "GG Art. 1",
       "Artikel 1 GG",
       "GG Artikel 1",
+    ]);
+
+    assert.equal(byCode.get("GWB")?.referenceType, "section");
+    assert.deepEqual(byCode.get("GWB")?.exampleInputs, [
+      "§ 1 GWB",
+      "GWB § 1",
+      "1 GWB",
+      "GWB 1",
     ]);
 
     assert.equal(byCode.get("EGBGB")?.referenceType, "article");
@@ -1386,6 +1486,24 @@ describe("GesetzeImInternetProvider", () => {
         expectedTextStart: /^\(1\) Germans within the meaning of Article 116 \(1\) of the Basic Law/,
         expectedUrl: "https://www.gesetze-im-internet.de/englisch_pauswg/englisch_pauswg.html",
       },
+      {
+        lawCode: "AGG",
+        section: "1",
+        fixture: englishAggHtmlFixture,
+        expectedLawCode: "AGG",
+        expectedHeading: "Purpose",
+        expectedTextStart: /^The purpose of this Act is to prevent or stop discrimination/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_agg/englisch_agg.html",
+      },
+      {
+        lawCode: "GWB",
+        section: "1",
+        fixture: englishGwbHtmlFixture,
+        expectedLawCode: "GWB",
+        expectedHeading: "Prohibition of restraints of competition",
+        expectedTextStart: /^Agreements between undertakings, decisions by associations of undertakings/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_gwb/englisch_gwb.html",
+      },
     ] as const;
 
     for (const testCase of cases) {
@@ -1487,6 +1605,15 @@ describe("GesetzeImInternetProvider", () => {
         expectedUrl: "https://www.gesetze-im-internet.de/hgb/__1.html",
       },
       {
+        lawCode: "AGG",
+        section: "1",
+        fixture: agg1HtmlFixture,
+        expectedLawCode: "AGG",
+        expectedLawTitle: "Allgemeines Gleichbehandlungsgesetz",
+        expectedHeading: "Ziel des Gesetzes",
+        expectedUrl: "https://www.gesetze-im-internet.de/agg/__1.html",
+      },
+      {
         lawCode: "ZPO",
         section: "1",
         fixture: zpo1HtmlFixture,
@@ -1521,6 +1648,15 @@ describe("GesetzeImInternetProvider", () => {
         expectedLawTitle: "Kapitalanlagegesetzbuch",
         expectedHeading: "",
         expectedUrl: "https://www.gesetze-im-internet.de/kagb/__1.html",
+      },
+      {
+        lawCode: "GWB",
+        section: "1",
+        fixture: gwb1HtmlFixture,
+        expectedLawCode: "GWB",
+        expectedLawTitle: "Gesetz gegen Wettbewerbsbeschränkungen",
+        expectedHeading: "Verbot wettbewerbsbeschränkender Vereinbarungen",
+        expectedUrl: "https://www.gesetze-im-internet.de/gwb/__1.html",
       },
       {
         lawCode: "KWG",
@@ -1818,6 +1954,32 @@ describe("GesetzeImInternetProvider", () => {
         officialFixture: makeSectionHtmlFixture({
           lawTitle: "Personalausweisgesetz",
           lawCode: "PAuswG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "AGG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_agg/englisch_agg.html",
+        translationFixture: englishAggHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/agg/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Allgemeines Gleichbehandlungsgesetz",
+          lawCode: "AGG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
+      {
+        lawCode: "GWB",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_gwb/englisch_gwb.html",
+        translationFixture: englishGwbHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/gwb/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz gegen Wettbewerbsbeschränkungen",
+          lawCode: "GWB",
           section: "999",
           heading: "Deutsche Ersatznorm",
           text: "Deutscher amtlicher Ersatztext.",
