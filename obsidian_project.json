@@ -45,13 +45,15 @@
       "id": "T-001",
       "title": "Create Obsidian plugin scaffold",
       "component": "Plugin",
-      "status": "open"
+      "status": "completed",
+      "notes": "Plugin scaffold exists and Stable MVP is runtime-validated."
     },
     {
       "id": "T-002",
       "title": "Implement legal citation parser",
       "component": "Parser",
-      "status": "open"
+      "status": "completed",
+      "notes": "Legal citation parser is implemented and covers supported §, article, SGB, EGBGB, GG, and FreizügG/EU forms."
     },
     {
       "id": "T-003",
@@ -63,7 +65,8 @@
       "id": "T-004",
       "title": "Insert formatted law text into active note",
       "component": "ObsidianIntegration",
-      "status": "open"
+      "status": "completed",
+      "notes": "Formatted law text insertion into the active Obsidian note is implemented and runtime-validated."
     },
     {
       "id": "T-005",
@@ -138,8 +141,8 @@
       "id": "T-029",
       "title": "Investigate skipped Gesetze-im-Internet candidates with uncertain paths or unsupported reference forms",
       "component": "GesetzeImInternetProvider",
-      "status": "open",
-      "notes": "Skipped in the explicit mapping expansion because they were not safely verified under the current model: EGBGB at candidate path bgbeg/__1.html returned 404 and likely needs article-style rather than paragraph-style handling; OWiG at candidate path owig/__1.html returned 404; KWG at candidate path kwg/__1.html returned 404; FreizügG/EU contains a slash and is not representable by the current parser law-code pattern; SGB I, SGB II, SGB V, and SGB X require space-containing law codes that are not currently parser-supported. These remain follow-up items rather than implemented support."
+      "status": "completed",
+      "notes": "Completed/obsolete follow-up task. Previously skipped candidates EGBGB, OWiG, KWG, FreizügG/EU, and SGB I/II/V/X class issues were resolved by later dedicated parser/provider work. Remaining future work must be tracked as new, source-verified law-specific tasks only."
     },
     {
       "id": "T-016",
@@ -583,11 +586,23 @@
         "Kept fallback to German official text when English text is unavailable or not extractable.",
         "Validated npm test and npm run build before commit."
       ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Clean project-log task state after final verification",
+      "commit": null,
+      "details": [
+        "Marked obsolete open scaffold/parser/insertion tasks as completed based on validated Stable MVP runtime state.",
+        "Marked T-029 as completed/obsolete because its listed skipped candidates were resolved by later dedicated law-code support.",
+        "Synchronized verification.last_known_head with HEAD 857bb64 Record final verification checkpoint.",
+        "Kept NeuRIS validation and GiI XML fallback validation open.",
+        "Kept Bundesrecht-only scope and citation metadata issues open."
+      ]
     }
   ],
   "verification": {
-    "last_known_head": "351e719",
-    "last_known_head_message": "Record FreizügG EU lookup support",
+    "last_known_head": "857bb64",
+    "last_known_head_message": "Record final verification checkpoint",
     "last_test_result": "149 pass, 0 fail",
     "last_build_result": "npm run build successful",
     "last_git_status": "clean"
