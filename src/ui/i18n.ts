@@ -60,7 +60,7 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     ggArticleOnlyNote:
       "GG wird derzeit ausschließlich für Artikelreferenzen unterstützt.",
     unsupportedCandidatesNote:
-      "KWG und FreizügG/EU bleiben vorerst Follow-ups; SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
+      "FreizügG/EU bleibt vorerst ein Follow-up; SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
     code: "Kürzel",
     law: "Gesetz",
     referenceType: "Referenztyp",
@@ -101,7 +101,7 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     ggArticleOnlyNote:
       "GG is currently supported only for article references.",
     unsupportedCandidatesNote:
-      "KWG and FreizügG/EU remain follow-ups for now; SGB XIII is intentionally not supported as a current SGB book.",
+      "FreizügG/EU remains a follow-up for now; SGB XIII is intentionally not supported as a current SGB book.",
     code: "Code",
     law: "Law",
     referenceType: "Reference type",
