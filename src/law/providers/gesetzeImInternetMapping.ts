@@ -277,6 +277,10 @@ const supportedLaws: Record<string, {
     path: "sgb_14",
     lawTitle: "Sozialgesetzbuch Vierzehntes Buch - Soziale Entschädigung",
     displayLawCode: "SGB XIV",
+    translation: {
+      path: "englisch_sgb_14/englisch_sgb_14.html",
+      documentType: "section-full-text",
+    },
   },
   STGB: {
     path: "stgb",
