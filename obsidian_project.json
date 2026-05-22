@@ -4,7 +4,7 @@
   "status": {
     "phase": "Stable MVP + broad official English law text coverage",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, and GWB support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text now covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, and GWB when available, otherwise falling back to German official text. The plugin never generates translations. Remaining special follow-ups include FreizügG/EU, EGBGB English text, and selected SGB English text."
+    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, KWG, AGG, and GWB support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent and defaults to German official text. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text now covers BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, and SGB XIV when available, otherwise falling back to German official text. The plugin never generates translations. Remaining special follow-ups include FreizügG/EU, EGBGB English text, and SGB V English text after renewed source verification."
   },
   "blockers": [
     {
@@ -38,7 +38,7 @@
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
     },
     "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
-    "Additional official English law text sources beyond BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, and GWB remain future work."
+    "Additional official English law text sources beyond BGB, GG, StGB, OWiG, HGB, GmbHG, AktG, InsO, AufenthG, FamFG, StAG, PAuswG, AGG, GWB, and SGB XIV remain future work."
   ],
   "tasks": [
     {
@@ -491,6 +491,19 @@
         "Kept official-de as the default law text source.",
         "Kept fallback to German official text when English text is unavailable or not extractable.",
         "Added parser, provider, URL, diagnostics, and fallback tests.",
+        "Validated npm test and npm run build before commit."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Add SGB XIV English law text support",
+      "commit": "9ecdda8",
+      "details": [
+        "Added explicit official Gesetze-im-Internet English law text configuration for SGB XIV.",
+        "Verified official-de path sgb_14/__1.html and English path englisch_sgb_14/englisch_sgb_14.html.",
+        "Added fixture-backed official-de, English translation, and English-missing to official-de fallback tests.",
+        "Kept official-de as the default law text source.",
+        "Made no parser, toggle, cache, UI, or preview/insert format changes.",
         "Validated npm test and npm run build before commit."
       ]
     }
