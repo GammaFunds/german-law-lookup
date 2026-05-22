@@ -153,6 +153,10 @@ const supportedLaws: Record<string, {
     path: "owig_1968",
     lawTitle: "Gesetz über Ordnungswidrigkeiten",
     displayLawCode: "OWiG",
+    translation: {
+      path: "englisch_owig/englisch_owig.html",
+      documentType: "section-full-text",
+    },
   },
   PAUSWG: {
     path: "pauswg",
@@ -233,6 +237,10 @@ const supportedLaws: Record<string, {
     lawTitle: "Strafgesetzbuch",
     displayLawCode: "StGB",
     exampleSection: "242",
+    translation: {
+      path: "englisch_stgb/englisch_stgb.html",
+      documentType: "section-full-text",
+    },
   },
   STAG: {
     path: "stag",

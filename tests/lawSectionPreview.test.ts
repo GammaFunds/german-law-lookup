@@ -163,4 +163,27 @@ describe("lawSectionPreview", () => {
       "Cache: cached.",
     ]);
   });
+
+  it("does not add a translation notice for official-de fallback previews", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/stgb/__999.html",
+      lawCode: "StGB",
+      lawTitle: "Strafgesetzbuch",
+      section: "999",
+      sourceVariant: "official-de",
+      heading: "Deutsche Ersatznorm",
+      text: "Deutscher amtlicher Ersatztext.",
+      retrievedAt: "2026-05-22T12:34:56.000Z",
+      cacheStatus: "cached",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.deepEqual(preview.metadataLines, [
+      "Quelle: Gesetze im Internet, StGB, § 999, abgerufen am 2026-05-22.",
+      "Cache: cached.",
+    ]);
+  });
 });

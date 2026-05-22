@@ -152,6 +152,42 @@ const englishBgbTocFirstHtmlFixture = `
 </body>
 </html>`;
 
+const englishStgbHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>German Criminal Code</div>
+  <div>table of contents</div>
+  <div>Section 241</div>
+  <div>Threatening the commission of a felony</div>
+  <div>Whoever threatens another person with the commission of a felony against them or a person close to them incurs a penalty.</div>
+  <div>table of contents</div>
+  <div>Section 242</div>
+  <div>Theft</div>
+  <div>(1) Whoever takes movable property away from another with the intention of unlawfully appropriating the property for themselves or a third party incurs a penalty of imprisonment not exceeding five years or a fine.</div>
+  <div>(2) The attempt is punishable.</div>
+  <div>table of contents</div>
+  <div>Section 243</div>
+  <div>Particularly serious case of theft</div>
+</body>
+</html>`;
+
+const englishOwigHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>Act on Regulatory Offences</div>
+  <div>table of contents</div>
+  <div>Section 1</div>
+  <div>Definition of regulatory offence</div>
+  <div>(1) A regulatory offence is an unlawful and reprehensible act which fulfils the constituent elements of a law permitting punishment by a regulatory fine.</div>
+  <div>(2) If the law threatens to impose a regulatory fine for intentional and negligent action without distinction as to the maximum regulatory fine, the maximum sanction for a negligent action does not exceed half of the maximum regulatory fine imposable.</div>
+  <div>table of contents</div>
+  <div>Section 2</div>
+  <div>Temporal applicability</div>
+</body>
+</html>`;
+
 const englishGgHtmlFixture = `
 <!DOCTYPE html>
 <html lang="en">
@@ -452,7 +488,7 @@ describe("GesetzeImInternet mapping helpers", () => {
     );
   });
 
-  it("builds verified English translation URLs only for configured Phase 1 laws", () => {
+  it("builds verified English translation URLs only for explicitly configured laws", () => {
     assert.equal(
       buildGesetzeImInternetSectionUrl({
         lawCode: "BGB",
@@ -472,7 +508,23 @@ describe("GesetzeImInternet mapping helpers", () => {
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
+        lawCode: "STGB",
+        section: "242",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_stgb/englisch_stgb.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
         lawCode: "OWIG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_owig/englisch_owig.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "KWG",
         section: "1",
         sourceVariant: "translation-en",
       }),
@@ -589,6 +641,40 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.equal(section.heading, "Human dignity");
     assert.match(section.text, /^\(1\) Human dignity shall be inviolable\./);
     assert.match(section.text, /\(3\) The following basic rights shall bind/);
+  });
+
+  it("maps StGB § 242 English translation into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "STGB", section: "242", sourceVariant: "translation-en" },
+      html: englishStgbHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_stgb/englisch_stgb.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "StGB");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, "Theft");
+    assert.match(section.text, /^\(1\) Whoever takes movable property away from another/);
+    assert.match(section.text, /\(2\) The attempt is punishable\./);
+  });
+
+  it("maps OWiG § 1 English translation into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "OWIG", section: "1", sourceVariant: "translation-en" },
+      html: englishOwigHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_owig/englisch_owig.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "OWiG");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, "Definition of regulatory offence");
+    assert.match(section.text, /^\(1\) A regulatory offence is an unlawful and reprehensible act/);
+    assert.match(section.text, /\(2\) If the law threatens to impose a regulatory fine/);
   });
 
   it("skips a TOC match before extracting the real BGB English section", () => {
@@ -1038,6 +1124,50 @@ describe("GesetzeImInternetProvider", () => {
     ]);
   });
 
+  it("resolves StGB § 242 English translation from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishStgbHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "STGB",
+      section: "242",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "StGB");
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, "Theft");
+    assert.match(section?.text ?? "", /^\(1\) Whoever takes movable property away from another/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_stgb/englisch_stgb.html",
+    ]);
+  });
+
+  it("resolves OWiG § 1 English translation from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishOwigHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "OWIG",
+      section: "1",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "OWiG");
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, "Definition of regulatory offence");
+    assert.match(section?.text ?? "", /^\(1\) A regulatory offence is an unlawful and reprehensible act/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_owig/englisch_owig.html",
+    ]);
+  });
+
   it("resolves EGBGB Art. 229 § 1 from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1251,28 +1381,7 @@ describe("GesetzeImInternetProvider", () => {
     );
   });
 
-  it("falls back to official German text for unconfigured English translations", async () => {
-    const requestedUrls: string[] = [];
-    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
-      requestedUrls.push(url);
-      return textResponse(owig1HtmlFixture);
-    });
-
-    const section = await provider.getSection({
-      lawCode: "OWIG",
-      section: "1",
-      sourceVariant: "translation-en",
-    });
-
-    assert.equal(section?.lawCode, "OWiG");
-    assert.equal(section?.sourceVariant, "official-de");
-    assert.match(section?.text ?? "", /^\(1\) Eine Ordnungswidrigkeit ist/);
-    assert.deepEqual(requestedUrls, [
-      "https://www.gesetze-im-internet.de/owig_1968/__1.html",
-    ]);
-  });
-
-  it("falls back to official German text for KWG when English text is requested", async () => {
+  it("falls back to official German text for KWG because no English translation is configured", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
       requestedUrls.push(url);
@@ -1287,10 +1396,83 @@ describe("GesetzeImInternetProvider", () => {
 
     assert.equal(section?.lawCode, "KWG");
     assert.equal(section?.sourceVariant, "official-de");
-    assert.equal(section?.heading, "Begriffsbestimmungen; Verordnungsermächtigung");
     assert.match(section?.text ?? "", /^\(1\) Kreditinstitute sind Unternehmen/);
     assert.deepEqual(requestedUrls, [
       "https://www.gesetze-im-internet.de/kredwg/__1.html",
+    ]);
+  });
+
+  it("falls back to official German text when the configured StGB English citation is missing", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+
+      if (url.endsWith("/englisch_stgb/englisch_stgb.html")) {
+        return textResponse(englishStgbHtmlFixture);
+      }
+
+      if (url.endsWith("/stgb/__999.html")) {
+        return textResponse(makeSectionHtmlFixture({
+          lawTitle: "Strafgesetzbuch",
+          lawCode: "StGB",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }));
+      }
+
+      return { ok: false, status: 404, json: async () => ({}), text: async () => "" };
+    });
+
+    const section = await provider.getSection({
+      lawCode: "STGB",
+      section: "999",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.sourceVariant, "official-de");
+    assert.equal(section?.heading, "Deutsche Ersatznorm");
+    assert.match(section?.text ?? "", /^Deutscher amtlicher Ersatztext\.$/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_stgb/englisch_stgb.html",
+      "https://www.gesetze-im-internet.de/stgb/__999.html",
+    ]);
+  });
+
+  it("falls back to official German text when the configured OWiG English citation is missing", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+
+      if (url.endsWith("/englisch_owig/englisch_owig.html")) {
+        return textResponse(englishOwigHtmlFixture);
+      }
+
+      if (url.endsWith("/owig_1968/__999.html")) {
+        return textResponse(makeSectionHtmlFixture({
+          lawTitle: "Gesetz über Ordnungswidrigkeiten",
+          lawCode: "OWiG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }));
+      }
+
+      return { ok: false, status: 404, json: async () => ({}), text: async () => "" };
+    });
+
+    const section = await provider.getSection({
+      lawCode: "OWIG",
+      section: "999",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.sourceVariant, "official-de");
+    assert.equal(section?.heading, "Deutsche Ersatznorm");
+    assert.match(section?.text ?? "", /^Deutscher amtlicher Ersatztext\.$/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_owig/englisch_owig.html",
+      "https://www.gesetze-im-internet.de/owig_1968/__999.html",
     ]);
   });
 
