@@ -76,6 +76,25 @@ const stgb242HtmlFixture = `
 </body>
 </html>`;
 
+const kwg1HtmlFixture = `
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
+<head>
+  <title>&#167; 1 KWG - Einzelnorm</title>
+</head>
+<body>
+  <div class="jnheader">
+    <h1>Gesetz über das Kreditwesen (Kreditwesengesetz - KWG)<br />
+      <span class="jnenbez">&#167; 1</span>&#160;<span class="jnentitel">Begriffsbestimmungen; Verordnungsermächtigung</span>
+    </h1>
+  </div>
+  <div class="jnhtml">
+    <div class="jurAbsatz">(1) Kreditinstitute sind Unternehmen, die Bankgeschäfte gewerbsmäßig oder in einem Umfang betreiben, der einen in kaufmännischer Weise eingerichteten Geschäftsbetrieb erfordert.</div>
+    <div class="jurAbsatz">(2) Finanzdienstleistungsinstitute sind Institute, die Finanzdienstleistungen für andere gewerbsmäßig erbringen.</div>
+  </div>
+</body>
+</html>`;
+
 const ggArt1HtmlFixture = `
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
@@ -379,6 +398,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "KAGB", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kagb/__1.html" },
       { lawCode: "KSCHG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kschg/__1.html" },
       { lawCode: "KSTG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kstg_1977/__1.html" },
+      { lawCode: "KWG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/kredwg/__1.html" },
       { lawCode: "OWIG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/owig_1968/__1.html" },
       { lawCode: "PAUSWG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/pauswg/__1.html" },
       { lawCode: "SGB I", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/sgb_1/__1.html" },
@@ -806,6 +826,14 @@ describe("GesetzeImInternet mapping helpers", () => {
       "OWiG 1",
     ]);
 
+    assert.equal(byCode.get("KWG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("KWG")?.exampleInputs, [
+      "§ 1 KWG",
+      "KWG § 1",
+      "1 KWG",
+      "KWG 1",
+    ]);
+
     assert.equal(byCode.get("SGB VI")?.referenceType, "section");
     assert.deepEqual(byCode.get("SGB VI")?.exampleInputs, [
       "§ 1 SGB VI",
@@ -1124,6 +1152,15 @@ describe("GesetzeImInternetProvider", () => {
         expectedUrl: "https://www.gesetze-im-internet.de/kagb/__1.html",
       },
       {
+        lawCode: "KWG",
+        section: "1",
+        fixture: kwg1HtmlFixture,
+        expectedLawCode: "KWG",
+        expectedLawTitle: "Gesetz über das Kreditwesen",
+        expectedHeading: "Begriffsbestimmungen; Verordnungsermächtigung",
+        expectedUrl: "https://www.gesetze-im-internet.de/kredwg/__1.html",
+      },
+      {
         lawCode: "OWIG",
         section: "1",
         fixture: owig1HtmlFixture,
@@ -1232,6 +1269,28 @@ describe("GesetzeImInternetProvider", () => {
     assert.match(section?.text ?? "", /^\(1\) Eine Ordnungswidrigkeit ist/);
     assert.deepEqual(requestedUrls, [
       "https://www.gesetze-im-internet.de/owig_1968/__1.html",
+    ]);
+  });
+
+  it("falls back to official German text for KWG when English text is requested", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(kwg1HtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "KWG",
+      section: "1",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "KWG");
+    assert.equal(section?.sourceVariant, "official-de");
+    assert.equal(section?.heading, "Begriffsbestimmungen; Verordnungsermächtigung");
+    assert.match(section?.text ?? "", /^\(1\) Kreditinstitute sind Unternehmen/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/kredwg/__1.html",
     ]);
   });
 

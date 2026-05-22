@@ -21,6 +21,10 @@ describe("ui i18n", () => {
       getUiStrings("de").englishTranslationWhenAvailable,
       "Englischer Gesetzestext, sofern vorhanden",
     );
+    assert.equal(
+      getUiStrings("de").unsupportedCandidatesNote,
+      "FreizügG/EU bleibt vorerst ein Follow-up; SGB XIII wird bewusst nicht als geltendes SGB-Buch unterstützt.",
+    );
   });
 
   it("falls back to English for en and unknown locales", () => {
@@ -37,6 +41,10 @@ describe("ui i18n", () => {
     assert.equal(
       getUiStrings("en").useEnglishTranslationWhenAvailable,
       "Show English law text when available",
+    );
+    assert.equal(
+      getUiStrings("en").unsupportedCandidatesNote,
+      "FreizügG/EU remains a follow-up for now; SGB XIII is intentionally not supported as a current SGB book.",
     );
   });
 

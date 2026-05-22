@@ -144,6 +144,11 @@ const supportedLaws: Record<string, {
     lawTitle: "Körperschaftsteuergesetz",
     displayLawCode: "KStG",
   },
+  KWG: {
+    path: "kredwg",
+    lawTitle: "Gesetz über das Kreditwesen",
+    displayLawCode: "KWG",
+  },
   OWIG: {
     path: "owig_1968",
     lawTitle: "Gesetz über Ordnungswidrigkeiten",
