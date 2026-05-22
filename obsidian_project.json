@@ -18,8 +18,8 @@
       "id": "B-002",
       "title": "NeuRIS API stability and coverage must be verified",
       "component": "LawProvider",
-      "status": "open",
-      "notes": "NeuRIS/Rechtsinformationsportal is the strategic target provider, but current service is in test phase and data coverage is limited."
+      "status": "deferred",
+      "notes": "Deferred, not MVP-blocking. NeuRIS remains the strategic future provider target, but official public information still describes the portal/API as a test-phase/development service with restricted and gradually expanding data coverage. The Stable MVP already uses runtime-validated official Gesetze im Internet HTML, and GiI XML access has been technically validated. NeuRIS must not replace or destabilize the current GiI provider path until API stability, schema, and law coverage are revalidated against the final or sufficiently stable portal."
     }
   ],
   "issues": [
@@ -84,7 +84,8 @@
       "id": "T-007",
       "title": "Validate NeuRIS API endpoints and schema",
       "component": "NeuRISProvider",
-      "status": "open"
+      "status": "deferred",
+      "notes": "Deferred after provider assessment on 2026-05-22. NeuRIS is strategically relevant but remains in test/development status with restricted and evolving coverage according to official public project information. No runtime/provider code should depend on NeuRIS until API stability, schema, coverage, and fallback behavior are revalidated. Current Stable MVP remains anchored on verified Gesetze im Internet official-de/translation-en paths."
     },
     {
       "id": "T-008",
@@ -277,6 +278,13 @@
       "component": "GesetzeImInternetProvider",
       "status": "open",
       "notes": "Future optional task. XML access is validated, but the Stable MVP already works through official GiI HTML. Any XML extractor must preserve parser behavior, provider fallback semantics, variant-aware cache keys, preview/insertion output, and no-translation invariants."
+    },
+    {
+      "id": "T-036",
+      "title": "Revisit NeuRIS provider after API stabilization",
+      "component": "LawProvider",
+      "status": "open",
+      "notes": "Future strategic task. Re-check NeuRIS only after the Rechtsinformationsportal/API is final or sufficiently stable. Verification must cover endpoint availability, schema, law coverage for currently supported lookups, metadata quality, version/fassung behavior, error semantics, and compatibility with existing provider fallback/cache/UI invariants."
     }
   ],
   "architecture": {
@@ -618,6 +626,19 @@
         "Closed B-001 because GiI source access is no longer an MVP blocker.",
         "Completed T-008 as technical XML fallback access validation.",
         "Added optional future task T-035 for evaluating an XML extractor without changing current runtime behavior."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Defer NeuRIS provider validation until API stabilization",
+      "commit": null,
+      "details": [
+        "Assessed NeuRIS using official public project information.",
+        "Classified NeuRIS as strategic future provider path, not a Stable MVP blocker.",
+        "Deferred B-002 and T-007 because NeuRIS remains in test/development status with restricted and evolving coverage.",
+        "Kept verified Gesetze im Internet HTML as the current stable runtime provider path.",
+        "Kept validated Gesetze im Internet XML access as optional robustness path.",
+        "Added T-036 to revisit NeuRIS after API stabilization without changing runtime/provider code."
       ]
     }
   ],
