@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + broad federal law coverage",
+    "phase": "Stable MVP + expanded official English law text lookup",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, and KWG support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent. German official law text remains the default source. Users can explicitly enable English law text lookup; Phase 1 uses published Gesetze-im-Internet English law text for BGB and GG when available, otherwise falling back to German official text. The plugin never generates translations. Remaining explicit law-code follow-up is FreizügG/EU."
+    "summary": "Stable MVP remains validated. Full SGB, EGBGB, OWiG, and KWG support are implemented, runtime-validated, tested, built, and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent. German official law text remains the default source. Users can explicitly enable English law text lookup; configured official Gesetze-im-Internet English law text now covers BGB, GG, StGB, and OWiG when available, otherwise falling back to German official text. The plugin never generates translations. Remaining explicit law-code follow-up is FreizügG/EU; additional official English law text sources beyond BGB, GG, StGB, and OWiG remain future work."
   },
   "blockers": [
     {
@@ -38,7 +38,7 @@
       "notes": "No Landesrecht, EU law, case law or commentary in MVP."
     },
     "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
-    "Additional official English law text sources beyond BGB and GG remain future work."
+    "Additional official English law text sources beyond BGB, GG, StGB, and OWiG remain future work."
   ],
   "tasks": [
     {
@@ -436,6 +436,21 @@
         "Validated KWG § 1, § 1 KWG, KWG 1, and 1 KWG in Obsidian runtime.",
         "Updated supported-law diagnostics so KWG is no longer listed as an unsupported follow-up.",
         "Kept English law text mode unconfigured for KWG, so the toggle falls back to German official text.",
+        "Validated npm test and npm run build before commit."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Add StGB and OWiG English law text support",
+      "commit": "a7d5cf3",
+      "details": [
+        "Added explicit official Gesetze-im-Internet English law text configuration for StGB and OWiG.",
+        "Verified StGB English source path englisch_stgb/englisch_stgb.html.",
+        "Verified OWiG English source path englisch_owig/englisch_owig.html.",
+        "Validated Obsidian runtime with English toggle on and off.",
+        "Kept German official law text as default source.",
+        "Kept fallback to German official text when English text is unavailable or not extrahierbar.",
+        "Ensured the plugin never generates translations.",
         "Validated npm test and npm run build before commit."
       ]
     }
