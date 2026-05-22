@@ -39,8 +39,6 @@
     },
     "KWG remains unsupported pending explicit verified mapping.",
     "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
-    "English UX is not implemented yet.",
-    "English law-text translations are not implemented yet and require separate provider/source handling.",
     "Additional official English law text sources beyond BGB and GG remain future work."
   ],
   "tasks": [
@@ -423,7 +421,7 @@
     {
       "date": "2026-05-22",
       "title": "Keep German law text as default source",
-      "commit": "TBD",
+      "commit": "9a1dad6",
       "details": [
         "Kept official-de as the default law text source regardless of Obsidian UI locale.",
         "Preserved translation-en only when explicitly saved by the user.",
