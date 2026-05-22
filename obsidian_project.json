@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP finalized with deferred future provider work",
+    "phase": "Beta release packaging prepared",
     "last_updated": "2026-05-22",
-    "summary": "Stable MVP is runtime-validated, tested, built, and committed. No open blockers remain. Gesetze im Internet HTML is the validated official runtime provider path, Gesetze im Internet XML access is technically validated and tracked only as optional future robustness work, and NeuRIS is deferred as a strategic future provider until API stability and coverage are sufficiently mature. The plugin UI follows the Obsidian interface language, law text source remains independent and defaults to German official text, English law text remains explicit opt-in, and the plugin never generates translations."
+    "summary": "Stable MVP remains frozen. GitHub beta release packaging for 0.1.0 is prepared: README.md and LICENSE were added, manifest release description was polished, tests pass, and production build succeeds. No parser, provider, cache, UI, or runtime behavior changed."
   },
   "blockers": [
     {
@@ -664,11 +664,34 @@
         "Preserved Stable MVP finalized state with no open blockers.",
         "Kept T-035 and T-036 as the only open future tasks."
       ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Prepare GitHub beta release documentation",
+      "commit": "d69ab03",
+      "details": [
+        "Added release-ready README.md.",
+        "Added LICENSE.",
+        "Documented supported usage, limitations, sources, installation, development commands, release files, and disclaimer.",
+        "Made no parser, provider, cache, UI, or runtime behavior changes."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Polish release manifest metadata",
+      "commit": "191125d",
+      "details": [
+        "Improved manifest description for the 0.1.0 beta release.",
+        "Kept version 0.1.0 and minAppVersion 1.8.0 unchanged.",
+        "Kept isDesktopOnly false.",
+        "Left author and authorUrl empty intentionally for now.",
+        "Validated npm test and npm run build before commit."
+      ]
     }
   ],
   "verification": {
-    "last_known_head": "151fa95",
-    "last_known_head_message": "Finalize Stable MVP project log",
+    "last_known_head": "191125d",
+    "last_known_head_message": "Polish release manifest metadata",
     "last_test_result": "149 pass, 0 fail",
     "last_build_result": "npm run build successful",
     "last_git_status": "clean"
