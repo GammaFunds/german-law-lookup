@@ -83,6 +83,15 @@ const supportedLaws: Record<string, {
     lawTitle: "Betriebsverfassungsgesetz",
     displayLawCode: "BetrVG",
   },
+  BVERFGG: {
+    path: "bverfgg",
+    lawTitle: "Gesetz über das Bundesverfassungsgericht",
+    displayLawCode: "BVerfGG",
+    translation: {
+      path: "englisch_bverfgg/englisch_bverfgg.html",
+      documentType: "section-full-text",
+    },
+  },
   BURLG: {
     path: "burlg",
     lawTitle: "Bundesurlaubsgesetz",
@@ -646,6 +655,7 @@ function extractEnglishSectionTranslation(
   lines: string[],
 ): { heading?: string; text: string } | null {
   const normalizedSection = section.trim().toLowerCase();
+  const paragraphStartPattern = /^(?:\(\d+[a-z]?\)|\d+\.)\s+/i;
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -654,8 +664,12 @@ function extractEnglishSectionTranslation(
       continue;
     }
 
-    const heading = lines[index + 1];
-    const textLines = collectTranslationTextLines(lines, index + 2, /^Section\s+\d+[a-z]?$/i);
+    const candidateHeading = lines[index + 1];
+    const heading = candidateHeading && !paragraphStartPattern.test(candidateHeading)
+      ? candidateHeading
+      : undefined;
+    const textStartIndex = heading ? index + 2 : index + 1;
+    const textLines = collectTranslationTextLines(lines, textStartIndex, /^Section\s+\d+[a-z]?$/i);
     if (textLines.length === 0) {
       continue;
     }

@@ -204,6 +204,23 @@ const englishOwigHtmlFixture = `
 </body>
 </html>`;
 
+const englishBverfggHtmlFixture = `
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <div>Act on the Federal Constitutional Court</div>
+  <div>(Bundesverfassungsgerichtsgesetz – BVerfGG)</div>
+  <div>table of contents</div>
+  <div>Section 1</div>
+  <div>(1) The Federal Constitutional Court shall be a federal court of justice which is autonomous and independent of all other constitutional organs.</div>
+  <div>(2) The seat of the Federal Constitutional Court shall be Karlsruhe.</div>
+  <div>(3) The Federal Constitutional Court shall establish its Rules of Procedure, which shall be adopted by the Plenary.</div>
+  <div>table of contents</div>
+  <div>Section 2</div>
+  <div>(1) The Federal Constitutional Court shall consist of two Senates.</div>
+</body>
+</html>`;
+
 const englishHgbHtmlFixture = makeEnglishSectionTranslationFixture({
   documentTitle: "Commercial Code",
   previousSection: "0",
@@ -523,6 +540,26 @@ const owig1HtmlFixture = makeSectionHtmlFixture({
   text: "(1) Eine Ordnungswidrigkeit ist eine rechtswidrige und vorwerfbare Handlung, die den Tatbestand eines Gesetzes verwirklicht.",
 });
 
+const bverfgg1HtmlFixture = `
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
+<head>
+  <title>&#167; 1 BVerfGG - Einzelnorm</title>
+</head>
+<body>
+  <div class="jnheader">
+    <h1>Gesetz über das Bundesverfassungsgericht (Bundesverfassungsgerichtsgesetz - BVerfGG)<br />
+      <span class="jnenbez">&#167; 1</span>
+    </h1>
+  </div>
+  <div class="jnhtml">
+    <div class="jurAbsatz">(1) Das Bundesverfassungsgericht ist ein allen übrigen Verfassungsorganen gegenüber selbständiger und unabhängiger Gerichtshof des Bundes.</div>
+    <div class="jurAbsatz">(2) Der Sitz des Bundesverfassungsgerichts ist Karlsruhe.</div>
+    <div class="jurAbsatz">(3) Das Bundesverfassungsgericht gibt sich eine Geschäftsordnung, die das Plenum beschließt.</div>
+  </div>
+</body>
+</html>`;
+
 const gwg10HtmlFixture = makeSectionHtmlFixture({
   lawTitle: "Geldwäschegesetz (GwG)",
   lawCode: "GwG",
@@ -620,6 +657,7 @@ describe("GesetzeImInternet mapping helpers", () => {
       { lawCode: "BDSG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/bdsg_2018/__1.html" },
       { lawCode: "BGB", section: "823", expectedUrl: "https://www.gesetze-im-internet.de/bgb/__823.html" },
       { lawCode: "BETRVG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/betrvg/__1.html" },
+      { lawCode: "BVERFGG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/bverfgg/__1.html" },
       { lawCode: "BURLG", section: "1", expectedUrl: "https://www.gesetze-im-internet.de/burlg/__1.html" },
       {
         lawCode: "EGBGB",
@@ -742,6 +780,14 @@ describe("GesetzeImInternet mapping helpers", () => {
         sourceVariant: "translation-en",
       }),
       "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
+    );
+    assert.equal(
+      buildGesetzeImInternetSectionUrl({
+        lawCode: "BVERFGG",
+        section: "1",
+        sourceVariant: "translation-en",
+      }),
+      "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
     );
     assert.equal(
       buildGesetzeImInternetSectionUrl({
@@ -1051,6 +1097,23 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.match(section.text, /\(2\) If the law threatens to impose a regulatory fine/);
   });
 
+  it("maps BVerfGG § 1 English translation without a heading block into LawSection", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "BVERFGG", section: "1", sourceVariant: "translation-en" },
+      html: englishBverfggHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "BVerfGG");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.heading, undefined);
+    assert.match(section.text, /^\(1\) The Federal Constitutional Court shall be a federal court of justice/);
+    assert.match(section.text, /\(3\) The Federal Constitutional Court shall establish its Rules of Procedure/);
+  });
+
   it("maps AGG and GWB English translations into LawSection", () => {
     const aggSection = mapGesetzeImInternetToLawSection({
       reference: { lawCode: "AGG", section: "1", sourceVariant: "translation-en" },
@@ -1112,6 +1175,21 @@ describe("GesetzeImInternet mapping helpers", () => {
 
     assert.equal(section.heading, "Human dignity");
     assert.match(section.text, /^\(1\) Human dignity shall be inviolable\./);
+  });
+
+  it("skips the TOC match and keeps heading undefined for BVerfGG English section text", () => {
+    const section = mapGesetzeImInternetToLawSection({
+      reference: { lawCode: "BVERFGG", section: "1", sourceVariant: "translation-en" },
+      html: englishBverfggHtmlFixture,
+      sourceUrl: "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      retrievedAt: "2026-05-22T00:00:00.000Z",
+    });
+
+    assert.equal(section.heading, undefined);
+    assert.match(section.text, /^\(1\) The Federal Constitutional Court shall be a federal court of justice/);
+    assert.doesNotMatch(section.text, /The Federal Constitutional Court shall consist of two Senates/);
   });
 
   it("maps EGBGB Art. 1 from the official full-law HTML into LawSection", () => {
@@ -1240,6 +1318,15 @@ describe("GesetzeImInternet mapping helpers", () => {
       "BDSG § 1",
       "1 BDSG",
       "BDSG 1",
+    ]);
+
+    assert.equal(byCode.get("BVerfGG")?.displayLawCode, "BVerfGG");
+    assert.equal(byCode.get("BVerfGG")?.referenceType, "section");
+    assert.deepEqual(byCode.get("BVerfGG")?.exampleInputs, [
+      "§ 1 BVerfGG",
+      "BVerfGG § 1",
+      "1 BVerfGG",
+      "BVerfGG 1",
     ]);
 
     assert.equal(byCode.get("StGB")?.displayLawCode, "StGB");
@@ -1490,6 +1577,24 @@ describe("GesetzeImInternetProvider", () => {
     assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/stgb/__242.html"]);
   });
 
+  it("resolves BVerfGG § 1 from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(bverfgg1HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "BVERFGG", section: "1" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "BVerfGG");
+    assert.equal(section?.lawTitle, "Gesetz über das Bundesverfassungsgericht");
+    assert.equal(section?.sourceUrl, "https://www.gesetze-im-internet.de/bverfgg/__1.html");
+    assert.equal(section?.heading, undefined);
+    assert.match(section?.text ?? "", /^\(1\) Das Bundesverfassungsgericht ist ein allen übrigen Verfassungsorganen/);
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/bverfgg/__1.html"]);
+  });
+
   it("resolves SGB V § 1 from fixture-backed fetch", async () => {
     const requestedUrls: string[] = [];
     const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
@@ -1654,8 +1759,39 @@ describe("GesetzeImInternetProvider", () => {
     ]);
   });
 
+  it("resolves BVerfGG § 1 English translation without a heading block from fixture-backed fetch", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(englishBverfggHtmlFixture);
+    });
+
+    const section = await provider.getSection({
+      lawCode: "BVERFGG",
+      section: "1",
+      sourceVariant: "translation-en",
+    });
+
+    assert.equal(section?.lawCode, "BVerfGG");
+    assert.equal(section?.sourceVariant, "translation-en");
+    assert.equal(section?.heading, undefined);
+    assert.match(section?.text ?? "", /^\(1\) The Federal Constitutional Court shall be a federal court of justice/);
+    assert.deepEqual(requestedUrls, [
+      "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
+    ]);
+  });
+
   it("resolves additional verified English section translations from fixture-backed fetches", async () => {
     const cases = [
+      {
+        lawCode: "BVERFGG",
+        section: "1",
+        fixture: englishBverfggHtmlFixture,
+        expectedLawCode: "BVerfGG",
+        expectedHeading: undefined,
+        expectedTextStart: /^\(1\) The Federal Constitutional Court shall be a federal court of justice/,
+        expectedUrl: "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
+      },
       {
         lawCode: "HGB",
         section: "1",
@@ -2205,6 +2341,19 @@ describe("GesetzeImInternetProvider", () => {
 
   it("falls back to official German text for additional configured English section sources when the citation is missing", async () => {
     const cases = [
+      {
+        lawCode: "BVERFGG",
+        translationUrl: "https://www.gesetze-im-internet.de/englisch_bverfgg/englisch_bverfgg.html",
+        translationFixture: englishBverfggHtmlFixture,
+        officialUrl: "https://www.gesetze-im-internet.de/bverfgg/__999.html",
+        officialFixture: makeSectionHtmlFixture({
+          lawTitle: "Gesetz über das Bundesverfassungsgericht",
+          lawCode: "BVerfGG",
+          section: "999",
+          heading: "Deutsche Ersatznorm",
+          text: "Deutscher amtlicher Ersatztext.",
+        }),
+      },
       {
         lawCode: "HGB",
         translationUrl: "https://www.gesetze-im-internet.de/englisch_hgb/englisch_hgb.html",
