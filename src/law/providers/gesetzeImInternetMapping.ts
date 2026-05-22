@@ -186,6 +186,10 @@ const supportedLaws: Record<string, {
     path: "pauswg",
     lawTitle: "Personalausweisgesetz",
     displayLawCode: "PAuswG",
+    translation: {
+      path: "englisch_pauswg/englisch_pauswg.html",
+      documentType: "section-full-text",
+    },
   },
   "SGB I": {
     path: "sgb_1",
@@ -270,6 +274,10 @@ const supportedLaws: Record<string, {
     path: "stag",
     lawTitle: "Staatsangehörigkeitsgesetz",
     displayLawCode: "StAG",
+    translation: {
+      path: "englisch_stag/englisch_stag.html",
+      documentType: "section-full-text",
+    },
   },
   STPO: {
     path: "stpo",
