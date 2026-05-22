@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Stable MVP + full SGB, EGBGB, and OWiG support",
-    "last_updated": "2026-05-21",
-    "summary": "Stable MVP remains validated. Full SGB and EGBGB support are implemented and committed. OWiG lookup support is now implemented, runtime-validated, tested, built, and committed. OWiG resolves through the explicit Gesetze-im-Internet mapping owig_1968 and supports the standard section reference forms OWiG § 1, § 1 OWiG, OWiG 1, and 1 OWiG. Remaining open law-code follow-ups are KWG and FreizügG/EU. English UX and optional English translations are now identified as separate future architecture blocks."
+    "phase": "Stable MVP + optional official English law text lookup",
+    "last_updated": "2026-05-22",
+    "summary": "Stable MVP remains validated. Full SGB, EGBGB, and OWiG support are implemented and committed. The plugin UI follows the Obsidian interface language, while the law text source remains independent. German official law text remains the default source for maximum provider coverage. Users can explicitly enable English law text lookup; the plugin then uses published Gesetze-im-Internet English law text for configured Phase 1 laws BGB and GG when available, otherwise falls back to the German official text. The plugin never generates translations. Preview and inserted Markdown remain WYSIWYG, cache keys distinguish official-de and translation-en, and legacy cache reads remain supported. Tests and production build pass."
   },
   "blockers": [
     {
@@ -40,7 +40,8 @@
     "KWG remains unsupported pending explicit verified mapping.",
     "FreizügG/EU remains unsupported pending parser and mapping support for slash-containing law codes.",
     "English UX is not implemented yet.",
-    "English law-text translations are not implemented yet and require separate provider/source handling."
+    "English law-text translations are not implemented yet and require separate provider/source handling.",
+    "Additional official English law text sources beyond BGB and GG remain future work."
   ],
   "tasks": [
     {
@@ -393,6 +394,40 @@
         "Confirmed existing parser supports OWiG § 1, § 1 OWiG, OWiG 1, and 1 OWiG without parser changes.",
         "Updated supported-law diagnostics so OWiG is no longer listed as an unsupported follow-up.",
         "Validated Obsidian runtime, npm test, and npm run build."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Localize plugin UI from Obsidian language",
+      "commit": "8b11d6c",
+      "details": [
+        "Added locale-aware UI strings using Obsidian getLanguage().",
+        "German Obsidian UI gets German plugin labels; non-German UI gets English plugin labels.",
+        "Kept persisted citation footer and preview/insert metadata format stable and synchronized."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Add optional English law text lookup",
+      "commit": "1eae846",
+      "details": [
+        "Added sourceVariant model for official-de and translation-en.",
+        "Added optional English law text lookup for Phase 1 laws BGB and GG using published Gesetze-im-Internet English law text.",
+        "Added fallback to German official text when English law text is unavailable or not configured.",
+        "Ensured the plugin never generates translations.",
+        "Routed translation-en lookups past German-only NeuRIS, then through Gesetze-im-Internet.",
+        "Added variant-aware cache keys with legacy official-de cache read compatibility.",
+        "Marked actual English law text output with a non-official text-variant line while preserving the German citation footer."
+      ]
+    },
+    {
+      "date": "2026-05-22",
+      "title": "Keep German law text as default source",
+      "commit": "TBD",
+      "details": [
+        "Kept official-de as the default law text source regardless of Obsidian UI locale.",
+        "Preserved translation-en only when explicitly saved by the user.",
+        "Prevented locale-based default source changes from reducing NeuRIS-only coverage."
       ]
     }
   ]
