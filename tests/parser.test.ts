@@ -19,6 +19,21 @@ describe("parseLawReference", () => {
       section: "1",
       referenceType: "article",
     });
+    assert.deepEqual(parseLawReference("art. 1 gg"), {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("art 1 gg"), {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("artikel 1 gg"), {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
   });
 
   it("parses GG law-code-first article references", () => {
@@ -28,6 +43,16 @@ describe("parseLawReference", () => {
       referenceType: "article",
     });
     assert.deepEqual(parseLawReference("GG Artikel 1"), {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("GG art 1"), {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("GG artikel 1"), {
       lawCode: "GG",
       section: "1",
       referenceType: "article",
@@ -59,6 +84,12 @@ describe("parseLawReference", () => {
 
   it("parses explicit EGBGB article-section references", () => {
     assert.deepEqual(parseLawReference("Art. 229 § 1 EGBGB"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
+    assert.deepEqual(parseLawReference("art. 229 § 1 egbgb"), {
       lawCode: "EGBGB",
       section: "229",
       subsection: "1",
