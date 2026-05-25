@@ -19,6 +19,11 @@ describe("parseLawReference", () => {
       section: "1",
       referenceType: "article",
     });
+    assert.deepEqual(parseLawReference("art. 1 gg"), {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+    });
   });
 
   it("parses GG law-code-first article references", () => {
