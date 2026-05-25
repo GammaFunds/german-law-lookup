@@ -89,6 +89,12 @@ describe("parseLawReference", () => {
       subsection: "1",
       referenceType: "article",
     });
+    assert.deepEqual(parseLawReference("art. 229 § 1 egbgb"), {
+      lawCode: "EGBGB",
+      section: "229",
+      subsection: "1",
+      referenceType: "article",
+    });
     assert.deepEqual(parseLawReference("EGBGB Art. 229 § 1"), {
       lawCode: "EGBGB",
       section: "229",
