@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Beta release ready",
-    "last_updated": "2026-05-22",
-    "summary": "Stable MVP remains frozen. GitHub beta release 0.1.0 is ready. The plugin name is German Law Lookup, the plugin id is german-law-lookup, the npm package name is german-law-lookup, README.md and LICENSE are present, manifest/package metadata are aligned, tests pass, and production build succeeds. No parser, provider, cache, UI, or runtime behavior changed."
+    "phase": "Post-beta parser regression coverage merged",
+    "last_updated": "2026-05-25",
+    "summary": "Beta release 0.1.0 remains tagged at 7b1dae8. Main has advanced to 84e0caf after merging Hermes parser regression coverage for lowercase legal citations. The merged change only touches tests/parser.test.ts and adds regression coverage; no parser runtime, provider, cache, UI, or build artifact behavior changed. npm test passes with 149 tests and production build succeeds."
   },
   "blockers": [
     {
@@ -712,11 +712,24 @@
         "Validated npm test and npm run build after package rename.",
         "Made no parser, provider, cache, UI, or runtime behavior changes."
       ]
+    },
+    {
+      "date": "2026-05-25",
+      "title": "Merge Hermes parser regression coverage",
+      "commit": "84e0caf",
+      "details": [
+        "Merged PR #1 adding lowercase legal citation parser regression coverage.",
+        "Only tests/parser.test.ts changed.",
+        "Added regression coverage for lowercase GG article references and EGBGB article-section references.",
+        "Kept beta release tag 0.1.0 at 7b1dae8.",
+        "Validated npm test and npm run build after fast-forward pull.",
+        "Made no parser runtime, provider, cache, UI, or runtime behavior changes."
+      ]
     }
   ],
   "verification": {
-    "last_known_head": "3364667",
-    "last_known_head_message": "Rename package for beta release",
+    "last_known_head": "84e0caf",
+    "last_known_head_message": "Merge pull request #1 from GammaFunds/hermes/parser-regressions-pr-20260525",
     "last_test_result": "149 pass, 0 fail",
     "last_build_result": "npm run build successful",
     "last_git_status": "clean"
