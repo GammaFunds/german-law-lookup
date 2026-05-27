@@ -1,7 +1,7 @@
 {
   "id": "german-law-lookup",
   "name": "German Law Lookup",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "1.8.0",
   "description": "Look up German federal law references in Obsidian and insert formatted law text into notes.",
   "author": "GammaFunds",
