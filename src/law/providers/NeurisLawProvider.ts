@@ -23,7 +23,7 @@ export class NeurisLawProvider implements LawProvider {
 
   constructor(
     private readonly baseUrl = DEFAULT_BASE_URL,
-    private readonly fetchFn: LawProviderHttpTransport = createFetchLawProviderTransport(),
+    private readonly fetchFn: LawProviderHttpTransport,
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {

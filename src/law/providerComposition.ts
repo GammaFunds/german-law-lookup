@@ -10,9 +10,11 @@ export interface ProviderCompositionOptions {
 }
 
 export function buildLawProviders(options: ProviderCompositionOptions = {}): LawProvider[] {
+  const httpTransport = options.httpTransport ?? createMissingHttpTransport();
+
   const providers: LawProvider[] = [
-    new NeurisLawProvider(undefined, options.httpTransport),
-    new GesetzeImInternetProvider(undefined, options.httpTransport),
+    new NeurisLawProvider(undefined, httpTransport),
+    new GesetzeImInternetProvider(undefined, httpTransport),
   ];
 
   if (options.enableMockLawProvider === true) {
@@ -20,4 +22,10 @@ export function buildLawProviders(options: ProviderCompositionOptions = {}): Law
   }
 
   return providers;
+}
+
+function createMissingHttpTransport(): LawProviderHttpTransport {
+  return async () => {
+    throw new Error("No HTTP transport configured");
+  };
 }

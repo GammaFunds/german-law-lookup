@@ -20,7 +20,7 @@ export class GesetzeImInternetProvider implements LawProvider {
 
   constructor(
     private readonly baseUrl = BASE_URL,
-    private readonly fetchFn: LawProviderHttpTransport = createFetchLawProviderTransport(),
+    private readonly fetchFn: LawProviderHttpTransport,
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
