@@ -50,6 +50,18 @@ Gesetze im Internet HTML is the current validated provider path. Gesetze im Inte
 
 NeuRIS is tracked as a future strategic provider once its public API, schema, and coverage are sufficiently stable.
 
+## Privacy and network access
+
+German Law Lookup retrieves law text from external public legal-information websites when a lookup is executed.
+
+- The current stable provider path uses Gesetze im Internet.
+- Network requests are made only for user-initiated lookups.
+- The plugin sends the requested law reference to the configured provider in order to retrieve the matching law text.
+- The plugin does not send note contents to external services.
+- The plugin does not use AI services and does not generate translations.
+- Optional English law text is retrieved only from published Gesetze im Internet sources where explicitly supported.
+- Retrieved law text may be cached locally in the Obsidian vault/plugin data, depending on the plugin settings.
+
 ## Installation
 
 For manual installation, copy the release files into:
