@@ -48,12 +48,14 @@ export class LawLookupModal extends Modal {
     });
     this.inputEl.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
-        this.renderParsedReference();
+        void this.renderParsedReference();
       }
     });
 
     const searchButton = formEl.createEl("button", { text: this.ui.lookUpLawButton });
-    searchButton.addEventListener("click", () => this.renderParsedReference());
+    searchButton.addEventListener("click", () => {
+      void this.renderParsedReference();
+    });
 
     this.resultEl = contentEl.createDiv({ cls: "de-law-lookup-result" });
     this.renderResultMessage(this.ui.noLookupRunYet);
