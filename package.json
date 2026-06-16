@@ -1,7 +1,7 @@
 {
   "name": "german-law-lookup",
-  "version": "0.1.1",
-  "description": "Minimal Obsidian plugin for looking up German law references.",
+  "version": "0.1.2",
+  "description": "Look up German federal law references and insert formatted law text into notes.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
