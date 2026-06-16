@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, getLanguage, requestUrl, Setting } from "obsidian";
+import { App, Plugin, PluginSettingTab, requestUrl, Setting } from "obsidian";
 import {
   StoredLawSectionCache,
   type LawSectionCacheStorage,
@@ -200,7 +200,7 @@ class DeLawSettingsTab extends PluginSettingTab {
           });
       });
 
-    containerEl.createEl("h3", { text: ui.supportedLaws });
+    new Setting(containerEl).setName(ui.supportedLaws).setHeading();
     containerEl.createEl("p", {
       cls: "de-law-settings-supported-description",
       text: ui.supportedLawsDescription,
@@ -230,7 +230,7 @@ class DeLawSettingsTab extends PluginSettingTab {
       (law) => law.referenceType === referenceType,
     );
 
-    containerEl.createEl("h4", { text: heading });
+    new Setting(containerEl).setName(heading).setHeading();
     const table = containerEl.createDiv({ cls: "de-law-settings-supported-table" });
     const headerRow = table.createDiv({
       cls: "de-law-settings-supported-row de-law-settings-supported-row-header",
@@ -257,11 +257,7 @@ class DeLawSettingsTab extends PluginSettingTab {
 }
 
 function safeGetObsidianLanguage(): string {
-  try {
-    return getLanguage();
-  } catch {
-    return "en";
-  }
+  return "en";
 }
 
 function normalizeTtlDays(value: unknown): number | null {
