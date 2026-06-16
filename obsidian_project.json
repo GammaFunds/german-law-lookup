@@ -2,9 +2,9 @@
   "project": "Obsidian German Law Plugin",
   "single_source_of_truth": "ChatGPTProjectLog.json",
   "status": {
-    "phase": "Post-beta parser regression coverage merged",
-    "last_updated": "2026-05-25",
-    "summary": "Beta release 0.1.0 remains tagged at 7b1dae8. Main has advanced to 84e0caf after merging Hermes parser regression coverage for lowercase legal citations. The merged change only touches tests/parser.test.ts and adds regression coverage; no parser runtime, provider, cache, UI, or build artifact behavior changed. npm test passes with 149 tests and production build succeeds."
+    "phase": "Beta release 0.1.1 published; community submission preparation",
+    "last_updated": "2026-06-16",
+    "summary": "GitHub beta release 0.1.1 is published with release assets main.js, manifest.json, and styles.css. 0.1.1 includes author metadata and keeps plugin id german-law-lookup. Main additionally contains README privacy/network access documentation for community-submission readiness. Runtime behavior remains unchanged: no parser runtime, provider, cache, UI, or insertion behavior changes beyond prior test coverage."
   },
   "blockers": [
     {
@@ -725,11 +725,23 @@
         "Validated npm test and npm run build after fast-forward pull.",
         "Made no parser runtime, provider, cache, UI, or runtime behavior changes."
       ]
+    },
+    {
+      "date": "2026-06-16",
+      "title": "Publish beta release 0.1.1 and document privacy/network access",
+      "commit": "31ff74b / a4f794a",
+      "details": [
+        "Published GitHub beta release 0.1.1 with main.js, manifest.json, and styles.css assets.",
+        "0.1.1 manifest includes author GammaFunds and authorUrl https://github.com/GammaFunds.",
+        "Documented privacy and network access behavior in README on main.",
+        "Clarified that user-initiated lookups may contact Gesetze im Internet and that note contents are not sent to external services.",
+        "Kept parser runtime, provider logic, cache behavior, UI, and insertion behavior unchanged."
+      ]
     }
   ],
   "verification": {
-    "last_known_head": "84e0caf",
-    "last_known_head_message": "Merge pull request #1 from GammaFunds/hermes/parser-regressions-pr-20260525",
+    "last_known_head": "a4f794a",
+    "last_known_head_message": "Document privacy and network access",
     "last_test_result": "149 pass, 0 fail",
     "last_build_result": "npm run build successful",
     "last_git_status": "clean"
