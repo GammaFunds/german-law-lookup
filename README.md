@@ -2,6 +2,10 @@
 
 Look up German federal law references in Obsidian, preview German or published English law text, and insert the formatted result into the active note.
 
+## Demo
+
+![German Law Lookup demo](assets/german-law-lookup-demo.gif)
+
 ## Features
 
 - Look up supported German federal law references directly from Obsidian.
