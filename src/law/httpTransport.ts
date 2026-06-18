@@ -7,12 +7,6 @@ export interface LawProviderHttpResponse {
 
 export type LawProviderHttpTransport = (input: string) => Promise<LawProviderHttpResponse>;
 
-export function createFetchLawProviderTransport(
-  fetchFn: (input: string) => Promise<LawProviderHttpResponse>,
-): LawProviderHttpTransport {
-  return fetchFn;
-}
-
 interface RequestUrlParamLike {
   url: string;
   method?: string;
