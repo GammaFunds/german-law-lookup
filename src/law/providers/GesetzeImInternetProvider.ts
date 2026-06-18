@@ -1,7 +1,6 @@
 import type { LawProvider } from "../LawProvider";
 import { LawProviderUnavailableError } from "../errors";
 import {
-  createFetchLawProviderTransport,
   type LawProviderHttpResponse,
   type LawProviderHttpTransport,
 } from "../httpTransport";

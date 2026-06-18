@@ -1,7 +1,7 @@
 {
   "id": "german-law-lookup",
   "name": "German Law Lookup",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "minAppVersion": "1.8.0",
   "description": "Look up German federal law references and insert formatted law text into notes.",
   "author": "GammaFunds",
