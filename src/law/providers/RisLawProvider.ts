@@ -1,21 +1,21 @@
 import type { LawProvider } from "../LawProvider";
 import { LawProviderUnavailableError } from "../errors";
-import {
-  type LawProviderHttpResponse,
-  type LawProviderHttpTransport,
+import type {
+  LawProviderHttpResponse,
+  LawProviderHttpTransport,
 } from "../httpTransport";
 import type { LawReference, LawSection } from "../types";
 import {
-  buildGesetzeImInternetSectionUrl,
-  canMapGesetzeImInternetReference,
-  mapGesetzeImInternetToLawSection,
-} from "./gesetzeImInternetMapping";
+  buildRisSectionUrl,
+  canMapRisReference,
+  mapRisToLawSection,
+} from "./risMapping";
 
-const BASE_URL = "https://www.gesetze-im-internet.de";
+const BASE_URL = "https://www.ris.bka.gv.at";
 
-export class GesetzeImInternetProvider implements LawProvider {
-  readonly id = "gesetze-im-internet";
-  readonly label = "Gesetze im Internet";
+export class RisLawProvider implements LawProvider {
+  readonly id = "ris";
+  readonly label = "RIS / Rechtsinformationssystem des Bundes";
 
   constructor(
     private readonly baseUrl = BASE_URL,
@@ -23,47 +23,38 @@ export class GesetzeImInternetProvider implements LawProvider {
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
-    if (reference.jurisdiction === "AT") {
+    if (reference.jurisdiction !== "AT") {
       return null;
     }
 
-    const lookupReference = this.referenceForLookup(reference);
-    const sectionUrl = buildGesetzeImInternetSectionUrl(reference, this.baseUrl);
-    if (!sectionUrl) {
-      if (reference.sourceVariant === "translation-en") {
-        return this.getSection(lookupReference);
-      }
+    if (reference.sourceVariant === "translation-en") {
+      return null;
+    }
 
+    const sectionUrl = buildRisSectionUrl(reference);
+    if (!sectionUrl) {
       return null;
     }
 
     try {
       const response = await this.request(sectionUrl);
       if (response.status === 404) {
-        if (reference.sourceVariant === "translation-en") {
-          return this.getSection(lookupReference);
-        }
-
         return null;
       }
 
       if (!response.ok) {
         throw new LawProviderUnavailableError(
           this.id,
-          `Gesetze im Internet request failed: ${sectionUrl}`,
+          `RIS request failed: ${sectionUrl}`,
         );
       }
 
       const html = await this.getText(response, sectionUrl);
-      if (!canMapGesetzeImInternetReference(reference, html)) {
-        if (reference.sourceVariant === "translation-en") {
-          return this.getSection(lookupReference);
-        }
-
+      if (!canMapRisReference(reference, html)) {
         return null;
       }
 
-      return mapGesetzeImInternetToLawSection({
+      return mapRisToLawSection({
         reference,
         html,
         sourceUrl: sectionUrl,
@@ -78,21 +69,10 @@ export class GesetzeImInternetProvider implements LawProvider {
 
       throw new LawProviderUnavailableError(
         this.id,
-        "Gesetze im Internet lookup failed before a definitive not-found result.",
+        "RIS lookup failed before a definitive not-found result.",
         error,
       );
     }
-  }
-
-  private referenceForLookup(reference: LawReference): LawReference {
-    if (reference.sourceVariant !== "translation-en") {
-      return reference;
-    }
-
-    return {
-      ...reference,
-      sourceVariant: "official-de",
-    };
   }
 
   private async request(url: string): ReturnType<LawProviderHttpTransport> {
@@ -101,7 +81,7 @@ export class GesetzeImInternetProvider implements LawProvider {
     } catch (error) {
       throw new LawProviderUnavailableError(
         this.id,
-        `Gesetze im Internet request failed: ${url}`,
+        `RIS request failed: ${url}`,
         error,
       );
     }
@@ -113,7 +93,7 @@ export class GesetzeImInternetProvider implements LawProvider {
     } catch (error) {
       throw new LawProviderUnavailableError(
         this.id,
-        `Gesetze im Internet text parsing failed: ${url}`,
+        `RIS text parsing failed: ${url}`,
         error,
       );
     }

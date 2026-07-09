@@ -37,6 +37,10 @@ function buildMetadataLines(
     lines.push("Textvariante: Englischer Gesetzestext von Gesetze im Internet (nicht amtlich).");
   }
 
+  if (section.jurisdiction === "AT") {
+    lines.push("Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich.");
+  }
+
   if (includeMetadataFooter) {
     lines.push(
       `Quelle: ${section.providerLabel}, ${section.lawCode}, ${referenceLabel}, abgerufen am ${section.retrievedAt.slice(0, 10)}.`,

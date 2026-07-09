@@ -224,6 +224,48 @@ describe("formatLawSectionAsMarkdown", () => {
     assert.doesNotMatch(markdown, /^Cache:/m);
   });
 
+  it("includes Austrian RIS Bundesrecht konsolidiert status in AT sections", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "ris",
+      providerLabel: "RIS / Rechtsinformationssystem des Bundes",
+      lawCode: "ABGB",
+      lawTitle: "Allgemeines bürgerliches Gesetzbuch",
+      section: "1295",
+      jurisdiction: "AT",
+      heading: "Schadenersatz",
+      text: "(1) Jedermann ist berechtigt, von dem Schädiger den Ersatz des Schadens zu fordern.",
+      retrievedAt: "2026-06-01T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.match(
+      markdown,
+      /^Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich\.$/m,
+    );
+    assert.match(markdown, /^Quelle: RIS \/ Rechtsinformationssystem des Bundes, ABGB, § 1295, abgerufen am 2026-06-01\.$/m);
+    assert.match(markdown, /^Cache: live\.$/m);
+  });
+
+  it("does not add Austrian status line for DE sections", () => {
+    const markdown = formatLawSectionAsMarkdown({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      lawCode: "StGB",
+      lawTitle: "Strafgesetzbuch",
+      section: "242",
+      heading: "Diebstahl",
+      text: "Wer eine fremde bewegliche Sache wegnimmt.",
+      retrievedAt: "2026-06-01T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.doesNotMatch(markdown, /Bundesrecht konsolidiert/);
+  });
+
   it("does not add a translation notice for official-de fallback content", () => {
     const markdown = formatLawSectionAsMarkdown({
       providerId: "gesetze-im-internet",

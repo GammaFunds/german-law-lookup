@@ -4,6 +4,7 @@ import type { LawProvider } from "../src/law/LawProvider";
 import { ProviderRegistry } from "../src/law/ProviderRegistry";
 import { LawProviderUnavailableError } from "../src/law/errors";
 import { GesetzeImInternetProvider } from "../src/law/providers/GesetzeImInternetProvider";
+import { RisLawProvider } from "../src/law/providers/RisLawProvider";
 import {
   buildGesetzeImInternetSectionUrl,
   extractGesetzeImInternetHeading,
@@ -2926,6 +2927,59 @@ describe("GesetzeImInternetProvider", () => {
       "https://www.gesetze-im-internet.de/englisch_bgb/englisch_bgb.html",
       "https://www.gesetze-im-internet.de/bgb/__999.html",
     ]);
+  });
+});
+
+describe("Gesetze im Internet Austrian jurisdiction gate", () => {
+  it("returns null for explicit AT StGB without fetching", async () => {
+    let calls = 0;
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => {
+      calls += 1;
+      return textResponse(stgb242HtmlFixture);
+    });
+
+    assert.equal(
+      await provider.getSection({ lawCode: "STGB", section: "75", jurisdiction: "AT" }),
+      null,
+    );
+    assert.equal(calls, 0);
+  });
+
+  it("does not let Gesetze im Internet claim explicit AT StGB before RIS", async () => {
+    let gesetzeCalls = 0;
+    const gesetze = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => {
+      gesetzeCalls += 1;
+      return textResponse(stgb242HtmlFixture);
+    });
+    const risAtStgbHtml = `<!DOCTYPE html><html lang="de"><head><title>RIS - StGB § 75</title></head><body><div id="tabContent"><h1>Strafgesetzbuch<br/>§ 75 Mord</h1><p>Wer einen anderen tötet, ist mit Freiheitsstrafe zu bestrafen.</p></div>Gesetzesnummer: 10002296<br/>Dokumentnummer: NOR12123456<br/>Zuletzt aktualisiert am: 01.01.2026</body></html>`;
+    const ris = new RisLawProvider("https://www.ris.bka.gv.at", async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+      text: async () => risAtStgbHtml,
+    }));
+
+    const registry = new ProviderRegistry([gesetze, ris]);
+
+    const result = await registry.getSection({ lawCode: "STGB", section: "75", jurisdiction: "AT" });
+
+    assert.equal(result?.providerId, "ris");
+    assert.equal(result?.jurisdiction, "AT");
+    assert.equal(gesetzeCalls, 0);
+  });
+
+  it("keeps bare STGB DE-compatible", async () => {
+    const requestedUrls: string[] = [];
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async (url) => {
+      requestedUrls.push(url);
+      return textResponse(stgb242HtmlFixture);
+    });
+
+    const section = await provider.getSection({ lawCode: "STGB", section: "242" });
+
+    assert.equal(section?.providerId, "gesetze-im-internet");
+    assert.equal(section?.lawCode, "StGB");
+    assert.deepEqual(requestedUrls, ["https://www.gesetze-im-internet.de/stgb/__242.html"]);
   });
 });
 

@@ -2,6 +2,7 @@ import type { LawReference } from "./law/types";
 
 export type ParsedLawReference = LawReference;
 
+const jurisdictionPattern = String.raw`(?:AT|DE)`;
 const lawCodePattern = String.raw`[A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß0-9-]*`;
 const sectionPattern = String.raw`\d+[A-Za-z]?`;
 const articleMarkerPattern = String.raw`(?:Art\.?|Artikel)`;
@@ -29,6 +30,46 @@ const explicitSpacedLawCodePattern = explicitSpacedLawCodes
 const explicitSlashLawCodePattern = explicitSlashLawCodes
   .map((lawCode) => lawCode.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   .join("|");
+
+const atLawFirstPattern = new RegExp(
+  String.raw`^AT\s+(${lawCodePattern})\s+(?:§\s*)?(${sectionPattern})$`,
+  "u",
+);
+
+const atSectionFirstPattern = new RegExp(
+  String.raw`^AT\s+(?:§\s*)?(${sectionPattern})\s+(${lawCodePattern})$`,
+  "u",
+);
+
+const atLawLastPattern = new RegExp(
+  String.raw`^(?:§\s*)?(${sectionPattern})\s+(${lawCodePattern})\s+AT$`,
+  "u",
+);
+
+const atLawMiddlePattern = new RegExp(
+  String.raw`^(${lawCodePattern})\s+AT\s+(?:§\s*)?(${sectionPattern})$`,
+  "u",
+);
+
+const atArticleFirstPattern = new RegExp(
+  String.raw`^AT\s+${articleMarkerPattern}\s*(${sectionPattern})\s+(${lawCodePattern})$`,
+  "iu",
+);
+
+const atLawFirstArticlePattern = new RegExp(
+  String.raw`^AT\s+(${lawCodePattern})\s+${articleMarkerPattern}\s*(${sectionPattern})$`,
+  "iu",
+);
+
+const atArticleLawLastPattern = new RegExp(
+  String.raw`^${articleMarkerPattern}\s*(${sectionPattern})\s+(${lawCodePattern})\s+AT$`,
+  "iu",
+);
+
+const atLawArticleMiddlePattern = new RegExp(
+  String.raw`^(${lawCodePattern})\s+${articleMarkerPattern}\s*(${sectionPattern})\s+AT$`,
+  "iu",
+);
 
 const lawFirstPattern = new RegExp(
   String.raw`^(${lawCodePattern})\s+(?:§\s*)?(${sectionPattern})$`,
@@ -91,6 +132,82 @@ export function parseLawReference(input: string): ParsedLawReference | null {
   const normalized = input.trim().replace(/\s+/g, " ");
   if (!normalized) {
     return null;
+  }
+
+  const atLawFirstMatch = normalized.match(atLawFirstPattern);
+  if (atLawFirstMatch) {
+    return {
+      lawCode: atLawFirstMatch[1].toUpperCase(),
+      section: atLawFirstMatch[2],
+      jurisdiction: "AT",
+    };
+  }
+
+  const atSectionFirstMatch = normalized.match(atSectionFirstPattern);
+  if (atSectionFirstMatch) {
+    return {
+      lawCode: atSectionFirstMatch[2].toUpperCase(),
+      section: atSectionFirstMatch[1],
+      jurisdiction: "AT",
+    };
+  }
+
+  const atLawLastMatch = normalized.match(atLawLastPattern);
+  if (atLawLastMatch) {
+    return {
+      lawCode: atLawLastMatch[2].toUpperCase(),
+      section: atLawLastMatch[1],
+      jurisdiction: "AT",
+    };
+  }
+
+  const atLawMiddleMatch = normalized.match(atLawMiddlePattern);
+  if (atLawMiddleMatch) {
+    return {
+      lawCode: atLawMiddleMatch[1].toUpperCase(),
+      section: atLawMiddleMatch[2],
+      jurisdiction: "AT",
+    };
+  }
+
+  const atArticleFirstMatch = normalized.match(atArticleFirstPattern);
+  if (atArticleFirstMatch) {
+    return {
+      lawCode: atArticleFirstMatch[2].toUpperCase(),
+      section: atArticleFirstMatch[1],
+      referenceType: "article",
+      jurisdiction: "AT",
+    };
+  }
+
+  const atLawFirstArticleMatch = normalized.match(atLawFirstArticlePattern);
+  if (atLawFirstArticleMatch) {
+    return {
+      lawCode: atLawFirstArticleMatch[1].toUpperCase(),
+      section: atLawFirstArticleMatch[2],
+      referenceType: "article",
+      jurisdiction: "AT",
+    };
+  }
+
+  const atArticleLawLastMatch = normalized.match(atArticleLawLastPattern);
+  if (atArticleLawLastMatch) {
+    return {
+      lawCode: atArticleLawLastMatch[2].toUpperCase(),
+      section: atArticleLawLastMatch[1],
+      referenceType: "article",
+      jurisdiction: "AT",
+    };
+  }
+
+  const atLawArticleMiddleMatch = normalized.match(atLawArticleMiddlePattern);
+  if (atLawArticleMiddleMatch) {
+    return {
+      lawCode: atLawArticleMiddleMatch[1].toUpperCase(),
+      section: atLawArticleMiddleMatch[2],
+      referenceType: "article",
+      jurisdiction: "AT",
+    };
   }
 
   const articleFirstMatch = normalized.match(articleFirstPattern);

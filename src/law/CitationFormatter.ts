@@ -24,6 +24,10 @@ export function formatLawSectionAsMarkdown(
     lines.push("", "Textvariante: Englischer Gesetzestext von Gesetze im Internet (nicht amtlich).");
   }
 
+  if (section.jurisdiction === "AT") {
+    lines.push("", "Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich.");
+  }
+
   if (includeMetadataFooter) {
     lines.push(
       "",

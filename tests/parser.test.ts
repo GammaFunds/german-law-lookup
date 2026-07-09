@@ -453,4 +453,109 @@ describe("parseLawReference", () => {
     assert.equal(parseLawReference("EGBGB 1"), null);
     assert.equal(parseLawReference("1 EGBGB"), null);
   });
+
+  it("parses AT ABGB references with jurisdiction AT and various orderings", () => {
+    assert.deepEqual(parseLawReference("AT ABGB § 1295"), {
+      lawCode: "ABGB",
+      section: "1295",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("AT § 1295 ABGB"), {
+      lawCode: "ABGB",
+      section: "1295",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("ABGB AT § 1295"), {
+      lawCode: "ABGB",
+      section: "1295",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("§ 1295 ABGB AT"), {
+      lawCode: "ABGB",
+      section: "1295",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("AT ABGB 1295"), {
+      lawCode: "ABGB",
+      section: "1295",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("AT 1295 ABGB"), {
+      lawCode: "ABGB",
+      section: "1295",
+      jurisdiction: "AT",
+    });
+  });
+
+  it("parses AT StGB references with jurisdiction AT", () => {
+    assert.deepEqual(parseLawReference("AT StGB § 75"), {
+      lawCode: "STGB",
+      section: "75",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("AT § 75 StGB"), {
+      lawCode: "STGB",
+      section: "75",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("StGB AT § 75"), {
+      lawCode: "STGB",
+      section: "75",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("§ 75 StGB AT"), {
+      lawCode: "STGB",
+      section: "75",
+      jurisdiction: "AT",
+    });
+  });
+
+  it("parses AT B-VG article references with jurisdiction AT", () => {
+    assert.deepEqual(parseLawReference("AT B-VG Art. 144"), {
+      lawCode: "B-VG",
+      section: "144",
+      referenceType: "article",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("AT Art. 144 B-VG"), {
+      lawCode: "B-VG",
+      section: "144",
+      referenceType: "article",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("B-VG Art. 144 AT"), {
+      lawCode: "B-VG",
+      section: "144",
+      referenceType: "article",
+      jurisdiction: "AT",
+    });
+    assert.deepEqual(parseLawReference("Art. 144 B-VG AT"), {
+      lawCode: "B-VG",
+      section: "144",
+      referenceType: "article",
+      jurisdiction: "AT",
+    });
+  });
+
+  it("does not add jurisdiction for bare StGB references", () => {
+    const result = parseLawReference("StGB § 75");
+    assert.notEqual(result, null);
+    assert.equal(result!.jurisdiction, undefined);
+    assert.equal(result!.lawCode, "STGB");
+    assert.equal(result!.section, "75");
+
+    const result2 = parseLawReference("§ 242 StGB");
+    assert.notEqual(result2, null);
+    assert.equal(result2!.jurisdiction, undefined);
+    assert.equal(result2!.lawCode, "STGB");
+    assert.equal(result2!.section, "242");
+  });
+
+  it("parses AT ABGB § 1294", () => {
+    assert.deepEqual(parseLawReference("AT ABGB § 1294"), {
+      lawCode: "ABGB",
+      section: "1294",
+      jurisdiction: "AT",
+    });
+  });
 });

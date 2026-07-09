@@ -1,11 +1,13 @@
 export type LawReferenceType = "section" | "article";
 export type LawSourceVariant = "official-de" | "translation-en";
+export type LawJurisdiction = "DE" | "AT";
 
 export interface LawReference {
   lawCode: string;
   section: string;
   referenceType?: LawReferenceType;
   sourceVariant?: LawSourceVariant;
+  jurisdiction?: LawJurisdiction;
   subsection?: string;
   sentence?: string;
 }
@@ -19,6 +21,7 @@ export interface LawSection {
   section: string;
   referenceType?: LawReferenceType;
   sourceVariant?: LawSourceVariant;
+  jurisdiction?: LawJurisdiction;
   subsection?: string;
   heading?: string;
   text: string;

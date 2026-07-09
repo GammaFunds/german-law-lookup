@@ -164,6 +164,49 @@ describe("lawSectionPreview", () => {
     ]);
   });
 
+  it("includes Austrian RIS Bundesrecht konsolidiert status in AT preview", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "ris",
+      providerLabel: "RIS / Rechtsinformationssystem des Bundes",
+      sourceUrl: "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001622&Paragraf=1295",
+      lawCode: "ABGB",
+      lawTitle: "Allgemeines bürgerliches Gesetzbuch",
+      section: "1295",
+      jurisdiction: "AT",
+      heading: "Schadenersatz",
+      text: "(1) Jedermann ist berechtigt, von dem Schädiger den Ersatz des Schadens zu fordern.",
+      retrievedAt: "2026-06-01T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.deepEqual(preview.metadataLines, [
+      "Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich.",
+      "Quelle: RIS / Rechtsinformationssystem des Bundes, ABGB, § 1295, abgerufen am 2026-06-01.",
+      "Cache: live.",
+    ]);
+  });
+
+  it("does not add Austrian status line for DE preview sections", () => {
+    const preview = buildLawSectionPreviewModel({
+      providerId: "gesetze-im-internet",
+      providerLabel: "Gesetze im Internet",
+      sourceUrl: "https://www.gesetze-im-internet.de/stgb/__242.html",
+      lawCode: "StGB",
+      lawTitle: "Strafgesetzbuch",
+      section: "242",
+      heading: "Diebstahl",
+      text: "(1) Wer eine fremde bewegliche Sache wegnimmt.",
+      retrievedAt: "2026-06-01T12:34:56.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: false,
+    });
+
+    assert.equal(preview.metadataLines.filter((l) => l.includes("Bundesrecht")).length, 0);
+  });
+
   it("does not add a translation notice for official-de fallback previews", () => {
     const preview = buildLawSectionPreviewModel({
       providerId: "gesetze-im-internet",

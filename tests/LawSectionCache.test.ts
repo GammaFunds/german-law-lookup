@@ -51,6 +51,40 @@ describe("lawSectionCacheKey", () => {
     );
   });
 
+  it("distinguishes DE and AT cache keys to prevent StGB collision", () => {
+    const deKey = lawSectionCacheKey({ lawCode: "STGB", section: "242" });
+    const atKey = lawSectionCacheKey({ lawCode: "STGB", section: "75", jurisdiction: "AT" });
+
+    assert.equal(deKey, "STGB:242:official-de");
+    assert.equal(atKey, "AT:STGB:75:official-de");
+    assert.notEqual(deKey, atKey);
+  });
+
+  it("includes AT prefix for AT cache keys", () => {
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "ABGB", section: "1295", jurisdiction: "AT" }),
+      "AT:ABGB:1295:official-de",
+    );
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "ABGB", section: "1295", jurisdiction: "AT", sourceVariant: "translation-en" }),
+      "AT:ABGB:1295:translation-en",
+    );
+  });
+
+  it("does not add AT prefix for undefined jurisdiction (DE-compatible)", () => {
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "ABGB", section: "1295" }),
+      "ABGB:1295:official-de",
+    );
+  });
+
+  it("distinguishes AT article cache keys", () => {
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "B-VG", section: "144", referenceType: "article", jurisdiction: "AT" }),
+      "AT:B-VG:art:144:official-de",
+    );
+  });
+
   it("distinguishes source variants in cache keys", () => {
     assert.equal(
       lawSectionCacheKey({ lawCode: "BGB", section: "823", sourceVariant: "translation-en" }),
@@ -584,6 +618,53 @@ describe("CachedLawProvider", () => {
       LawProviderUnavailableError,
     );
     assert.deepEqual(await cache.get(reference()), section());
+  });
+
+  it("does not return DE legacy STGB entries for AT STGB references", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "STGB:75:official-de": section({
+            providerId: "gesetze-im-internet",
+            lawCode: "STGB",
+            lawTitle: "Strafgesetzbuch",
+            section: "75",
+            heading: "DE legacy Diebstahl",
+            text: "DE legacy text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      await cache.get({ lawCode: "STGB", section: "75", jurisdiction: "AT" }),
+      null,
+    );
+  });
+
+  it("keeps existing DE legacy STGB entries readable for bare references", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "STGB:75:official-de": section({
+            providerId: "gesetze-im-internet",
+            lawCode: "STGB",
+            lawTitle: "Strafgesetzbuch",
+            section: "75",
+            heading: "Diebstahl",
+            text: "Legacy German text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal((await cache.get({ lawCode: "STGB", section: "75" }))?.text, "Legacy German text");
   });
 
   it("does not cache null results", async () => {

@@ -3,6 +3,7 @@ import type { LawProviderHttpTransport } from "./httpTransport";
 import { GesetzeImInternetProvider } from "./providers/GesetzeImInternetProvider";
 import { MockLawProvider } from "./providers/MockLawProvider";
 import { NeurisLawProvider } from "./providers/NeurisLawProvider";
+import { RisLawProvider } from "./providers/RisLawProvider";
 
 export interface ProviderCompositionOptions {
   enableMockLawProvider?: boolean;
@@ -15,6 +16,7 @@ export function buildLawProviders(options: ProviderCompositionOptions = {}): Law
   const providers: LawProvider[] = [
     new NeurisLawProvider(undefined, httpTransport),
     new GesetzeImInternetProvider(undefined, httpTransport),
+    new RisLawProvider(undefined, httpTransport),
   ];
 
   if (options.enableMockLawProvider === true) {

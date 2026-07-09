@@ -24,7 +24,8 @@ export function normalizeLawSourceVariant(sourceVariant?: LawSourceVariant): Law
 }
 
 export function lawSectionCacheKey(reference: LawReference): string {
-  return `${legacyLawSectionCacheKey(reference)}:${normalizeLawSourceVariant(reference.sourceVariant)}`;
+  const jurisdiction = reference.jurisdiction === "AT" ? "AT:" : "";
+  return `${jurisdiction}${legacyLawSectionCacheKey(reference)}:${normalizeLawSourceVariant(reference.sourceVariant)}`;
 }
 
 function legacyLawSectionCacheKey(reference: LawReference): string {
@@ -44,6 +45,14 @@ function legacyLawSectionCacheKey(reference: LawReference): string {
 
 function cacheKeysForRead(reference: LawReference): string[] {
   const key = lawSectionCacheKey(reference);
+  if (reference.jurisdiction === "AT") {
+    if (normalizeLawSourceVariant(reference.sourceVariant) === "translation-en") {
+      return [key, lawSectionCacheKey({ ...reference, sourceVariant: "official-de" })];
+    }
+
+    return [key];
+  }
+
   if (normalizeLawSourceVariant(reference.sourceVariant) === "translation-en") {
     return [
       key,
