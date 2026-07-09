@@ -28,6 +28,36 @@ const supportedAustrianLaws: Record<string, AustrianLawConfig> = {
     displayLawCode: "B-VG",
     referenceType: "article",
   },
+  ZPO: {
+    gesetzesnummer: "10001699",
+    lawTitle: "Zivilprozessordnung",
+    displayLawCode: "ZPO",
+    referenceType: "section",
+  },
+  JN: {
+    gesetzesnummer: "10001697",
+    lawTitle: "Jurisdiktionsnorm",
+    displayLawCode: "JN",
+    referenceType: "section",
+  },
+  EO: {
+    gesetzesnummer: "10001700",
+    lawTitle: "Exekutionsordnung",
+    displayLawCode: "EO",
+    referenceType: "section",
+  },
+  UGB: {
+    gesetzesnummer: "10001702",
+    lawTitle: "Unternehmensgesetzbuch",
+    displayLawCode: "UGB",
+    referenceType: "section",
+  },
+  STPO: {
+    gesetzesnummer: "10002326",
+    lawTitle: "Strafprozeßordnung 1975",
+    displayLawCode: "StPO",
+    referenceType: "section",
+  },
 };
 
 export function buildRisSectionUrl(reference: LawReference): string | null {

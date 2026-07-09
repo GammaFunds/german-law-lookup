@@ -90,6 +90,21 @@ Paragraph 75,
 </body>
 </html>`;
 
+const zpo1HtmlFixture = `<!DOCTYPE html>
+<html lang="de">
+<head><title>RIS - ZPO § 1</title></head>
+<body>
+<div id="tabContent">
+<h1>Zivilprozessordnung<br/>§ 1 Begriff der bürgerlichen Rechtssachen</h1>
+<p>Die Zivilprozessordnung regelt das Verfahren in bürgerlichen Rechtssachen vor den ordentlichen Gerichten.</p>
+</div>
+Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich
+Gesetzesnummer: 10001699
+Dokumentnummer: NOR12012901
+Zuletzt aktualisiert am: 01.01.2026
+</body>
+</html>`;
+
 const bvg144HtmlFixture = `<!DOCTYPE html>
 <html lang="en">
 <head><title>RIS - B-VG Art. 144</title></head>
@@ -149,6 +164,61 @@ describe("RIS mapping helpers", () => {
         jurisdiction: "AT",
       }),
       "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000138&Artikel=144",
+    );
+  });
+
+  it("builds AT ZPO § 1 URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "ZPO",
+        section: "1",
+        jurisdiction: "AT",
+      }),
+      "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001699&Paragraf=1",
+    );
+  });
+
+  it("builds AT JN § 1 URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "JN",
+        section: "1",
+        jurisdiction: "AT",
+      }),
+      "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001697&Paragraf=1",
+    );
+  });
+
+  it("builds AT EO § 1 URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "EO",
+        section: "1",
+        jurisdiction: "AT",
+      }),
+      "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001700&Paragraf=1",
+    );
+  });
+
+  it("builds AT UGB § 1 URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "UGB",
+        section: "1",
+        jurisdiction: "AT",
+      }),
+      "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001702&Paragraf=1",
+    );
+  });
+
+  it("builds AT StPO § 1 URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "StPO",
+        section: "1",
+        jurisdiction: "AT",
+      }),
+      "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10002326&Paragraf=1",
     );
   });
 
@@ -308,6 +378,28 @@ Zuletzt aktualisiert am: 01.01.2026
     assert.equal(section.jurisdiction, "AT");
   });
 
+  it("maps ZPO § 1 into LawSection with AT jurisdiction", () => {
+    const section = mapRisToLawSection({
+      reference: { lawCode: "ZPO", section: "1", jurisdiction: "AT" },
+      html: zpo1HtmlFixture,
+      sourceUrl: "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001699&Paragraf=1",
+      providerId: "ris",
+      providerLabel: "RIS / Rechtsinformationssystem des Bundes",
+      retrievedAt: "2026-06-01T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "ZPO");
+    assert.equal(section.lawTitle, "Zivilprozessordnung");
+    assert.equal(section.section, "1");
+    assert.equal(section.jurisdiction, "AT");
+    assert.equal(section.heading, "Begriff der bürgerlichen Rechtssachen");
+    assert.equal(section.referenceType, "section");
+    assert.equal(section.cacheStatus, "live");
+    assert.equal(section.isOfficialSource, true);
+    assert.equal(section.isAuthoritativeText, false);
+    assert.match(section.text, /regelt das Verfahren/);
+  });
+
   it("extracts RIS metadata fields from fixture", () => {
     const meta = extractRisMetadata(abgb1295HtmlFixture);
 
@@ -373,6 +465,22 @@ describe("RisLawProvider", () => {
     assert.notEqual(section, null);
     assert.equal(section!.lawCode, "ABGB");
     assert.equal(section!.heading, "Schadenersatz");
+    assert.equal(section!.jurisdiction, "AT");
+  });
+
+  it("resolves an AT ZPO § 1 section through fixture-backed fetch", async () => {
+    const provider = new RisLawProvider("https://www.ris.bka.gv.at", async () => ({
+      ok: true,
+      status: 200,
+      text: async () => zpo1HtmlFixture,
+      json: async () => ({}),
+    }));
+
+    const section = await provider.getSection({ lawCode: "ZPO", section: "1", jurisdiction: "AT" });
+
+    assert.notEqual(section, null);
+    assert.equal(section!.lawCode, "ZPO");
+    assert.equal(section!.heading, "Begriff der bürgerlichen Rechtssachen");
     assert.equal(section!.jurisdiction, "AT");
   });
 
