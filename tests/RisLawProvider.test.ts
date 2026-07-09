@@ -90,6 +90,57 @@ Paragraph 75,
 </body>
 </html>`;
 
+
+const liveLikeStgb75HtmlFixture = `<!DOCTYPE html>
+<html lang="de">
+<head><title>RIS - StGB § 75</title></head>
+<body>
+<script type="text/javascript">
+SmartPage_Initialize();
+StyleUtility.CreateBorderSpans('#Header_MainNavigation_RisTabbedMenu_MainMenuTabStrip_BundesrechtTab > *:first');
+</script>
+<style type="text/css">body { font-family: Arial, sans-serif; }</style>
+<noscript>Sie sind dabei, die Seite zu verlassen.</noscript>
+<a href="#content">Zum Inhalt</a>
+<div id="navigation">
+  Navigationsleiste:
+  <a href="/">Bund</a>
+  <a href="/Landesrecht">Länder</a>
+  <a href="/Judikatur">Judikatur</a>
+  <a href="/Gesamtabfrage">Gesamtabfrage</a>
+</div>
+<h1>Bundesrecht konsolidiert: Strafgesetzbuch &#167; 75, tagesaktuelle Fassung</h1>
+<div class="adjacent">
+  <a href="#p74">§ 74 am 09.07.2026</a>
+  <a href="#p76">§ 76 am 09.07.2026</a>
+  <span>Alle Fassungen</span>
+</div>
+<div class="document">
+  <div>Text</div>
+  <div>Besonderer Teil</div>
+  <div>Erster Abschnitt</div>
+  <div>Strafbare Handlungen gegen Leib und Leben</div>
+  <div>Mord</div>
+  <div>§&nbsp;75.  Paragraph 75,</div>
+  <p>Wer einen anderen tötet, ist mit Freiheitsstrafe von zehn bis zu zwanzig Jahren oder mit lebenslanger Freiheitsstrafe zu bestrafen.</p>
+  <div>Schlagworte</div>
+  <div>Umbringen</div>
+  <div>Zuletzt aktualisiert am</div>
+  <div>14.09.2015</div>
+  <div>Gesetzesnummer</div>
+  <div>10002296</div>
+  <div>Dokumentnummer</div>
+  <div>NOR12029618</div>
+  <div>Alte Dokumentnummer</div>
+  <div>N2197415070T</div>
+  <div>https://www.ris.bka.gv.at/eli/bgbl/1974/60/P75/NOR12029618</div>
+  <div>Zum Seitenanfang</div>
+  <div>Über diese Seite</div>
+  <div>© 2026 Bundeskanzleramt der Republik Österreich</div>
+</div>
+</body>
+</html>`;
+
 const zpo1HtmlFixture = `<!DOCTYPE html>
 <html lang="de">
 <head><title>RIS - ZPO § 1</title></head>
@@ -254,6 +305,11 @@ describe("RIS mapping helpers", () => {
     );
   });
 
+
+  it("extracts heading from live-like RIS StGB § 75 fallback page", () => {
+    assert.equal(extractRisHeading(liveLikeStgb75HtmlFixture), "Mord");
+  });
+
   it("extracts plain text from ABGB § 1295 fixture", () => {
     const text = extractRisPlainText(abgb1295HtmlFixture);
 
@@ -295,6 +351,36 @@ Zuletzt aktualisiert am: 01.01.2026
     assert.doesNotMatch(text, /Gesetzesnummer/);
     assert.doesNotMatch(text, /Dokumentnummer/);
     assert.doesNotMatch(text, /European Legislation Identifier/);
+  });
+
+
+  it("extracts only norm text from live-like RIS StGB § 75 fallback page", () => {
+    const text = extractRisPlainText(liveLikeStgb75HtmlFixture);
+
+    assert.match(
+      text,
+      /Wer einen anderen tötet, ist mit Freiheitsstrafe von zehn bis zu zwanzig Jahren oder mit lebenslanger Freiheitsstrafe zu bestrafen\./,
+    );
+    assert.match(text, /^Mord$/m);
+    assert.doesNotMatch(text, /SmartPage_Initialize/);
+    assert.doesNotMatch(text, /Sie sind dabei, die Seite zu verlassen/);
+    assert.doesNotMatch(text, /Navigationsleiste/);
+    assert.doesNotMatch(text, /Zum Inhalt/);
+    assert.doesNotMatch(text, /Zum Seitenanfang/);
+    assert.doesNotMatch(text, /Über diese Seite/);
+    assert.doesNotMatch(text, /StyleUtility/);
+    assert.doesNotMatch(text, /Schlagworte/);
+    assert.doesNotMatch(text, /Zuletzt aktualisiert/);
+    assert.doesNotMatch(text, /Gesetzesnummer/);
+    assert.doesNotMatch(text, /Dokumentnummer/);
+    assert.doesNotMatch(text, /Alte Dokumentnummer/);
+    assert.doesNotMatch(text, /European Legislation Identifier/);
+    assert.doesNotMatch(text, /NOR12029618/);
+    assert.doesNotMatch(text, /Paragraph 75/);
+    assert.doesNotMatch(text, /Strafgesetzbuch &#167; 75/);
+    assert.doesNotMatch(text, /Besonderer Teil/);
+    assert.doesNotMatch(text, /Erster Abschnitt/);
+    assert.doesNotMatch(text, /Strafbare Handlungen/);
   });
 
   it("extracts plain text from ABGB § 1294 fixture", () => {
