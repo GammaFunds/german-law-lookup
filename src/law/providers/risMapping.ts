@@ -72,7 +72,9 @@ export function extractRisHeading(html: string): string | undefined {
 
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i];
-    const headingMatch = line.match(/^(?:§\s*\d+[a-z]?|Art(?:ikel)?\.?\s*\d+[a-z]?)\s+(.+)$/i);
+    const headingMatch = line.match(
+      /^(?:§\.?\s*\d+[a-z]?(?:\.?\s*Paragraph\s*\d+,?)?|Art(?:ikel)?\.?\s*\d+[a-z]?)\s+(.+)$/i,
+    );
     if (headingMatch) {
       const heading = headingMatch[1].trim();
       if (heading.length > 0) {
@@ -82,7 +84,7 @@ export function extractRisHeading(html: string): string | undefined {
   }
 
   const lastLine = lines[lines.length - 1];
-  if (lastLine && !/^(?:§\s*\d+|Art(?:ikel)?\.?\s*\d+)/i.test(lastLine)) {
+  if (lastLine && !/^(?:§\.?\s*\d+|Art(?:ikel)?\.?\s*\d+)/i.test(lastLine)) {
     return lastLine;
   }
 
@@ -120,6 +122,7 @@ export function extractRisPlainText(html: string): string {
       if (line.startsWith("Datenschutz")) return false;
       if (line.startsWith("Barrierefreiheit")) return false;
       if (line.startsWith("Kontakt")) return false;
+      if (/^Paragraph\s*\d+[,.]?\s*$/i.test(line)) return false;
       return line.length > 0;
     });
 

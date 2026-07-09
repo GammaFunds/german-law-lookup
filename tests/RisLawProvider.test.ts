@@ -56,6 +56,40 @@ Zuletzt aktualisiert am: 01.01.2026
 </body>
 </html>`;
 
+const historicalStgb75HtmlFixture = `<!DOCTYPE html>
+<html lang="de">
+<head><title>RIS - StGB § 75</title></head>
+<body>
+<div id="tabContent">
+<h1>Strafgesetzbuch<br/>§. 75.Paragraph 75, Mord</h1>
+<p>(1) Wer einen anderen tötet, ist mit Freiheitsstrafe von zehn bis zu zwanzig Jahren oder mit lebenslanger Freiheitsstrafe zu bestrafen.</p>
+</div>
+</body>
+</html>`;
+
+const historicalStgb75HtmlMultiLineFixture = `<!DOCTYPE html>
+<html lang="de">
+<head><title>RIS - StGB § 75</title></head>
+<body>
+<div id="tabContent">
+<h1>Strafgesetzbuch<br/>§. 75.<br/>Paragraph 75,<br/>Mord</h1>
+<p>(1) Wer einen anderen tötet, ist mit Freiheitsstrafe von zehn bis zu zwanzig Jahren oder mit lebenslanger Freiheitsstrafe zu bestrafen.</p>
+</div>
+</body>
+</html>`;
+
+const dedupLabelHtmlFixture = `<!DOCTYPE html>
+<html lang="de">
+<head><title>RIS - StGB § 75</title></head>
+<body>
+<div id="tabContent">
+<h1>Strafgesetzbuch<br/>§ 75 Mord</h1>
+Paragraph 75,
+<p>(1) Wer einen anderen tötet, ist mit Freiheitsstrafe von zehn bis zu zwanzig Jahren oder mit lebenslanger Freiheitsstrafe zu bestrafen.</p>
+</div>
+</body>
+</html>`;
+
 const bvg144HtmlFixture = `<!DOCTYPE html>
 <html lang="en">
 <head><title>RIS - B-VG Art. 144</title></head>
@@ -136,6 +170,20 @@ describe("RIS mapping helpers", () => {
     assert.equal(extractRisHeading(abgb1295HtmlFixture), "Schadenersatz");
   });
 
+  it("extracts heading from historical §. N.Paragraph N, form (one line)", () => {
+    assert.equal(
+      extractRisHeading(historicalStgb75HtmlFixture),
+      "Mord",
+    );
+  });
+
+  it("extracts heading from historical §. N.Paragraph N, form (multi-line)", () => {
+    assert.equal(
+      extractRisHeading(historicalStgb75HtmlMultiLineFixture),
+      "Mord",
+    );
+  });
+
   it("extracts plain text from ABGB § 1295 fixture", () => {
     const text = extractRisPlainText(abgb1295HtmlFixture);
 
@@ -190,6 +238,14 @@ Zuletzt aktualisiert am: 01.01.2026
 
     assert.match(text, /Wer einen anderen tötet/);
     assert.doesNotMatch(text, /Gesetzesnummer 10002296/);
+  });
+
+  it("removes standalone Paragraph N labels from plain text (dedup)", () => {
+    const text = extractRisPlainText(dedupLabelHtmlFixture);
+
+    assert.match(text, /Wer einen anderen tötet/);
+    assert.match(text, /§ 75 Mord/);
+    assert.doesNotMatch(text, /^Paragraph\s*75[,.]?\s*$/m);
   });
 
   it("extracts plain text from B-VG Art. 144 fixture", () => {
