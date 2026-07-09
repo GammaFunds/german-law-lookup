@@ -7,6 +7,9 @@ import {
   extractRisHeading,
   extractRisPlainText,
   extractRisMetadata,
+  extractRisErvArticleEnglish,
+  extractRisErvHeading,
+  mapRisErvToLawSection,
   mapRisToLawSection,
 } from "../src/law/providers/risMapping";
 
@@ -169,6 +172,20 @@ Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich
 Gesetzesnummer: 10000138
 Dokumentnummer: NOR13123456
 Zuletzt aktualisiert am: 01.01.2026
+</body>
+</html>`;
+
+const ervBvgHtmlFixture = `<!DOCTYPE html>
+<html lang="en">
+<head><title>RIS Dokument</title></head>
+<body>
+<div class="Header_MainNavigation"><a href="#content">Zum Inhalt</a> <a href="/">Startseite</a> <a href="/Dokumente">RIS Dokument</a></div>
+<table>
+<tr><td style="vertical-align:top;padding:0pt 5.4pt 0pt 5.4pt;"><div class="ParagraphMitAbsatzzahl"><div class="GldSymbolFloatLeft AlignJustify"><h3 class="GldSymbol AlignJustify">Artikel 144.</h3></div><ol class="wai-absatz-list"><li><div class="content"><div class="Abs_small_indent AlignJustify"><span aria-hidden="true" class="Absatzzahl">(1)</span><span class="sr-only">Absatz eins,</span><span>Der Verfassungsgerichtshof erkennt über Beschwerden gegen das Erkenntnis eines Verwaltungsgerichtes, soweit der Beschwerdeführer durch das Erkenntnis in einem verfassungsgesetzlich gewährleisteten Recht verletzt zu sein behauptet.</span></div></div></li><li><div class="content"><div class="Abs_small_indent AlignJustify"><span aria-hidden="true" class="Absatzzahl">(2)</span><span class="sr-only">Absatz zwei,</span><span>Der Verfassungsgerichtshof kann dem Beschwerdeführer die Beschwerde unter Setzung einer angemessenen Frist zur Verbesserung zurückstellen.</span></div></div></li></ol></div></td>
+<td style="vertical-align:top;padding:0pt 5.4pt 0pt 5.4pt;"><div class="ParagraphMitAbsatzzahl"><div class="GldSymbolFloatLeft AlignJustify"><h3 class="GldSymbol AlignJustify"><span style="font-weight:normal;"><span class="Fett">Article </span></span>144.</h3></div><ol class="wai-absatz-list"><li><div class="content"><div class="Abs_small_indent AlignJustify"><span aria-hidden="true" class="Absatzzahl">(1)</span><span class="sr-only">Absatz eins,</span><span>The Constitutional Court shall rule on complaints against rulings of administrative courts, where the complainant alleges that the ruling has infringed any of their constitutionally guaranteed rights.</span></div></div></li><li><div class="content"><div class="Abs_small_indent AlignJustify"><span aria-hidden="true" class="Absatzzahl">(2)</span><span class="sr-only">Absatz zwei,</span><span>The Constitutional Court may, instead of dismissing or rejecting the complaint, request the complainant to amend it within an appropriate period.</span></div></div></li></ol></div></td></tr>
+<tr><td style="vertical-align:top;padding:0pt 5.4pt 0pt 5.4pt;"><div class="Abs_small_indent AlignJustify"><span>Findet der Verfassungsgerichtshof die Beschwerde nicht zulässig, so weist er sie zurück.</span></div></td><td style="vertical-align:top;padding:0pt 5.4pt 0pt 5.4pt;"><div class="Abs_small_indent AlignJustify"><span>If the Constitutional Court does not consider the complaint admissible, it shall dismiss it.</span></div></td></tr>
+<tr><td style="vertical-align:top;padding:0pt 5.4pt 0pt 5.4pt;"><div class="GldSymbolFloatLeft AlignJustify"><h3 class="GldSymbol AlignJustify">Artikel 145.</h3></div></td><td style="vertical-align:top;padding:0pt 5.4pt 0pt 5.4pt;"><div class="GldSymbolFloatLeft AlignJustify"><h3 class="GldSymbol AlignJustify"><span style="font-weight:normal;"><span class="Fett">Article </span></span>145.</h3></div></td></tr>
+</table>
 </body>
 </html>`;
 
@@ -464,6 +481,70 @@ Zuletzt aktualisiert am: 01.01.2026
     assert.equal(section.jurisdiction, "AT");
   });
 
+  it("builds AT B-VG translation-en ERV URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "B-VG",
+        section: "144",
+        referenceType: "article",
+        sourceVariant: "translation-en",
+        jurisdiction: "AT",
+      }),
+      "https://www.ris.bka.gv.at/Dokumente/Erv/ERV_1930_1/ERV_1930_1.html",
+    );
+  });
+
+  it("returns null for non-B-VG AT translation-en URL", () => {
+    assert.equal(
+      buildRisSectionUrl({
+        lawCode: "ABGB",
+        section: "1295",
+        sourceVariant: "translation-en",
+        jurisdiction: "AT",
+      }),
+      null,
+    );
+  });
+
+  it("extracts English article text from ERV B-VG fixture", () => {
+    const text = extractRisErvArticleEnglish(ervBvgHtmlFixture, "144");
+
+    assert.match(
+      text,
+      /The Constitutional Court shall rule on complaints against rulings of administrative courts/,
+    );
+    assert.match(text, /The Constitutional Court may, instead of dismissing or rejecting the complaint/);
+    assert.doesNotMatch(text, /Der Verfassungsgerichtshof kann/);
+    assert.doesNotMatch(text, /Findet der Verfassungsgerichtshof/);
+    assert.doesNotMatch(text, /Startseite/);
+    assert.doesNotMatch(text, /RIS Dokument/);
+    assert.doesNotMatch(text, /Absatz eins,/);
+  });
+
+  it("extracts English heading from ERV B-VG fixture", () => {
+    assert.equal(extractRisErvHeading(ervBvgHtmlFixture, "144"), "Article 144.");
+  });
+
+  it("maps ERV B-VG Art. 144 into translation-en LawSection", () => {
+    const section = mapRisErvToLawSection({
+      reference: { lawCode: "B-VG", section: "144", referenceType: "article", sourceVariant: "translation-en", jurisdiction: "AT" },
+      html: ervBvgHtmlFixture,
+      sourceUrl: "https://www.ris.bka.gv.at/Dokumente/Erv/ERV_1930_1/ERV_1930_1.html",
+      providerId: "ris",
+      providerLabel: "RIS / Rechtsinformationssystem des Bundes",
+      retrievedAt: "2026-06-01T00:00:00.000Z",
+    });
+
+    assert.equal(section.jurisdiction, "AT");
+    assert.equal(section.lawCode, "B-VG");
+    assert.equal(section.referenceType, "article");
+    assert.equal(section.sourceVariant, "translation-en");
+    assert.equal(section.isOfficialSource, true);
+    assert.equal(section.isAuthoritativeText, false);
+    assert.equal(section.heading, "Article 144.");
+    assert.match(section.text, /The Constitutional Court shall rule on complaints against rulings of administrative courts/);
+  });
+
   it("maps ZPO § 1 into LawSection with AT jurisdiction", () => {
     const section = mapRisToLawSection({
       reference: { lawCode: "ZPO", section: "1", jurisdiction: "AT" },
@@ -568,6 +649,39 @@ describe("RisLawProvider", () => {
     assert.equal(section!.lawCode, "ZPO");
     assert.equal(section!.heading, "Begriff der bürgerlichen Rechtssachen");
     assert.equal(section!.jurisdiction, "AT");
+  });
+
+  it("resolves an AT B-VG Art. 144 translation-en section through fixture-backed fetch", async () => {
+    let fetchedUrl: string | null = null;
+    const provider = new RisLawProvider("https://www.ris.bka.gv.at", async (url) => {
+      fetchedUrl = url;
+      return {
+        ok: true,
+        status: 200,
+        text: async () => ervBvgHtmlFixture,
+        json: async () => ({}),
+      };
+    });
+
+    const section = await provider.getSection({
+      lawCode: "B-VG",
+      section: "144",
+      referenceType: "article",
+      sourceVariant: "translation-en",
+      jurisdiction: "AT",
+    });
+
+    assert.equal(fetchedUrl, "https://www.ris.bka.gv.at/Dokumente/Erv/ERV_1930_1/ERV_1930_1.html");
+    assert.notEqual(section, null);
+    assert.equal(section!.jurisdiction, "AT");
+    assert.equal(section!.lawCode, "B-VG");
+    assert.equal(section!.referenceType, "article");
+    assert.equal(section!.sourceVariant, "translation-en");
+    assert.equal(section!.isOfficialSource, true);
+    assert.equal(section!.isAuthoritativeText, false);
+    assert.match(section!.text, /The Constitutional Court shall rule on complaints against rulings of administrative courts/);
+    assert.doesNotMatch(section!.text, /Der Verfassungsgerichtshof kann/);
+    assert.doesNotMatch(section!.text, /Findet der Verfassungsgerichtshof/);
   });
 
   it("returns null on 404", async () => {

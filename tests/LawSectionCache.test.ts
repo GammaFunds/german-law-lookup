@@ -404,6 +404,133 @@ describe("CachedLawProvider", () => {
     );
   });
 
+  it("does not return cached AT ABGB official-de for AT ABGB translation-en", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "AT:ABGB:1295:official-de": section({
+            providerId: "neuris",
+            lawCode: "ABGB",
+            lawTitle: "Allgemeines bürgerliches Gesetzbuch",
+            section: "1295",
+            heading: "Schadensersatz",
+            text: "AT German text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      await cache.get({
+        lawCode: "ABGB",
+        section: "1295",
+        jurisdiction: "AT",
+        sourceVariant: "translation-en",
+      }),
+      null,
+    );
+  });
+
+  it("does not return cached AT StGB official-de for AT StGB translation-en", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "AT:STGB:242:official-de": section({
+            providerId: "neuris",
+            lawCode: "StGB",
+            lawTitle: "Strafgesetzbuch",
+            section: "242",
+            heading: "Diebstahl",
+            text: "AT German text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      await cache.get({
+        lawCode: "STGB",
+        section: "242",
+        jurisdiction: "AT",
+        sourceVariant: "translation-en",
+      }),
+      null,
+    );
+  });
+
+  it("does not return cached AT B-VG official-de for AT B-VG translation-en", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "AT:B-VG:art:144:official-de": section({
+            providerId: "neuris",
+            lawCode: "B-VG",
+            lawTitle: "Bundes-Verfassungsgesetz",
+            section: "144",
+            referenceType: "article",
+            heading: "Erkenntnisse und Beschlüsse",
+            text: "AT German text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      await cache.get({
+        lawCode: "B-VG",
+        section: "144",
+        referenceType: "article",
+        jurisdiction: "AT",
+        sourceVariant: "translation-en",
+      }),
+      null,
+    );
+  });
+
+  it("returns cached AT B-VG translation-en for AT B-VG translation-en", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "AT:B-VG:art:144:translation-en": section({
+            providerId: "neuris",
+            lawCode: "B-VG",
+            lawTitle: "Bundes-Verfassungsgesetz",
+            section: "144",
+            referenceType: "article",
+            sourceVariant: "translation-en",
+            heading: "Findings and decisions",
+            text: "AT English text",
+          }),
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      (
+        await cache.get({
+          lawCode: "B-VG",
+          section: "144",
+          referenceType: "article",
+          jurisdiction: "AT",
+          sourceVariant: "translation-en",
+        })
+      )?.text,
+      "AT English text",
+    );
+  });
+
   it("reads official-de variant keys for translation requests before legacy fallback", async () => {
     const cache = new StoredLawSectionCache({
       async load() {

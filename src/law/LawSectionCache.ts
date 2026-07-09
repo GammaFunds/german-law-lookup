@@ -46,10 +46,6 @@ function legacyLawSectionCacheKey(reference: LawReference): string {
 function cacheKeysForRead(reference: LawReference): string[] {
   const key = lawSectionCacheKey(reference);
   if (reference.jurisdiction === "AT") {
-    if (normalizeLawSourceVariant(reference.sourceVariant) === "translation-en") {
-      return [key, lawSectionCacheKey({ ...reference, sourceVariant: "official-de" })];
-    }
-
     return [key];
   }
 

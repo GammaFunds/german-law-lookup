@@ -60,8 +60,20 @@ const supportedAustrianLaws: Record<string, AustrianLawConfig> = {
   },
 };
 
+export const ERV_BVG_URL =
+  "https://www.ris.bka.gv.at/Dokumente/Erv/ERV_1930_1/ERV_1930_1.html";
+
 export function buildRisSectionUrl(reference: LawReference): string | null {
   if (reference.jurisdiction !== "AT") {
+    return null;
+  }
+
+  if (reference.sourceVariant === "translation-en") {
+    const law = supportedAustrianLaws[reference.lawCode.toUpperCase()];
+    if (law && law.gesetzesnummer === "10000138" && law.referenceType === "article") {
+      return ERV_BVG_URL;
+    }
+
     return null;
   }
 
@@ -185,6 +197,103 @@ export function mapRisToLawSection(params: {
   };
 }
 
+
+interface ErvEnglishHeading {
+  index: number;
+  number: string;
+  text: string;
+}
+
+function findErvEnglishHeadings(cleaned: string): ErvEnglishHeading[] {
+  const headingRe = /<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi;
+  const hits: ErvEnglishHeading[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = headingRe.exec(cleaned)) !== null) {
+    const text = stripTags(match[1])
+      .replace(/ /g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const parsed = text.match(/^Article\s+(\d+[a-z]?)\.?$/i);
+    if (parsed) {
+      hits.push({ index: match.index, number: parsed[1], text });
+    }
+  }
+
+  return hits;
+}
+
+export function extractRisErvHeading(html: string, article: string): string | undefined {
+  const cleaned = stripRisClientCode(html);
+  const target = String(article).trim();
+  const hit = findErvEnglishHeadings(cleaned).find((h) => h.number === target);
+
+  return hit?.text;
+}
+
+export function extractRisErvArticleEnglish(html: string, article: string): string {
+  const cleaned = stripRisClientCode(html);
+  const hits = findErvEnglishHeadings(cleaned);
+  const target = String(article).trim();
+
+  const startHit = hits.find((h) => h.number === target);
+  if (!startHit) {
+    return "";
+  }
+
+  const endHit = hits.find((h) => h.index > startHit.index && h.number !== target);
+  const startTrIndex = cleaned.lastIndexOf("<tr", startHit.index);
+  const endTrIndex = endHit
+    ? cleaned.lastIndexOf("<tr", endHit.index)
+    : cleaned.length;
+
+  const region = cleaned.slice(startTrIndex < 0 ? 0 : startTrIndex, endTrIndex);
+  const rows = [...region.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)].map((m) => m[1]);
+
+  const cells: string[] = [];
+  for (const row of rows) {
+    const tds = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => m[1]);
+    cells.push(tds[1] ?? "");
+  }
+
+  let body = cells.join("\n");
+  body = body.replace(/<h[1-6]\b[^>]*>[\s\S]*?<\/h[1-6]>/gi, " ");
+  body = body.replace(
+    /<(?:span|div|p|li|ol|ul)[^>]*class=["'][^"']*sr-only[^"']*["'][^>]*>[\s\S]*?<\/(?:span|div|p|li|ol|ul)>/gi,
+    " ",
+  );
+
+  return toRisTextLines(body).filter(isRisPlainTextLine).join("\n");
+}
+
+export function mapRisErvToLawSection(params: {
+  reference: LawReference;
+  html: string;
+  sourceUrl: string;
+  providerId: string;
+  providerLabel: string;
+  retrievedAt: string;
+}): LawSection {
+  const article = params.reference.section;
+
+  return {
+    providerId: params.providerId,
+    providerLabel: params.providerLabel,
+    sourceUrl: params.sourceUrl,
+    lawCode: "B-VG",
+    lawTitle: "Bundes-Verfassungsgesetz",
+    section: article,
+    referenceType: "article",
+    sourceVariant: "translation-en",
+    jurisdiction: "AT",
+    heading: extractRisErvHeading(params.html, article),
+    text: extractRisErvArticleEnglish(params.html, article),
+    retrievedAt: params.retrievedAt,
+    cacheStatus: "live",
+    isOfficialSource: true,
+    isAuthoritativeText: false,
+  };
+}
 
 function extractRisHeadingFromHeadingElement(html: string): string | undefined {
   const headingMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);

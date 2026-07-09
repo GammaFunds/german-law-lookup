@@ -8,6 +8,8 @@ import type { LawReference, LawSection } from "../types";
 import {
   buildRisSectionUrl,
   canMapRisReference,
+  extractRisErvArticleEnglish,
+  mapRisErvToLawSection,
   mapRisToLawSection,
 } from "./risMapping";
 
@@ -28,7 +30,7 @@ export class RisLawProvider implements LawProvider {
     }
 
     if (reference.sourceVariant === "translation-en") {
-      return null;
+      return this.getTranslationEnSection(reference);
     }
 
     const sectionUrl = buildRisSectionUrl(reference);
@@ -70,6 +72,51 @@ export class RisLawProvider implements LawProvider {
       throw new LawProviderUnavailableError(
         this.id,
         "RIS lookup failed before a definitive not-found result.",
+        error,
+      );
+    }
+  }
+
+  private async getTranslationEnSection(reference: LawReference): Promise<LawSection | null> {
+    const sectionUrl = buildRisSectionUrl(reference);
+    if (!sectionUrl) {
+      return null;
+    }
+
+    try {
+      const response = await this.request(sectionUrl);
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new LawProviderUnavailableError(
+          this.id,
+          `RIS request failed: ${sectionUrl}`,
+        );
+      }
+
+      const html = await this.getText(response, sectionUrl);
+      if (!extractRisErvArticleEnglish(html, reference.section)) {
+        return null;
+      }
+
+      return mapRisErvToLawSection({
+        reference,
+        html,
+        sourceUrl: sectionUrl,
+        providerId: this.id,
+        providerLabel: this.label,
+        retrievedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      if (error instanceof LawProviderUnavailableError) {
+        throw error;
+      }
+
+      throw new LawProviderUnavailableError(
+        this.id,
+        "RIS translation-en lookup failed before a definitive not-found result.",
         error,
       );
     }
