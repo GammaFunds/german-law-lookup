@@ -2,8 +2,8 @@ import { App, MarkdownView, Modal, Notice, Setting } from "obsidian";
 import { formatLawSectionAsMarkdown } from "../law/CitationFormatter";
 import { LawTranslationUnavailableError } from "../law/errors";
 import { ProviderRegistry } from "../law/ProviderRegistry";
-import type { LawSection, LawSourceVariant } from "../law/types";
-import { parseLawReference } from "../parser";
+import type { LawJurisdiction, LawSection, LawSourceVariant } from "../law/types";
+import { parseLawReferenceWithSelectedJurisdiction } from "../parser";
 import { LookupSequence } from "./LookupSequence";
 import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
 import type { UiStrings } from "./i18n";
@@ -22,6 +22,7 @@ export class LawLookupModal extends Modal {
   private currentSection: LawSection | null = null;
   private currentMarkdown = "";
   private selectedSourceVariant: LawSourceVariant = "official-de";
+  private selectedJurisdiction: LawJurisdiction = "DE";
   private showInsertedSourceMetadata = true;
   private readonly lookupSequence = new LookupSequence();
 
@@ -52,6 +53,24 @@ export class LawLookupModal extends Modal {
       }
     });
 
+    const jurisdictionSelect = formEl.createEl("select", {
+      cls: "de-law-jurisdiction-select",
+    });
+    jurisdictionSelect.createEl("option", {
+      value: "DE",
+      text: this.ui.jurisdictionGermany,
+    });
+    jurisdictionSelect.createEl("option", {
+      value: "AT",
+      text: this.ui.jurisdictionAustria,
+    });
+    jurisdictionSelect.addEventListener("change", () => {
+      this.selectedJurisdiction = jurisdictionSelect.value as LawJurisdiction;
+      if (this.inputEl?.value.trim()) {
+        void this.renderParsedReference();
+      }
+    });
+
     const searchButton = formEl.createEl("button", { text: this.ui.lookUpLawButton });
     searchButton.addEventListener("click", () => {
       void this.renderParsedReference();
@@ -72,7 +91,10 @@ export class LawLookupModal extends Modal {
 
   private async renderParsedReference() {
     const lookupId = this.lookupSequence.next();
-    const parsedReference = parseLawReference(this.inputEl.value);
+    const parsedReference = parseLawReferenceWithSelectedJurisdiction(
+      this.inputEl.value,
+      this.selectedJurisdiction,
+    );
     this.currentSection = null;
     this.currentMarkdown = "";
     this.renderActions();

@@ -1,4 +1,4 @@
-import type { LawReference } from "./law/types";
+import type { LawJurisdiction, LawReference } from "./law/types";
 
 export type ParsedLawReference = LawReference;
 
@@ -127,6 +127,32 @@ const egbgbLawFirstArticlePattern = new RegExp(
   String.raw`^(EGBGB)\s+${articleMarkerPattern}\s*(${egbgbArticlePattern})$`,
   "iu",
 );
+
+export function enrichJurisdiction(
+  reference: ParsedLawReference,
+  selectedJurisdiction: LawJurisdiction,
+): ParsedLawReference {
+  if (selectedJurisdiction === "AT" && !reference.jurisdiction) {
+    return { ...reference, jurisdiction: "AT" };
+  }
+  return reference;
+}
+
+export function parseLawReferenceWithSelectedJurisdiction(
+  input: string,
+  selectedJurisdiction: LawJurisdiction,
+): ParsedLawReference | null {
+  const parsedReference = parseLawReference(input);
+  if (parsedReference) {
+    return enrichJurisdiction(parsedReference, selectedJurisdiction);
+  }
+
+  if (selectedJurisdiction === "AT") {
+    return parseLawReference(`AT ${input}`);
+  }
+
+  return null;
+}
 
 export function parseLawReference(input: string): ParsedLawReference | null {
   const normalized = input.trim().replace(/\s+/g, " ");

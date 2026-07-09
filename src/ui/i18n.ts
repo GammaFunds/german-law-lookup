@@ -35,6 +35,9 @@ export interface UiStrings {
   insertSourceAndCacheNote: string;
   insertIntoCurrentNote: string;
   noActiveMarkdownEditorFound: string;
+  jurisdictionLabel: string;
+  jurisdictionGermany: string;
+  jurisdictionAustria: string;
 }
 
 const UI_STRINGS: Record<UiLanguage, UiStrings> = {
@@ -78,6 +81,9 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     insertSourceAndCacheNote: "Quellen- und Cache-Hinweis einfügen",
     insertIntoCurrentNote: "In aktuelle Note einfügen",
     noActiveMarkdownEditorFound: "Kein aktiver Markdown-Editor gefunden.",
+    jurisdictionLabel: "Rechtsraum",
+    jurisdictionGermany: "Deutschland",
+    jurisdictionAustria: "Österreich",
   },
   en: {
     commandName: "Look up German law",
@@ -119,6 +125,9 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     insertSourceAndCacheNote: "Insert source and cache note",
     insertIntoCurrentNote: "Insert into current note",
     noActiveMarkdownEditorFound: "No active Markdown editor found.",
+    jurisdictionLabel: "Jurisdiction",
+    jurisdictionGermany: "Germany",
+    jurisdictionAustria: "Austria",
   },
 };
 

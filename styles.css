@@ -8,6 +8,10 @@
   flex: 1;
 }
 
+.de-law-jurisdiction-select {
+  flex: 0 0 auto;
+}
+
 .de-law-lookup-result {
   min-height: 72px;
   padding: 14px 16px;
