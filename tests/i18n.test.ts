@@ -59,6 +59,21 @@ describe("ui i18n", () => {
     assert.equal(defaultLawSourceVariantForLanguage(undefined), "official-de");
   });
 
+  it("provides German Switzerland label", () => {
+    assert.equal(getUiStrings("de").jurisdictionSwitzerland, "Schweiz");
+  });
+
+  it("provides English Switzerland label", () => {
+    assert.equal(getUiStrings("en").jurisdictionSwitzerland, "Switzerland");
+  });
+
+  it("preserves existing Germany and Austria labels", () => {
+    assert.equal(getUiStrings("de").jurisdictionGermany, "Deutschland");
+    assert.equal(getUiStrings("de").jurisdictionAustria, "Österreich");
+    assert.equal(getUiStrings("en").jurisdictionGermany, "Germany");
+    assert.equal(getUiStrings("en").jurisdictionAustria, "Austria");
+  });
+
   it("uses official-de for existing plugin data without a stored variant on non-German locales", () => {
     assert.equal(
       defaultLawSourceVariantForLanguage("en", undefined),

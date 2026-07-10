@@ -64,6 +64,10 @@ export class LawLookupModal extends Modal {
       value: "AT",
       text: this.ui.jurisdictionAustria,
     });
+    jurisdictionSelect.createEl("option", {
+      value: "CH",
+      text: this.ui.jurisdictionSwitzerland,
+    });
     jurisdictionSelect.addEventListener("change", () => {
       this.selectedJurisdiction = jurisdictionSelect.value as LawJurisdiction;
       if (this.inputEl?.value.trim()) {

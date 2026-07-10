@@ -38,6 +38,7 @@ export interface UiStrings {
   jurisdictionLabel: string;
   jurisdictionGermany: string;
   jurisdictionAustria: string;
+  jurisdictionSwitzerland: string;
 }
 
 const UI_STRINGS: Record<UiLanguage, UiStrings> = {
@@ -84,6 +85,7 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     jurisdictionLabel: "Rechtsraum",
     jurisdictionGermany: "Deutschland",
     jurisdictionAustria: "Österreich",
+    jurisdictionSwitzerland: "Schweiz",
   },
   en: {
     commandName: "Look up German law",
@@ -128,6 +130,7 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     jurisdictionLabel: "Jurisdiction",
     jurisdictionGermany: "Germany",
     jurisdictionAustria: "Austria",
+    jurisdictionSwitzerland: "Switzerland",
   },
 };
 

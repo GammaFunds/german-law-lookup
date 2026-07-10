@@ -135,6 +135,14 @@ export function enrichJurisdiction(
   if (selectedJurisdiction === "AT" && !reference.jurisdiction) {
     return { ...reference, jurisdiction: "AT" };
   }
+  if (
+    selectedJurisdiction === "CH" &&
+    !reference.jurisdiction &&
+    reference.referenceType === "article" &&
+    (reference.lawCode === "BV" || reference.lawCode === "ZGB")
+  ) {
+    return { ...reference, jurisdiction: "CH" };
+  }
   return reference;
 }
 
@@ -144,11 +152,51 @@ export function parseLawReferenceWithSelectedJurisdiction(
 ): ParsedLawReference | null {
   const parsedReference = parseLawReference(input);
   if (parsedReference) {
-    return enrichJurisdiction(parsedReference, selectedJurisdiction);
+    if (selectedJurisdiction !== "CH") {
+      return enrichJurisdiction(parsedReference, selectedJurisdiction);
+    }
+
+    if (parsedReference.jurisdiction) {
+      return parsedReference;
+    }
+
+    const enrichedReference = enrichJurisdiction(parsedReference, "CH");
+    return enrichedReference.jurisdiction === "CH" ? enrichedReference : null;
   }
 
   if (selectedJurisdiction === "AT") {
     return parseLawReference(`AT ${input}`);
+  }
+
+  if (selectedJurisdiction === "CH") {
+    const normalized = input.trim().replace(/\s+/g, " ");
+    if (normalized) {
+      const artFirstMatch = normalized.match(articleFirstPattern);
+      if (artFirstMatch) {
+        const lawCode = artFirstMatch[2].toUpperCase();
+        if (lawCode === "BV" || lawCode === "ZGB") {
+          return {
+            lawCode,
+            section: artFirstMatch[1],
+            referenceType: "article",
+            jurisdiction: "CH",
+          };
+        }
+      }
+
+      const lawFirstArtMatch = normalized.match(lawFirstArticlePattern);
+      if (lawFirstArtMatch) {
+        const lawCode = lawFirstArtMatch[1].toUpperCase();
+        if (lawCode === "BV" || lawCode === "ZGB") {
+          return {
+            lawCode,
+            section: lawFirstArtMatch[2],
+            referenceType: "article",
+            jurisdiction: "CH",
+          };
+        }
+      }
+    }
   }
 
   return null;

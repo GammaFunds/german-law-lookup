@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, requestUrl, Setting } from "obsidian";
+import { App, Plugin, PluginSettingTab, requestUrl, Setting, moment } from "obsidian";
 import {
   StoredLawSectionCache,
   type LawSectionCacheStorage,
@@ -257,8 +257,12 @@ class DeLawSettingsTab extends PluginSettingTab {
   }
 }
 
-function safeGetObsidianLanguage(): string {
-  return "en";
+function safeGetObsidianLanguage(): string  {
+  try {
+    return moment.locale();
+  } catch {
+    return "en";
+  }
 }
 
 function normalizeTtlDays(value: unknown): number | null {
