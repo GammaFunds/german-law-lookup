@@ -59,6 +59,78 @@ const supportedSwissLaws: Record<string, SwissLawConfig> = {
     lawTitle: "Datenschutzgesetz",
     displayLawCode: "DSG",
   },
+  IPRG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1988/1776_1776_1776",
+    lawTitle: "Bundesgesetz über das Internationale Privatrecht",
+    displayLawCode: "IPRG",
+  },
+  DBG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1991/1184_1184_1184",
+    lawTitle: "Bundesgesetz über die direkte Bundessteuer",
+    displayLawCode: "DBG",
+  },
+  STHG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1991/1256_1256_1256",
+    lawTitle:
+      "Bundesgesetz über die Harmonisierung der direkten Steuern der Kantone und Gemeinden",
+    displayLawCode: "StHG",
+  },
+  AHVG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/63/837_843_843",
+    lawTitle:
+      "Bundesgesetz über die Alters- und Hinterlassenenversicherung",
+    displayLawCode: "AHVG",
+  },
+  IVG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1959/827_857_845",
+    lawTitle: "Bundesgesetz über die Invalidenversicherung",
+    displayLawCode: "IVG",
+  },
+  ATSG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/2002/510",
+    lawTitle:
+      "Bundesgesetz über den Allgemeinen Teil des Sozialversicherungsrechts",
+    displayLawCode: "ATSG",
+  },
+  ARG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1966/57_57_57",
+    lawTitle:
+      "Bundesgesetz über die Arbeit in Industrie, Gewerbe und Handel",
+    displayLawCode: "ArG",
+  },
+  SVG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1959/679_705_685",
+    lawTitle: "Strassenverkehrsgesetz",
+    displayLawCode: "SVG",
+  },
+  AIG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/2007/758",
+    lawTitle: "Ausländer- und Integrationsgesetz",
+    displayLawCode: "AIG",
+  },
+  KG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1996/546_546_546",
+    lawTitle:
+      "Bundesgesetz über Kartelle und andere Wettbewerbsbeschränkungen",
+    displayLawCode: "KG",
+  },
+  URG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1993/1798_1798_1798",
+    lawTitle:
+      "Bundesgesetz über das Urheberrecht und verwandte Schutzrechte",
+    displayLawCode: "URG",
+  },
+  PATG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1955/871_893_899",
+    lawTitle: "Bundesgesetz über die Erfindungspatente",
+    displayLawCode: "PatG",
+  },
+  MSCHG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1993/274_274_274",
+    lawTitle:
+      "Bundesgesetz über den Schutz von Marken und Herkunftsangaben",
+    displayLawCode: "MSchG",
+  },
 };
 
 export interface FedlexMapResult {

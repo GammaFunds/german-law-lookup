@@ -463,3 +463,89 @@ describe("CH Phase 1C exact contract matrix", () => {
     );
   });
 });
+
+describe("CH Phase 1D exact contract matrix", () => {
+  const accepted = [
+    ["IPRG Art. 1", "IPRG"],
+    ["Art. 1 IPRG", "IPRG"],
+    ["DBG Art. 1", "DBG"],
+    ["StHG Art. 1", "STHG"],
+    ["AHVG Art. 1", "AHVG"],
+    ["IVG Art. 1", "IVG"],
+    ["ATSG Art. 1", "ATSG"],
+    ["ArG Art. 1", "ARG"],
+    ["SVG Art. 1", "SVG"],
+    ["AIG Art. 1", "AIG"],
+    ["KG Art. 1", "KG"],
+    ["URG Art. 1", "URG"],
+    ["PatG Art. 1", "PATG"],
+    ["MSchG Art. 1", "MSCHG"],
+  ] as const;
+
+  for (const [input, lawCode] of accepted) {
+    it(`accepts ${input} for selected CH`, () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction(input, "CH"),
+        {
+          lawCode,
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+  }
+
+  for (const input of [
+    "IPRG § 1",
+    "DBG § 1",
+    "ArG § 1",
+    "MSchG § 1",
+  ]) {
+    it(`rejects ${input} for selected CH`, () => {
+      assert.equal(
+        parseLawReferenceWithSelectedJurisdiction(input, "CH"),
+        null,
+      );
+    });
+  }
+
+  it("preserves existing BV, ZGB, DE, and AT behavior", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("BV Art. 8", "CH"),
+      {
+        lawCode: "BV",
+        section: "8",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+    );
+
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("ZGB Art. 1", "CH"),
+      {
+        lawCode: "ZGB",
+        section: "1",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+    );
+
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("StGB § 211", "DE"),
+      {
+        lawCode: "STGB",
+        section: "211",
+      },
+    );
+
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("StGB § 75", "AT"),
+      {
+        lawCode: "STGB",
+        section: "75",
+        jurisdiction: "AT",
+      },
+    );
+  });
+});

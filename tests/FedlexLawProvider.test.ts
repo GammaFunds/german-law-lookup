@@ -352,6 +352,143 @@ describe("Fedlex mapping helpers", () => {
     }
   });
 
+  it("maps exact metadata for all 13 Swiss Phase 1D laws", () => {
+    const cases = [
+      {
+        key: "IPRG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1988/1776_1776_1776",
+        lawTitle:
+          "Bundesgesetz über das Internationale Privatrecht",
+        displayLawCode: "IPRG",
+      },
+      {
+        key: "DBG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1991/1184_1184_1184",
+        lawTitle: "Bundesgesetz über die direkte Bundessteuer",
+        displayLawCode: "DBG",
+      },
+      {
+        key: "STHG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1991/1256_1256_1256",
+        lawTitle:
+          "Bundesgesetz über die Harmonisierung der direkten Steuern der Kantone und Gemeinden",
+        displayLawCode: "StHG",
+      },
+      {
+        key: "AHVG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/63/837_843_843",
+        lawTitle:
+          "Bundesgesetz über die Alters- und Hinterlassenenversicherung",
+        displayLawCode: "AHVG",
+      },
+      {
+        key: "IVG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1959/827_857_845",
+        lawTitle: "Bundesgesetz über die Invalidenversicherung",
+        displayLawCode: "IVG",
+      },
+      {
+        key: "ATSG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/2002/510",
+        lawTitle:
+          "Bundesgesetz über den Allgemeinen Teil des Sozialversicherungsrechts",
+        displayLawCode: "ATSG",
+      },
+      {
+        key: "ARG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1966/57_57_57",
+        lawTitle:
+          "Bundesgesetz über die Arbeit in Industrie, Gewerbe und Handel",
+        displayLawCode: "ArG",
+      },
+      {
+        key: "SVG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1959/679_705_685",
+        lawTitle: "Strassenverkehrsgesetz",
+        displayLawCode: "SVG",
+      },
+      {
+        key: "AIG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/2007/758",
+        lawTitle: "Ausländer- und Integrationsgesetz",
+        displayLawCode: "AIG",
+      },
+      {
+        key: "KG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1996/546_546_546",
+        lawTitle:
+          "Bundesgesetz über Kartelle und andere Wettbewerbsbeschränkungen",
+        displayLawCode: "KG",
+      },
+      {
+        key: "URG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1993/1798_1798_1798",
+        lawTitle:
+          "Bundesgesetz über das Urheberrecht und verwandte Schutzrechte",
+        displayLawCode: "URG",
+      },
+      {
+        key: "PATG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1955/871_893_899",
+        lawTitle: "Bundesgesetz über die Erfindungspatente",
+        displayLawCode: "PatG",
+      },
+      {
+        key: "MSCHG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1993/274_274_274",
+        lawTitle:
+          "Bundesgesetz über den Schutz von Marken und Herkunftsangaben",
+        displayLawCode: "MSchG",
+      },
+    ] as const;
+
+    for (const candidate of cases) {
+      const reference = {
+        lawCode: candidate.key,
+        section: "1",
+        referenceType: "article" as const,
+        jurisdiction: "CH" as const,
+      };
+
+      const mapped = mapFedlexReference(reference);
+      assert.notEqual(mapped, null);
+      assert.equal(mapped!.workUri, candidate.workUri);
+      assert.equal(mapped!.articleNumber, "1");
+
+      const section = mapFedlexToLawSection({
+        reference,
+        articleData: {
+          id: "art_1",
+          title: "<p>Art. 1 Test</p>",
+          content: "<p>Test.</p>",
+          itemUri: `${candidate.workUri}/art_1`,
+        },
+        providerId: "fedlex",
+        providerLabel: "Fedlex / Bundesrecht der Schweiz",
+        retrievedAt: "2026-07-10T00:00:00.000Z",
+      });
+
+      assert.equal(section.lawCode, candidate.displayLawCode);
+      assert.equal(section.lawTitle, candidate.lawTitle);
+      assert.equal(section.section, "1");
+      assert.equal(section.referenceType, "article");
+      assert.equal(section.jurisdiction, "CH");
+    }
+  });
+
   it("returns null for an unsupported CH law", () => {
     assert.equal(
       mapFedlexReference({

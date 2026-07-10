@@ -139,6 +139,19 @@ const swissFedlexLawCodes = [
   "VWVG",
   "BGG",
   "DSG",
+  "IPRG",
+  "DBG",
+  "STHG",
+  "AHVG",
+  "IVG",
+  "ATSG",
+  "ARG",
+  "SVG",
+  "AIG",
+  "KG",
+  "URG",
+  "PATG",
+  "MSCHG",
 ];
 
 const swissFedlexLawCodeSet = new Set(swissFedlexLawCodes);
