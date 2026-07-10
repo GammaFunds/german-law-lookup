@@ -10,6 +10,8 @@ export type LawProviderHttpTransport = (input: string) => Promise<LawProviderHtt
 interface RequestUrlParamLike {
   url: string;
   method?: string;
+  body?: string;
+  headers?: Record<string, string>;
   throw?: boolean;
 }
 
@@ -30,6 +32,29 @@ export function createObsidianRequestUrlTransport(
     const response = await requestUrl({
       url,
       method: "GET",
+      throw: false,
+    });
+
+    return {
+      ok: response.status >= 200 && response.status < 300,
+      status: response.status,
+      text: async () => response.text,
+      json: async () => response.json,
+    };
+  };
+}
+
+export function createObsidianRequestUrlPostTransport(
+  requestUrl: RequestUrlLike,
+): (url: string, body: string) => Promise<LawProviderHttpResponse> {
+  return async (url, body) => {
+    const response = await requestUrl({
+      url,
+      method: "POST",
+      body,
+      headers: {
+        "Content-Type": "application/json",
+      },
       throw: false,
     });
 

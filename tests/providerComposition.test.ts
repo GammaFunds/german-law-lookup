@@ -8,7 +8,7 @@ describe("provider composition", () => {
 
     assert.deepEqual(
       providers.map((provider) => provider.id),
-      ["neuris", "gesetze-im-internet", "ris"],
+      ["fedlex", "neuris", "gesetze-im-internet", "ris"],
     );
   });
 
@@ -17,7 +17,7 @@ describe("provider composition", () => {
 
     assert.deepEqual(
       providers.map((provider) => provider.id),
-      ["neuris", "gesetze-im-internet", "ris", "mock"],
+      ["fedlex", "neuris", "gesetze-im-internet", "ris", "mock"],
     );
   });
 

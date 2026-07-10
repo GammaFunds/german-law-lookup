@@ -100,6 +100,21 @@ describe("lawSectionCacheKey", () => {
       "GG:art:1:translation-en",
     );
   });
+
+  it("prefixes CH cache keys with CH:", () => {
+    assert.equal(
+      lawSectionCacheKey({ lawCode: "BV", section: "8", referenceType: "article", jurisdiction: "CH" }),
+      "CH:BV:art:8:official-de",
+    );
+  });
+
+  it("distinguishes CH ZGB Art. 1 from unprefixed ZGB Art. 1", () => {
+    const chKey = lawSectionCacheKey({ lawCode: "ZGB", section: "1", referenceType: "article", jurisdiction: "CH" });
+    const deKey = lawSectionCacheKey({ lawCode: "ZGB", section: "1", referenceType: "article" });
+    assert.equal(chKey, "CH:ZGB:art:1:official-de");
+    assert.equal(deKey, "ZGB:art:1:official-de");
+    assert.notEqual(chKey, deKey);
+  });
 });
 
 describe("CachedLawProvider", () => {
@@ -811,6 +826,139 @@ describe("CachedLawProvider", () => {
     assert.equal(await provider.getSection(reference()), null);
     assert.equal(await cache.get(reference()), null);
     assert.equal(calls, 1);
+  });
+
+  it("CH reads do not return unprefixed legacy entries", async () => {
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return {
+          "ZGB:art:1:official-de": {
+            providerId: "gesetze-im-internet",
+            providerLabel: "Gesetze im Internet",
+            sourceUrl: "https://example.com",
+            lawCode: "ZGB",
+            lawTitle: "Zivilgesetzbuch",
+            section: "1",
+            referenceType: "article",
+            sourceVariant: "official-de",
+            heading: "Anwendung des Rechts",
+            text: "DE legacy text",
+            retrievedAt: "2026-07-10T00:00:00.000Z",
+            cacheStatus: "live",
+            isOfficialSource: true,
+            isAuthoritativeText: false,
+          },
+        };
+      },
+      async save() {
+        throw new Error("should not write");
+      },
+    });
+
+    assert.equal(
+      await cache.get({
+        lawCode: "ZGB",
+        section: "1",
+        referenceType: "article",
+        jurisdiction: "CH",
+      }),
+      null,
+    );
+  });
+
+  it("writes and reads CH Fedlex cached section", async () => {
+    const cache = new InMemoryLawSectionCache();
+    await cache.set({
+      providerId: "fedlex",
+      providerLabel: "Fedlex / Bundesrecht der Schweiz",
+      sourceUrl: "https://fedlex.data.admin.ch/eli/cc/1999/404/art_8",
+      lawCode: "BV",
+      lawTitle: "Bundesverfassung der Schweizerischen Eidgenossenschaft",
+      section: "8",
+      referenceType: "article",
+      sourceVariant: "official-de",
+      jurisdiction: "CH",
+      heading: "Rechtsgleichheit",
+      text: "Alle Menschen sind vor dem Gesetz gleich.",
+      retrievedAt: "2026-07-10T00:00:00.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: true,
+    });
+
+    const result = await cache.get({
+      lawCode: "BV",
+      section: "8",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(result!.heading, "Rechtsgleichheit");
+    assert.equal(result!.jurisdiction, "CH");
+    assert.equal(result!.providerId, "fedlex");
+  });
+
+  it("stores CH Fedlex section with exact CH-prefixed key and isolates from DE lookups", async () => {
+    let savedEntries: Record<string, LawSection> | null = null;
+    const cache = new StoredLawSectionCache({
+      async load() {
+        return savedEntries;
+      },
+      async save(entries) {
+        savedEntries = entries;
+      },
+    });
+
+    await cache.set({
+      providerId: "fedlex",
+      providerLabel: "Fedlex / Bundesrecht der Schweiz",
+      sourceUrl: "https://fedlex.data.admin.ch/eli/cc/1999/404/art_8",
+      lawCode: "BV",
+      lawTitle: "Bundesverfassung der Schweizerischen Eidgenossenschaft",
+      section: "8",
+      referenceType: "article",
+      sourceVariant: "official-de",
+      jurisdiction: "CH",
+      heading: "Rechtsgleichheit",
+      text: "Alle Menschen sind vor dem Gesetz gleich.",
+      retrievedAt: "2026-07-10T00:00:00.000Z",
+      cacheStatus: "live",
+      isOfficialSource: true,
+      isAuthoritativeText: true,
+    });
+
+    // Verify stored entries contain exactly the CH-prefixed key
+    assert.notEqual(savedEntries, null);
+    const storedKeys = Object.keys(savedEntries!);
+    assert.ok(storedKeys.includes("CH:BV:art:8:official-de"));
+
+    // Verify no unprefixed BV key was written
+    assert.ok(!storedKeys.includes("BV:art:8:official-de"));
+
+    // Verify stored section metadata
+    const stored = savedEntries!["CH:BV:art:8:official-de"];
+    assert.equal(stored.providerId, "fedlex");
+    assert.equal(stored.jurisdiction, "CH");
+    assert.equal(stored.referenceType, "article");
+
+    // Verify CH lookup reads the saved CH entry
+    const chResult = await cache.get({
+      lawCode: "BV",
+      section: "8",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+    assert.notEqual(chResult, null);
+    assert.equal(chResult!.heading, "Rechtsgleichheit");
+
+    // Verify undefined/DE lookup does NOT read the CH-prefixed entry
+    const deResult = await cache.get({
+      lawCode: "BV",
+      section: "8",
+      referenceType: "article",
+    });
+    assert.equal(deResult, null);
   });
 });
 

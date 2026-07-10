@@ -1,6 +1,6 @@
 export type LawReferenceType = "section" | "article";
 export type LawSourceVariant = "official-de" | "translation-en";
-export type LawJurisdiction = "DE" | "AT";
+export type LawJurisdiction = "DE" | "AT" | "CH";
 
 export interface LawReference {
   lawCode: string;

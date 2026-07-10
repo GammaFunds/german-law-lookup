@@ -93,6 +93,7 @@ export default class DeLawPlugin extends Plugin {
     const runtimeProviders = buildLawProviders({
       ...this.settings,
       httpTransport: createObsidianRequestUrlTransport(requestUrl),
+      requestUrl,
     });
     const cache = new StoredLawSectionCache(this.createLawSectionCacheStorage());
     this.providerRegistry = new ProviderRegistry(
