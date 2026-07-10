@@ -7,6 +7,7 @@ import {
   extractFedlexArticleFromResponse,
   mapFedlexReference,
   mapFedlexToLawSection,
+  normalizeArticleId,
   normalizeFedlexHeading,
 } from "../src/law/providers/fedlexMapping";
 import type { FedlexArticleData } from "../src/law/providers/fedlexMapping";
@@ -146,7 +147,7 @@ describe("Fedlex mapping helpers", () => {
     assert.equal(result!.articleNumber, "1");
   });
 
-  it("returns null for unsupported CH OR Art. 1", () => {
+  it("maps OR Art. 1 to work URI and article number", () => {
     const result = mapFedlexReference({
       lawCode: "OR",
       section: "1",
@@ -154,7 +155,213 @@ describe("Fedlex mapping helpers", () => {
       jurisdiction: "CH",
     });
 
-    assert.equal(result, null);
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/27/317_321_377",
+    );
+    assert.equal(result!.articleNumber, "1");
+  });
+
+  it("maps STGB Art. 1 to work URI and article number", () => {
+    const result = mapFedlexReference({
+      lawCode: "STGB",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/54/757_781_799",
+    );
+    assert.equal(result!.articleNumber, "1");
+  });
+
+  it("maps ZPO Art. 1 to work URI", () => {
+    const result = mapFedlexReference({
+      lawCode: "ZPO",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/2010/262",
+    );
+  });
+
+  it("maps STPO Art. 1 to work URI", () => {
+    const result = mapFedlexReference({
+      lawCode: "STPO",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/2010/267",
+    );
+  });
+
+  it("maps SCHKG Art. 1 to work URI", () => {
+    const result = mapFedlexReference({
+      lawCode: "SCHKG",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/11/529_488_529",
+    );
+  });
+
+  it("maps VWVG Art. 1 to work URI", () => {
+    const result = mapFedlexReference({
+      lawCode: "VWVG",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/1969/737_757_755",
+    );
+  });
+
+  it("maps BGG Art. 1 to work URI", () => {
+    const result = mapFedlexReference({
+      lawCode: "BGG",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/2006/218",
+    );
+  });
+
+  it("maps DSG Art. 1 to work URI", () => {
+    const result = mapFedlexReference({
+      lawCode: "DSG",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "CH",
+    });
+
+    assert.notEqual(result, null);
+    assert.equal(
+      result!.workUri,
+      "https://fedlex.data.admin.ch/eli/cc/2022/491",
+    );
+  });
+
+  it("maps exact metadata for all eight new Swiss laws", () => {
+    const cases = [
+      {
+        key: "OR",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/27/317_321_377",
+        lawTitle: "Obligationenrecht",
+        displayLawCode: "OR",
+      },
+      {
+        key: "STGB",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/54/757_781_799",
+        lawTitle: "Schweizerisches Strafgesetzbuch",
+        displayLawCode: "StGB",
+      },
+      {
+        key: "ZPO",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/2010/262",
+        lawTitle: "Schweizerische Zivilprozessordnung",
+        displayLawCode: "ZPO",
+      },
+      {
+        key: "STPO",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/2010/267",
+        lawTitle: "Schweizerische Strafprozessordnung",
+        displayLawCode: "StPO",
+      },
+      {
+        key: "SCHKG",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/11/529_488_529",
+        lawTitle: "Bundesgesetz über Schuldbetreibung und Konkurs",
+        displayLawCode: "SchKG",
+      },
+      {
+        key: "VWVG",
+        workUri:
+          "https://fedlex.data.admin.ch/eli/cc/1969/737_757_755",
+        lawTitle: "Verwaltungsverfahrensgesetz",
+        displayLawCode: "VwVG",
+      },
+      {
+        key: "BGG",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/2006/218",
+        lawTitle: "Bundesgerichtsgesetz",
+        displayLawCode: "BGG",
+      },
+      {
+        key: "DSG",
+        workUri: "https://fedlex.data.admin.ch/eli/cc/2022/491",
+        lawTitle: "Datenschutzgesetz",
+        displayLawCode: "DSG",
+      },
+    ] as const;
+
+    for (const candidate of cases) {
+      const reference = {
+        lawCode: candidate.key,
+        section: "1",
+        referenceType: "article" as const,
+        jurisdiction: "CH" as const,
+      };
+
+      const mapped = mapFedlexReference(reference);
+      assert.notEqual(mapped, null);
+      assert.equal(mapped!.workUri, candidate.workUri);
+
+      const section = mapFedlexToLawSection({
+        reference,
+        articleData: {
+          id: "art_1",
+          title: "<p>Art. 1 Test</p>",
+          content: "<p>Test.</p>",
+          itemUri: `${candidate.workUri}/art_1`,
+        },
+        providerId: "fedlex",
+        providerLabel: "Fedlex / Bundesrecht der Schweiz",
+        retrievedAt: "2026-07-10T00:00:00.000Z",
+      });
+
+      assert.equal(section.lawCode, candidate.displayLawCode);
+      assert.equal(section.lawTitle, candidate.lawTitle);
+    }
+  });
+
+  it("returns null for an unsupported CH law", () => {
+    assert.equal(
+      mapFedlexReference({
+        lawCode: "XYZ",
+        section: "1",
+        referenceType: "article",
+        jurisdiction: "CH",
+      }),
+      null,
+    );
   });
 
   it("returns null for non-CH jurisdiction", () => {
@@ -294,6 +501,71 @@ describe("Fedlex mapping helpers", () => {
     assert.equal(heading, "Abs. 8 Satz 2");
   });
 
+  it("normalizes article ID for numeric-only section", () => {
+    assert.equal(normalizeArticleId("8"), "art_8");
+    assert.equal(normalizeArticleId("41"), "art_41");
+    assert.equal(normalizeArticleId("1"), "art_1");
+  });
+
+  it("normalizes article ID for number-plus-letter section", () => {
+    assert.equal(normalizeArticleId("321a"), "art_321_a");
+    assert.equal(normalizeArticleId("321A"), "art_321_a");
+    assert.equal(normalizeArticleId("8a"), "art_8_a");
+  });
+
+  it("builds Fedlex query body with normalized article ID for 321a", () => {
+    const body = buildFedlexQueryBody(
+      "https://fedlex.data.admin.ch/eli/cc/27/317_321_377",
+      "321a",
+    ) as Record<string, unknown>;
+
+    const query = body.query as Record<string, unknown>;
+    const bool = query.bool as Record<string, unknown>;
+    const must = bool.must as Array<Record<string, unknown>>;
+    const nested = must[1] as Record<string, unknown>;
+    const nestedQuery = (nested.nested as Record<string, unknown>)
+      .query as Record<string, unknown>;
+    assert.equal(
+      (nestedQuery.term as Record<string, string>)["deContent.id.keyword"],
+      "art_321_a",
+    );
+  });
+
+  it("builds Fedlex query body with normalized article ID for uppercase 321A", () => {
+    const body = buildFedlexQueryBody(
+      "https://fedlex.data.admin.ch/eli/cc/27/317_321_377",
+      "321A",
+    ) as Record<string, unknown>;
+
+    const query = body.query as Record<string, unknown>;
+    const bool = query.bool as Record<string, unknown>;
+    const must = bool.must as Array<Record<string, unknown>>;
+    const nested = must[1] as Record<string, unknown>;
+    const nestedQuery = (nested.nested as Record<string, unknown>)
+      .query as Record<string, unknown>;
+
+    assert.equal(
+      (nestedQuery.term as Record<string, string>)["deContent.id.keyword"],
+      "art_321_a",
+    );
+  });
+
+  it("normalizes heading with spaced-letter Art. 321 a for section 321a", () => {
+    const heading = normalizeFedlexHeading(
+      "<p>Art. 321 a Pflichten des Arbeitnehmers</p>",
+      "321a",
+    );
+    assert.equal(heading, "Pflichten des Arbeitnehmers");
+  });
+
+  it("normalizes heading with compact Art. 321a for section 321a", () => {
+    const heading = normalizeFedlexHeading(
+      "<p>Art. 321a Pflichten des Arbeitnehmers</p>",
+      "321a",
+    );
+    assert.equal(heading, "Pflichten des Arbeitnehmers");
+  });
+
   it("formats dl/dt/dd as readable line", () => {
     const html = '<dl><dt>a.</dt><dd>jede Person an der sozialen Sicherheit teilhat;</dd></dl>';
     const text = convertFedlexHtmlToText(html);
@@ -411,6 +683,98 @@ describe("Fedlex mapping helpers", () => {
       section.text,
       /Das Gesetz findet auf alle Rechtsfragen Anwendung/,
     );
+  });
+
+  it("maps OR Art. 321a into LawSection while preserving the raw section", () => {
+    const articleData: FedlexArticleData = {
+      id: "art_321_a",
+      title: "<p>Art. 321 a Pflichten des Arbeitnehmers</p>",
+      content: "<p>Der Arbeitnehmer hat die ihm übertragene Arbeit sorgfältig auszuführen.</p>",
+      order: 321,
+      itemUri:
+        "https://fedlex.data.admin.ch/eli/cc/27/317_321_377/art_321_a",
+    };
+
+    const section = mapFedlexToLawSection({
+      reference: {
+        lawCode: "OR",
+        section: "321a",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+      articleData,
+      providerId: "fedlex",
+      providerLabel: "Fedlex / Bundesrecht der Schweiz",
+      retrievedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "OR");
+    assert.equal(section.lawTitle, "Obligationenrecht");
+    assert.equal(section.section, "321a");
+    assert.equal(section.referenceType, "article");
+    assert.equal(section.jurisdiction, "CH");
+    assert.equal(section.heading, "Pflichten des Arbeitnehmers");
+    assert.equal(section.sourceVariant, "official-de");
+  });
+
+  it("maps StGB Art. 111 into LawSection with canonical display metadata", () => {
+    const articleData: FedlexArticleData = {
+      id: "art_111",
+      title: "<p>Art. 111 Tötung</p>",
+      content: "<p>Wer vorsätzlich einen Menschen tötet, wird bestraft.</p>",
+      order: 111,
+      itemUri:
+        "https://fedlex.data.admin.ch/eli/cc/54/757_781_799/art_111",
+    };
+
+    const section = mapFedlexToLawSection({
+      reference: {
+        lawCode: "STGB",
+        section: "111",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+      articleData,
+      providerId: "fedlex",
+      providerLabel: "Fedlex / Bundesrecht der Schweiz",
+      retrievedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "StGB");
+    assert.equal(section.lawTitle, "Schweizerisches Strafgesetzbuch");
+    assert.equal(section.section, "111");
+    assert.equal(section.heading, "Tötung");
+    assert.equal(section.jurisdiction, "CH");
+  });
+
+  it("maps ZPO Art. 1 into LawSection with the verified work metadata", () => {
+    const articleData: FedlexArticleData = {
+      id: "art_1",
+      title: "<p>Art. 1 Gegenstand</p>",
+      content: "<p>Dieses Gesetz regelt das Verfahren vor den kantonalen Instanzen.</p>",
+      order: 1,
+      itemUri:
+        "https://fedlex.data.admin.ch/eli/cc/2010/262/art_1",
+    };
+
+    const section = mapFedlexToLawSection({
+      reference: {
+        lawCode: "ZPO",
+        section: "1",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+      articleData,
+      providerId: "fedlex",
+      providerLabel: "Fedlex / Bundesrecht der Schweiz",
+      retrievedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    assert.equal(section.lawCode, "ZPO");
+    assert.equal(section.lawTitle, "Schweizerische Zivilprozessordnung");
+    assert.equal(section.section, "1");
+    assert.equal(section.heading, "Gegenstand");
+    assert.equal(section.jurisdiction, "CH");
   });
 });
 
@@ -560,7 +924,7 @@ describe("FedlexLawProvider", () => {
     );
   });
 
-  it("returns null for unsupported CH OR Art. 1", async () => {
+  it("returns null for OR Art. 1 with empty response", async () => {
     const provider = new FedlexLawProvider(
       "https://www.fedlex.admin.ch",
       async () => ({

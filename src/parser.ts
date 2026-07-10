@@ -128,6 +128,21 @@ const egbgbLawFirstArticlePattern = new RegExp(
   "iu",
 );
 
+const swissFedlexLawCodes = [
+  "BV",
+  "ZGB",
+  "OR",
+  "STGB",
+  "ZPO",
+  "STPO",
+  "SCHKG",
+  "VWVG",
+  "BGG",
+  "DSG",
+];
+
+const swissFedlexLawCodeSet = new Set(swissFedlexLawCodes);
+
 export function enrichJurisdiction(
   reference: ParsedLawReference,
   selectedJurisdiction: LawJurisdiction,
@@ -139,7 +154,7 @@ export function enrichJurisdiction(
     selectedJurisdiction === "CH" &&
     !reference.jurisdiction &&
     reference.referenceType === "article" &&
-    (reference.lawCode === "BV" || reference.lawCode === "ZGB")
+    swissFedlexLawCodeSet.has(reference.lawCode)
   ) {
     return { ...reference, jurisdiction: "CH" };
   }
@@ -174,7 +189,7 @@ export function parseLawReferenceWithSelectedJurisdiction(
       const artFirstMatch = normalized.match(articleFirstPattern);
       if (artFirstMatch) {
         const lawCode = artFirstMatch[2].toUpperCase();
-        if (lawCode === "BV" || lawCode === "ZGB") {
+        if (swissFedlexLawCodeSet.has(lawCode)) {
           return {
             lawCode,
             section: artFirstMatch[1],
@@ -187,7 +202,7 @@ export function parseLawReferenceWithSelectedJurisdiction(
       const lawFirstArtMatch = normalized.match(lawFirstArticlePattern);
       if (lawFirstArtMatch) {
         const lawCode = lawFirstArtMatch[1].toUpperCase();
-        if (lawCode === "BV" || lawCode === "ZGB") {
+        if (swissFedlexLawCodeSet.has(lawCode)) {
           return {
             lawCode,
             section: lawFirstArtMatch[2],

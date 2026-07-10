@@ -187,10 +187,111 @@ describe("jurisdiction enrichment", () => {
       );
     });
 
-    it("rejects OR Art. 1 when Switzerland is selected", () => {
-      assert.equal(
+    it("parses OR Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
         parseLawReferenceWithSelectedJurisdiction("OR Art. 1", "CH"),
-        null,
+        {
+          lawCode: "OR",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses STGB Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("STGB Art. 1", "CH"),
+        {
+          lawCode: "STGB",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses ZPO Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("ZPO Art. 1", "CH"),
+        {
+          lawCode: "ZPO",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses STPO Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("STPO Art. 1", "CH"),
+        {
+          lawCode: "STPO",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses SCHKG Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("SCHKG Art. 1", "CH"),
+        {
+          lawCode: "SCHKG",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses VWVG Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("VWVG Art. 1", "CH"),
+        {
+          lawCode: "VWVG",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses BGG Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("BGG Art. 1", "CH"),
+        {
+          lawCode: "BGG",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses DSG Art. 1 when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("DSG Art. 1", "CH"),
+        {
+          lawCode: "DSG",
+          section: "1",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+
+    it("parses Art. 321a STGB when Switzerland is selected", () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction("Art. 321a STGB", "CH"),
+        {
+          lawCode: "STGB",
+          section: "321a",
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
       );
     });
 
@@ -248,5 +349,117 @@ describe("jurisdiction enrichment", () => {
         },
       );
     });
+  });
+});
+
+describe("CH Phase 1C exact contract matrix", () => {
+  const accepted = [
+    ["OR Art. 1", "OR", "1"],
+    ["Art. 1 OR", "OR", "1"],
+    ["OR Art. 321a", "OR", "321a"],
+    ["StGB Art. 111", "STGB", "111"],
+    ["ZPO Art. 1", "ZPO", "1"],
+    ["StPO Art. 1", "STPO", "1"],
+    ["SchKG Art. 1", "SCHKG", "1"],
+    ["VwVG Art. 1", "VWVG", "1"],
+    ["BGG Art. 42", "BGG", "42"],
+    ["DSG Art. 1", "DSG", "1"],
+  ] as const;
+
+  for (const [input, lawCode, section] of accepted) {
+    it(`accepts ${input} for selected CH`, () => {
+      assert.deepEqual(
+        parseLawReferenceWithSelectedJurisdiction(input, "CH"),
+        {
+          lawCode,
+          section,
+          referenceType: "article",
+          jurisdiction: "CH",
+        },
+      );
+    });
+  }
+
+  for (const input of [
+    "OR § 1",
+    "StGB § 111",
+    "ZPO § 1",
+    "Art. 1 GG",
+    "XYZ Art. 1",
+  ]) {
+    it(`rejects ${input} for selected CH`, () => {
+      assert.equal(
+        parseLawReferenceWithSelectedJurisdiction(input, "CH"),
+        null,
+      );
+    });
+  }
+
+  it("preserves DE/default StGB § 211", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("StGB § 211", "DE"),
+      {
+        lawCode: "STGB",
+        section: "211",
+      },
+    );
+  });
+
+  it("preserves AT StGB § 75", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("StGB § 75", "AT"),
+      {
+        lawCode: "STGB",
+        section: "75",
+        jurisdiction: "AT",
+      },
+    );
+  });
+
+  it("preserves an explicit DE reference under selected CH", () => {
+    const reference: ParsedLawReference = {
+      lawCode: "GG",
+      section: "1",
+      referenceType: "article",
+      jurisdiction: "DE",
+    };
+
+    assert.deepEqual(enrichJurisdiction(reference, "CH"), reference);
+  });
+
+  it("preserves an explicit AT reference under selected CH", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction(
+        "AT StGB § 75",
+        "CH",
+      ),
+      {
+        lawCode: "STGB",
+        section: "75",
+        jurisdiction: "AT",
+      },
+    );
+  });
+
+  it("preserves existing BV and ZGB article behavior", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("Art. 8 BV", "CH"),
+      {
+        lawCode: "BV",
+        section: "8",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+    );
+
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("ZGB Art. 1", "CH"),
+      {
+        lawCode: "ZGB",
+        section: "1",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+    );
   });
 });

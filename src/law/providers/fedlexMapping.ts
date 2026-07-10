@@ -19,6 +19,46 @@ const supportedSwissLaws: Record<string, SwissLawConfig> = {
     lawTitle: "Zivilgesetzbuch",
     displayLawCode: "ZGB",
   },
+  OR: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/27/317_321_377",
+    lawTitle: "Obligationenrecht",
+    displayLawCode: "OR",
+  },
+  STGB: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/54/757_781_799",
+    lawTitle: "Schweizerisches Strafgesetzbuch",
+    displayLawCode: "StGB",
+  },
+  ZPO: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/2010/262",
+    lawTitle: "Schweizerische Zivilprozessordnung",
+    displayLawCode: "ZPO",
+  },
+  STPO: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/2010/267",
+    lawTitle: "Schweizerische Strafprozessordnung",
+    displayLawCode: "StPO",
+  },
+  SCHKG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/11/529_488_529",
+    lawTitle: "Bundesgesetz über Schuldbetreibung und Konkurs",
+    displayLawCode: "SchKG",
+  },
+  VWVG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/1969/737_757_755",
+    lawTitle: "Verwaltungsverfahrensgesetz",
+    displayLawCode: "VwVG",
+  },
+  BGG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/2006/218",
+    lawTitle: "Bundesgerichtsgesetz",
+    displayLawCode: "BGG",
+  },
+  DSG: {
+    workUri: "https://fedlex.data.admin.ch/eli/cc/2022/491",
+    lawTitle: "Datenschutzgesetz",
+    displayLawCode: "DSG",
+  },
 };
 
 export interface FedlexMapResult {
@@ -48,6 +88,14 @@ export function mapFedlexReference(
   };
 }
 
+export function normalizeArticleId(section: string): string {
+  const match = section.match(/^(\d+)([a-zA-Z])$/);
+  if (match) {
+    return `art_${match[1]}_${match[2].toLowerCase()}`;
+  }
+  return `art_${section}`;
+}
+
 export function buildFedlexQueryBody(
   workUri: string,
   articleNumber: string,
@@ -62,7 +110,7 @@ export function buildFedlexQueryBody(
               path: "deContent",
               query: {
                 term: {
-                  "deContent.id.keyword": `art_${articleNumber}`,
+                  "deContent.id.keyword": normalizeArticleId(articleNumber),
                 },
               },
               inner_hits: { _source: true },
@@ -127,10 +175,13 @@ export function normalizeFedlexHeading(
 
   // Remove leading article label like "Art. 8", "Art 8", "Artikel 8"
   if (sectionNumber) {
-    // Escape special regex characters in sectionNumber
     const escapedSection = sectionNumber.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const sectionPattern = escapedSection.replace(
+      /^(\d+)([a-zA-Z])$/,
+      "$1\\s*$2",
+    );
     const pattern = new RegExp(
-      `^(?:Art\\.?\\s*${escapedSection}|Artikel\\s+${escapedSection})(?:\\s+|$)`,
+      `^(?:Art\\.?\\s*${sectionPattern}|Artikel\\s+${sectionPattern})(?:\\s+|$)`,
       "i",
     );
     text = text.replace(pattern, "").trim();
