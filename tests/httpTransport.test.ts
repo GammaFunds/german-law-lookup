@@ -45,6 +45,40 @@ describe("createObsidianRequestUrlTransport", () => {
     assert.equal(response.status, 404);
     assert.equal(await response.text(), "not found");
   });
+
+  it("forwards optional GET headers exactly", async () => {
+    const calls: unknown[] = [];
+    const requestUrl: RequestUrlLike = async (request) => {
+      calls.push(request);
+      return {
+        status: 200,
+        text: "ok",
+        json: {},
+      };
+    };
+
+    const transport = createObsidianRequestUrlTransport(requestUrl);
+    await transport("https://publications.europa.eu/resource/celex/32016R0679", {
+      headers: {
+        Accept: "application/xhtml+xml",
+        "Accept-Language": "deu",
+        "Accept-Max-Cs-Size": "8388608",
+      },
+    });
+
+    assert.deepEqual(calls, [
+      {
+        url: "https://publications.europa.eu/resource/celex/32016R0679",
+        method: "GET",
+        headers: {
+          Accept: "application/xhtml+xml",
+          "Accept-Language": "deu",
+          "Accept-Max-Cs-Size": "8388608",
+        },
+        throw: false,
+      },
+    ]);
+  });
 });
 
 describe("createObsidianRequestUrlPostTransport", () => {

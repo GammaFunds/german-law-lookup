@@ -4,6 +4,11 @@ import { formatLawSectionAsMarkdown } from "../src/law/CitationFormatter";
 import type { LawSection } from "../src/law/types";
 
 describe("formatLawSectionAsMarkdown", () => {
+  it("labels official EU language versions without a translation warning", () => {
+    const markdown = formatLawSectionAsMarkdown({ providerId: "eur-lex", providerLabel: "EUR-Lex", lawCode: "DSGVO", lawTitle: "Regulation (EU) 2016/679", section: "6", referenceType: "article", jurisdiction: "EU", language: "en", text: "Lawful processing.", retrievedAt: "2026-07-10T12:00:00.000Z", cacheStatus: "live", isOfficialSource: true, isAuthoritativeText: true });
+    assert.match(markdown, /^Amtliche EU-Sprachfassung: English\.$/m);
+    assert.doesNotMatch(markdown, /Englischer Gesetzestext von Gesetze im Internet/);
+  });
   const section: LawSection = {
     providerId: "mock",
     providerLabel: "Mock Law Provider",

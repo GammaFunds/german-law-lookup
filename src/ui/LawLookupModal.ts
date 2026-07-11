@@ -3,6 +3,8 @@ import { formatLawSectionAsMarkdown } from "../law/CitationFormatter";
 import { LawTranslationUnavailableError } from "../law/errors";
 import { ProviderRegistry } from "../law/ProviderRegistry";
 import type { LawJurisdiction, LawSection, LawSourceVariant } from "../law/types";
+import { EU_LANGUAGES, defaultEuLawLanguage } from "../law/euLanguages";
+import type { EuLawLanguage } from "../law/types";
 import { parseLawReferenceWithSelectedJurisdiction } from "../parser";
 import { LookupSequence } from "./LookupSequence";
 import { insertMarkdownIntoMarkdownView } from "./editorInsertion";
@@ -11,6 +13,8 @@ import { buildLawSectionPreviewModel } from "./lawSectionPreview";
 
 interface LawLookupModalSettingsStore {
   getDefaultLawSourceVariant(): LawSourceVariant;
+  getDefaultEuLawLanguage(): EuLawLanguage;
+  setDefaultEuLawLanguage(value: EuLawLanguage): Promise<void>;
   getShowInsertedSourceMetadata(): boolean;
   setShowInsertedSourceMetadata(value: boolean): Promise<void>;
 }
@@ -23,6 +27,7 @@ export class LawLookupModal extends Modal {
   private currentMarkdown = "";
   private selectedSourceVariant: LawSourceVariant = "official-de";
   private selectedJurisdiction: LawJurisdiction = "DE";
+  private selectedEuLanguage: EuLawLanguage = "de";
   private showInsertedSourceMetadata = true;
   private readonly lookupSequence = new LookupSequence();
 
@@ -68,8 +73,10 @@ export class LawLookupModal extends Modal {
       value: "CH",
       text: this.ui.jurisdictionSwitzerland,
     });
+    jurisdictionSelect.createEl("option", { value: "EU", text: this.ui.jurisdictionEuropeanUnion });
     jurisdictionSelect.addEventListener("change", () => {
       this.selectedJurisdiction = jurisdictionSelect.value as LawJurisdiction;
+      this.renderActions();
       if (this.inputEl?.value.trim()) {
         void this.renderParsedReference();
       }
@@ -84,6 +91,7 @@ export class LawLookupModal extends Modal {
     this.renderResultMessage(this.ui.noLookupRunYet);
     this.actionsEl = contentEl.createDiv({ cls: "de-law-lookup-actions" });
     this.selectedSourceVariant = this.settingsStore.getDefaultLawSourceVariant();
+    this.selectedEuLanguage = this.settingsStore.getDefaultEuLawLanguage();
     this.showInsertedSourceMetadata =
       this.settingsStore.getShowInsertedSourceMetadata();
     this.renderActions();
@@ -108,10 +116,9 @@ export class LawLookupModal extends Modal {
       return;
     }
 
-    const parsed = {
-      ...parsedReference,
-      sourceVariant: this.selectedSourceVariant,
-    };
+    const parsed = this.selectedJurisdiction === "EU"
+      ? { ...parsedReference, language: this.selectedEuLanguage }
+      : { ...parsedReference, sourceVariant: this.selectedSourceVariant };
 
     this.renderResultMessage(this.ui.lookingUpLaw);
 
@@ -144,18 +151,23 @@ export class LawLookupModal extends Modal {
   private renderActions() {
     this.actionsEl.empty();
 
-    new Setting(this.actionsEl)
-      .setName(this.ui.useEnglishTranslationWhenAvailable)
-      .addToggle((toggle) => {
-        toggle
-          .setValue(this.selectedSourceVariant === "translation-en")
-          .onChange((value) => {
-            this.selectedSourceVariant = value ? "translation-en" : "official-de";
-            if (this.inputEl?.value.trim()) {
-              void this.renderParsedReference();
-            }
-          });
+    if (this.selectedJurisdiction === "EU") {
+      new Setting(this.actionsEl).setName(this.ui.euTextLanguage).addDropdown((dropdown) => {
+        for (const language of EU_LANGUAGES) dropdown.addOption(language.code, language.nativeName);
+        dropdown.setValue(this.selectedEuLanguage).onChange(async (value) => {
+          this.selectedEuLanguage = defaultEuLawLanguage(undefined, value);
+          await this.settingsStore.setDefaultEuLawLanguage(this.selectedEuLanguage);
+          if (this.inputEl?.value.trim()) void this.renderParsedReference();
+        });
       });
+    } else {
+      new Setting(this.actionsEl).setName(this.ui.useEnglishTranslationWhenAvailable).addToggle((toggle) => {
+        toggle.setValue(this.selectedSourceVariant === "translation-en").onChange((value) => {
+          this.selectedSourceVariant = value ? "translation-en" : "official-de";
+          if (this.inputEl?.value.trim()) void this.renderParsedReference();
+        });
+      });
+    }
 
     new Setting(this.actionsEl)
       .setName(this.ui.insertSourceAndCacheNote)

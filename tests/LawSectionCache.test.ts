@@ -12,6 +12,13 @@ import { LawProviderUnavailableError } from "../src/law/errors";
 import type { LawReference, LawSection } from "../src/law/types";
 
 describe("lawSectionCacheKey", () => {
+  it("isolates EU official language cache keys without legacy fallback", async () => {
+    const de = { lawCode: "DSGVO", section: "6", referenceType: "article" as const, jurisdiction: "EU" as const, language: "de" as const };
+    const en = { ...de, language: "en" as const };
+    assert.equal(lawSectionCacheKey(de), "EU:DSGVO:art:6:de"); assert.equal(lawSectionCacheKey(en), "EU:DSGVO:art:6:en");
+    const cache = new InMemoryLawSectionCache(); await cache.set(section({ ...de, language: "de", jurisdiction: "EU", referenceType: "article", lawCode: "DSGVO", text: "Deutsch" }));
+    assert.equal((await cache.get(en))?.text, undefined); assert.equal((await cache.get(de))?.text, "Deutsch");
+  });
   it("normalizes law code for cache keys", () => {
     assert.equal(lawSectionCacheKey({ lawCode: "bgb", section: "823" }), "BGB:823:official-de");
   });

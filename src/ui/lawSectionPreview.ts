@@ -1,5 +1,6 @@
 import { formatReferenceLabel } from "../law/referenceLabel";
 import type { LawSection } from "../law/types";
+import { euLanguageNativeName } from "../law/euLanguages";
 
 interface LawSectionPreviewOptions {
   includeMetadataFooter?: boolean;
@@ -39,6 +40,9 @@ function buildMetadataLines(
 
   if (section.jurisdiction === "AT") {
     lines.push("Bundesrecht konsolidiert; Informationsfassung, rechtlich unverbindlich.");
+  }
+  if (section.jurisdiction === "EU" && section.language) {
+    lines.push(`Amtliche EU-Sprachfassung: ${euLanguageNativeName(section.language)}.`);
   }
 
   if (includeMetadataFooter) {

@@ -5,12 +5,13 @@ import {
   getUiStrings,
   resolveUiLanguage,
 } from "../src/ui/i18n";
+import { defaultEuLawLanguage } from "../src/law/euLanguages";
 
 describe("ui i18n", () => {
   it("uses German for de locales", () => {
     assert.equal(resolveUiLanguage("de"), "de");
     assert.equal(resolveUiLanguage("de-DE"), "de");
-    assert.equal(getUiStrings("de-AT").lookUpLawTitle, "Deutsches Gesetz nachschlagen");
+    assert.equal(getUiStrings("de-AT").lookUpLawTitle, "Gesetz nachschlagen");
     assert.equal(getUiStrings("de").supportedLaws, "Unterstützte Gesetze");
     assert.equal(
       getUiStrings("de").useEnglishTranslationWhenAvailable,
@@ -65,6 +66,11 @@ describe("ui i18n", () => {
 
   it("provides English Switzerland label", () => {
     assert.equal(getUiStrings("en").jurisdictionSwitzerland, "Switzerland");
+  });
+
+  it("provides EU labels and resolves stored, locale, then German defaults", () => {
+    assert.equal(getUiStrings("de").jurisdictionEuropeanUnion, "Europäische Union"); assert.equal(getUiStrings("en").jurisdictionEuropeanUnion, "European Union");
+    assert.equal(defaultEuLawLanguage("fr-FR"), "fr"); assert.equal(defaultEuLawLanguage("xx", "pl"), "pl"); assert.equal(defaultEuLawLanguage("xx"), "de");
   });
 
   it("preserves existing Germany and Austria labels", () => {

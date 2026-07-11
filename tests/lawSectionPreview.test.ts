@@ -4,6 +4,10 @@ import { buildLawSectionPreviewModel } from "../src/ui/lawSectionPreview";
 import type { LawSection } from "../src/law/types";
 
 describe("lawSectionPreview", () => {
+  it("shows official EU language metadata without a national translation warning", () => {
+    const preview = buildLawSectionPreviewModel({ providerId: "eur-lex", providerLabel: "EUR-Lex", lawCode: "DSGVO", lawTitle: "Regulation (EU) 2016/679", section: "6", referenceType: "article", jurisdiction: "EU", language: "en", text: "Lawful processing.", retrievedAt: "2026-07-10T12:00:00.000Z", cacheStatus: "live", isOfficialSource: true, isAuthoritativeText: true });
+    assert.deepEqual(preview.metadataLines, ["Amtliche EU-Sprachfassung: English.", "Quelle: EUR-Lex, DSGVO, Art. 6, abgerufen am 2026-07-10.", "Cache: live."]);
+  });
   const section: LawSection = {
     providerId: "gesetze-im-internet",
     providerLabel: "Gesetze im Internet",

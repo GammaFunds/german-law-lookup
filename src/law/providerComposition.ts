@@ -9,6 +9,7 @@ import { GesetzeImInternetProvider } from "./providers/GesetzeImInternetProvider
 import { MockLawProvider } from "./providers/MockLawProvider";
 import { NeurisLawProvider } from "./providers/NeurisLawProvider";
 import { RisLawProvider } from "./providers/RisLawProvider";
+import { EurLexLawProvider } from "./providers/EurLexLawProvider";
 
 export interface ProviderCompositionOptions {
   enableMockLawProvider?: boolean;
@@ -23,6 +24,7 @@ export function buildLawProviders(options: ProviderCompositionOptions = {}): Law
     : createMissingPostTransport();
 
   const providers: LawProvider[] = [
+    new EurLexLawProvider(httpTransport),
     new FedlexLawProvider(undefined, fedlexTransport),
     new NeurisLawProvider(undefined, httpTransport),
     new GesetzeImInternetProvider(undefined, httpTransport),

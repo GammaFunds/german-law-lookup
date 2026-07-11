@@ -155,6 +155,7 @@ const swissFedlexLawCodes = [
 ];
 
 const swissFedlexLawCodeSet = new Set(swissFedlexLawCodes);
+const euLawCodeSet = new Set(["DSGVO", "GDPR", "RGPD", "RODO"]);
 
 export function enrichJurisdiction(
   reference: ParsedLawReference,
@@ -171,6 +172,9 @@ export function enrichJurisdiction(
   ) {
     return { ...reference, jurisdiction: "CH" };
   }
+  if (selectedJurisdiction === "EU" && !reference.jurisdiction && reference.referenceType === "article" && euLawCodeSet.has(reference.lawCode)) {
+    return { ...reference, lawCode: "DSGVO", jurisdiction: "EU" };
+  }
   return reference;
 }
 
@@ -178,9 +182,25 @@ export function parseLawReferenceWithSelectedJurisdiction(
   input: string,
   selectedJurisdiction: LawJurisdiction,
 ): ParsedLawReference | null {
+  if (selectedJurisdiction === "EU") {
+    const normalized = input.trim().replace(/\s+/g, " ");
+    const euCodes = Array.from(euLawCodeSet).join("|");
+    const euArticle = new RegExp(`^(?:(${euCodes})\\s+${articleMarkerPattern}\\s*(${sectionPattern})|${articleMarkerPattern}\\s*(${sectionPattern})\\s+(${euCodes}))$`, "iu").exec(normalized);
+    if (euArticle) {
+      return { lawCode: "DSGVO", section: euArticle[2] ?? euArticle[3], referenceType: "article", jurisdiction: "EU" };
+    }
+  }
   const parsedReference = parseLawReference(input);
   if (parsedReference) {
-    if (selectedJurisdiction !== "CH") {
+    if (
+      selectedJurisdiction !== "EU" &&
+      !parsedReference.jurisdiction &&
+      euLawCodeSet.has(parsedReference.lawCode)
+    ) {
+      return null;
+    }
+
+    if (selectedJurisdiction !== "CH" && selectedJurisdiction !== "EU") {
       return enrichJurisdiction(parsedReference, selectedJurisdiction);
     }
 
@@ -188,8 +208,16 @@ export function parseLawReferenceWithSelectedJurisdiction(
       return parsedReference;
     }
 
-    const enrichedReference = enrichJurisdiction(parsedReference, "CH");
-    return enrichedReference.jurisdiction === "CH" ? enrichedReference : null;
+    if (selectedJurisdiction === "CH") {
+      const enrichedReference = enrichJurisdiction(parsedReference, "CH");
+      return enrichedReference.jurisdiction === "CH" ? enrichedReference : null;
+    }
+    const enrichedReference = enrichJurisdiction(parsedReference, "EU");
+    return enrichedReference.jurisdiction === "EU" ? enrichedReference : null;
+  }
+
+  if (selectedJurisdiction !== "EU" && isStandaloneEuAliasReference(input)) {
+    return null;
   }
 
   if (selectedJurisdiction === "AT") {
@@ -228,6 +256,14 @@ export function parseLawReferenceWithSelectedJurisdiction(
   }
 
   return null;
+}
+
+function isStandaloneEuAliasReference(input: string): boolean {
+  const normalized = input.trim().replace(/\s+/g, " ");
+  if (!normalized) return false;
+
+  const euCodes = Array.from(euLawCodeSet).join("|");
+  return new RegExp(`^(?:(${euCodes})\\s+${articleMarkerPattern}\\s*(${sectionPattern})|${articleMarkerPattern}\\s*(${sectionPattern})\\s+(${euCodes})|(${euCodes})\\s+(?:§\\s*)?(${sectionPattern})|(?:§\\s*)?(${sectionPattern})\\s+(${euCodes}))$`, "iu").test(normalized);
 }
 
 export function parseLawReference(input: string): ParsedLawReference | null {

@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
 import { buildLawProviders } from "../src/law/providerComposition";
+import { allowedCachedProviderIds } from "../src/law/cachedProviderComposition";
 
 describe("provider composition", () => {
   it("registers only runtime providers by default", () => {
@@ -8,7 +9,7 @@ describe("provider composition", () => {
 
     assert.deepEqual(
       providers.map((provider) => provider.id),
-      ["fedlex", "neuris", "gesetze-im-internet", "ris"],
+      ["eur-lex", "fedlex", "neuris", "gesetze-im-internet", "ris"],
     );
   });
 
@@ -17,7 +18,7 @@ describe("provider composition", () => {
 
     assert.deepEqual(
       providers.map((provider) => provider.id),
-      ["fedlex", "neuris", "gesetze-im-internet", "ris", "mock"],
+      ["eur-lex", "fedlex", "neuris", "gesetze-im-internet", "ris", "mock"],
     );
   });
 
@@ -37,5 +38,9 @@ describe("provider composition", () => {
     });
 
     assert.equal(calls, 0);
+  });
+
+  it("permits cached EUR-Lex sections", () => {
+    assert.deepEqual(allowedCachedProviderIds(false), ["eur-lex", "fedlex", "neuris", "gesetze-im-internet", "ris"]);
   });
 });

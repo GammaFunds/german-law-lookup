@@ -2,6 +2,7 @@ import { canonicalDisplayLawCode } from "./displayLawCode";
 import { normalizeReferenceType } from "./referenceLabel";
 import type { LawProvider } from "./LawProvider";
 import type { LawReference, LawSection, LawSourceVariant } from "./types";
+import { isEuLawLanguage } from "./euLanguages";
 
 export interface LawSectionCache {
   get(reference: LawReference): Promise<LawSection | null>;
@@ -24,6 +25,9 @@ export function normalizeLawSourceVariant(sourceVariant?: LawSourceVariant): Law
 }
 
 export function lawSectionCacheKey(reference: LawReference): string {
+  if (reference.jurisdiction === "EU") {
+    return `EU:${legacyLawSectionCacheKey(reference)}:${isEuLawLanguage(reference.language) ? reference.language : "de"}`;
+  }
   const jurisdiction = reference.jurisdiction === "AT" ? "AT:" : reference.jurisdiction === "CH" ? "CH:" : "";
   return `${jurisdiction}${legacyLawSectionCacheKey(reference)}:${normalizeLawSourceVariant(reference.sourceVariant)}`;
 }
@@ -45,7 +49,7 @@ function legacyLawSectionCacheKey(reference: LawReference): string {
 
 function cacheKeysForRead(reference: LawReference): string[] {
   const key = lawSectionCacheKey(reference);
-  if (reference.jurisdiction === "AT" || reference.jurisdiction === "CH") {
+  if (reference.jurisdiction === "AT" || reference.jurisdiction === "CH" || reference.jurisdiction === "EU") {
     return [key];
   }
 

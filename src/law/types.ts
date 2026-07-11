@@ -1,6 +1,9 @@
 export type LawReferenceType = "section" | "article";
 export type LawSourceVariant = "official-de" | "translation-en";
-export type LawJurisdiction = "DE" | "AT" | "CH";
+export type LawJurisdiction = "DE" | "AT" | "CH" | "EU";
+export type EuLawLanguage =
+  | "bg" | "es" | "cs" | "da" | "de" | "et" | "el" | "en" | "fr" | "ga" | "hr" | "it"
+  | "lv" | "lt" | "hu" | "mt" | "nl" | "pl" | "pt" | "ro" | "sk" | "sl" | "fi" | "sv";
 
 export interface LawReference {
   lawCode: string;
@@ -8,6 +11,7 @@ export interface LawReference {
   referenceType?: LawReferenceType;
   sourceVariant?: LawSourceVariant;
   jurisdiction?: LawJurisdiction;
+  language?: EuLawLanguage;
   subsection?: string;
   sentence?: string;
 }
@@ -22,6 +26,7 @@ export interface LawSection {
   referenceType?: LawReferenceType;
   sourceVariant?: LawSourceVariant;
   jurisdiction?: LawJurisdiction;
+  language?: EuLawLanguage;
   subsection?: string;
   heading?: string;
   text: string;

@@ -39,11 +39,15 @@ export interface UiStrings {
   jurisdictionGermany: string;
   jurisdictionAustria: string;
   jurisdictionSwitzerland: string;
+  jurisdictionEuropeanUnion: string;
+  euTextLanguage: string;
+  defaultEuTextLanguage: string;
+  defaultEuTextLanguageDescription: string;
 }
 
 const UI_STRINGS: Record<UiLanguage, UiStrings> = {
   de: {
-    commandName: "Deutsches Gesetz nachschlagen",
+    commandName: "Gesetz nachschlagen",
     enableLocalLawTextCache: "Lokalen Gesetzestext-Cache aktivieren",
     enableLocalLawTextCacheDescription:
       "Speichert erfolgreiche Treffer lokal. Live-Anbieter werden weiterhin zuerst abgefragt.",
@@ -69,7 +73,7 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     law: "Gesetz",
     referenceType: "Referenztyp",
     examples: "Beispiel",
-    lookUpLawTitle: "Deutsches Gesetz nachschlagen",
+    lookUpLawTitle: "Gesetz nachschlagen",
     lawReferencePlaceholder: "z. B. § 823 BGB",
     lookUpLawButton: "Gesetz suchen",
     noLookupRunYet: "Noch keine Suche ausgeführt.",
@@ -86,9 +90,13 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     jurisdictionGermany: "Deutschland",
     jurisdictionAustria: "Österreich",
     jurisdictionSwitzerland: "Schweiz",
+    jurisdictionEuropeanUnion: "Europäische Union",
+    euTextLanguage: "EU-Sprachfassung",
+    defaultEuTextLanguage: "Standard-EU-Sprachfassung",
+    defaultEuTextLanguageDescription: "Amtliche Sprachfassung für EUR-Lex-Abfragen.",
   },
   en: {
-    commandName: "Look up German law",
+    commandName: "Look up law",
     enableLocalLawTextCache: "Enable local law text cache",
     enableLocalLawTextCacheDescription:
       "Stores successful lookups locally. Live providers are still queried first.",
@@ -131,6 +139,10 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     jurisdictionGermany: "Germany",
     jurisdictionAustria: "Austria",
     jurisdictionSwitzerland: "Switzerland",
+    jurisdictionEuropeanUnion: "European Union",
+    euTextLanguage: "EU text language",
+    defaultEuTextLanguage: "Default EU text language",
+    defaultEuTextLanguageDescription: "Official language version used for EUR-Lex lookups.",
   },
 };
 

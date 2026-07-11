@@ -12,6 +12,8 @@ import {
   type SupportedGesetzeImInternetLaw,
 } from "./law/providers/gesetzeImInternetMapping";
 import type { LawSection, LawSourceVariant } from "./law/types";
+import type { EuLawLanguage } from "./law/types";
+import { EU_LANGUAGES, defaultEuLawLanguage } from "./law/euLanguages";
 import {
   defaultLawSourceVariantForLanguage,
   getUiStrings,
@@ -24,6 +26,7 @@ interface DeLawPluginSettings {
   enableLawSectionCache: boolean;
   lawSectionCacheTtlDays: number | null;
   defaultLawSourceVariant: LawSourceVariant;
+  defaultEuLawLanguage: EuLawLanguage;
   showInsertedSourceMetadata: boolean;
 }
 
@@ -36,6 +39,7 @@ const DEFAULT_SETTINGS: DeLawPluginSettings = {
   enableLawSectionCache: true,
   lawSectionCacheTtlDays: null,
   defaultLawSourceVariant: "official-de",
+  defaultEuLawLanguage: "de",
   showInsertedSourceMetadata: true,
 };
 
@@ -60,6 +64,8 @@ export default class DeLawPlugin extends Plugin {
           {
             getDefaultLawSourceVariant: () =>
               this.settings.defaultLawSourceVariant,
+            getDefaultEuLawLanguage: () => this.settings.defaultEuLawLanguage,
+            setDefaultEuLawLanguage: async (value) => { await this.updateSettings({ defaultEuLawLanguage: value }); },
             getShowInsertedSourceMetadata: () =>
               this.settings.showInsertedSourceMetadata,
             setShowInsertedSourceMetadata: async (value) => {
@@ -113,6 +119,7 @@ export default class DeLawPlugin extends Plugin {
         safeGetObsidianLanguage(),
         storedSettings?.defaultLawSourceVariant,
       ),
+      defaultEuLawLanguage: defaultEuLawLanguage(safeGetObsidianLanguage(), storedSettings?.defaultEuLawLanguage),
       showInsertedSourceMetadata:
         storedSettings?.showInsertedSourceMetadata !== false,
     };
@@ -168,6 +175,16 @@ class DeLawSettingsTab extends PluginSettingTab {
             await this.plugin.updateSettings({ enableLawSectionCache: value });
             this.display();
           });
+      });
+
+    new Setting(containerEl)
+      .setName(ui.defaultEuTextLanguage)
+      .setDesc(ui.defaultEuTextLanguageDescription)
+      .addDropdown((dropdown) => {
+        for (const language of EU_LANGUAGES) dropdown.addOption(language.code, language.nativeName);
+        dropdown.setValue(settings.defaultEuLawLanguage).onChange(async (value) => {
+          await this.plugin.updateSettings({ defaultEuLawLanguage: defaultEuLawLanguage(undefined, value) });
+        });
       });
 
     new Setting(containerEl)

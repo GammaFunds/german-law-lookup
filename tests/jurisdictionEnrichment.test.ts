@@ -8,12 +8,70 @@ import {
 } from "../src/parser";
 
 describe("jurisdiction enrichment", () => {
+  it("isolates EU DSGVO aliases to the selected EU jurisdiction", () => {
+    const acceptedForms = [
+      "DSGVO Art. 6",
+      "Art. 6 DSGVO",
+      "GDPR Art. 6",
+      "Art. 6 GDPR",
+      "RGPD Art. 6",
+      "Art. 6 RGPD",
+      "RODO Art. 6",
+      "Art. 6 RODO",
+    ];
+
+    for (const input of acceptedForms) {
+      assert.deepEqual(parseLawReferenceWithSelectedJurisdiction(input, "EU"), {
+        lawCode: "DSGVO",
+        section: "6",
+        referenceType: "article",
+        jurisdiction: "EU",
+      });
+    }
+
+    for (const jurisdiction of ["DE", "AT", "CH"] as const) {
+      for (const input of acceptedForms) {
+        assert.equal(parseLawReferenceWithSelectedJurisdiction(input, jurisdiction), null);
+      }
+    }
+
+    assert.equal(parseLawReferenceWithSelectedJurisdiction("DSGVO § 6", "EU"), null);
+    assert.equal(parseLawReferenceWithSelectedJurisdiction("GDPR § 6", "EU"), null);
+    assert.equal(parseLawReferenceWithSelectedJurisdiction("RGPD § 6", "EU"), null);
+    assert.equal(parseLawReferenceWithSelectedJurisdiction("RODO § 6", "EU"), null);
+
+    for (const jurisdiction of ["DE", "AT", "CH"] as const) {
+      for (const input of ["DSGVO § 6", "GDPR § 6", "RGPD § 6", "RODO § 6"] as const) {
+        assert.equal(parseLawReferenceWithSelectedJurisdiction(input, jurisdiction), null);
+      }
+    }
+
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("AT StGB § 75", "EU"),
+      {
+        lawCode: "STGB",
+        section: "75",
+        jurisdiction: "AT",
+      },
+    );
+  });
   it("keeps Deutschland selection DE/default-compatible for bare StGB", () => {
     assert.deepEqual(
       parseLawReferenceWithSelectedJurisdiction("StGB § 75", "DE"),
       {
         lawCode: "STGB",
         section: "75",
+      },
+    );
+  });
+
+  it("keeps Art. 1 GG valid under Deutschland selection", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("Art. 1 GG", "DE"),
+      {
+        lawCode: "GG",
+        section: "1",
+        referenceType: "article",
       },
     );
   });
@@ -106,7 +164,7 @@ describe("jurisdiction enrichment", () => {
   });
 
   describe("CH jurisdiction", () => {
-    it("parses Art. 8 BV when Switzerland is selected", () => {
+    it("keeps Art. 8 BV valid under Switzerland selection", () => {
       assert.deepEqual(
         parseLawReferenceWithSelectedJurisdiction("Art. 8 BV", "CH"),
         {
