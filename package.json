@@ -1,7 +1,7 @@
 {
   "name": "german-law-lookup",
-  "version": "0.1.4",
-  "description": "Look up German federal law references and insert formatted law text into notes.",
+  "version": "0.2.0",
+  "description": "Look up selected federal law references from Germany, Austria, and Switzerland and insert formatted provisions into notes.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

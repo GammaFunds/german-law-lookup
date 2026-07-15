@@ -43,12 +43,12 @@ export interface UiStrings {
 
 const UI_STRINGS: Record<UiLanguage, UiStrings> = {
   de: {
-    commandName: "Deutsches Gesetz nachschlagen",
+    commandName: "Gesetz nachschlagen",
     enableLocalLawTextCache: "Lokalen Gesetzestext-Cache aktivieren",
     enableLocalLawTextCacheDescription:
       "Speichert erfolgreiche Treffer lokal. Live-Anbieter werden weiterhin zuerst abgefragt.",
     defaultLawTextSource: "Standard-Gesetzestextquelle",
-    germanOfficialText: "Deutscher amtlicher Text",
+    germanOfficialText: "Deutschsprachiger Gesetzestext",
     englishTranslationWhenAvailable: "Englischer Gesetzestext, sofern vorhanden",
     cacheExpirationInDays: "Cache-Ablauf in Tagen",
     cacheExpirationInDaysDescription:
@@ -69,7 +69,7 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     law: "Gesetz",
     referenceType: "Referenztyp",
     examples: "Beispiel",
-    lookUpLawTitle: "Deutsches Gesetz nachschlagen",
+    lookUpLawTitle: "Gesetz nachschlagen",
     lawReferencePlaceholder: "z. B. § 823 BGB",
     lookUpLawButton: "Gesetz suchen",
     noLookupRunYet: "Noch keine Suche ausgeführt.",
@@ -88,12 +88,12 @@ const UI_STRINGS: Record<UiLanguage, UiStrings> = {
     jurisdictionSwitzerland: "Schweiz",
   },
   en: {
-    commandName: "Look up German law",
+    commandName: "Look up law",
     enableLocalLawTextCache: "Enable local law text cache",
     enableLocalLawTextCacheDescription:
       "Stores successful lookups locally. Live providers are still queried first.",
     defaultLawTextSource: "Default law text source",
-    germanOfficialText: "German official text",
+    germanOfficialText: "German-language law text",
     englishTranslationWhenAvailable: "English law text when available",
     cacheExpirationInDays: "Cache expiration in days",
     cacheExpirationInDaysDescription:

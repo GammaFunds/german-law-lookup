@@ -10,7 +10,12 @@ describe("ui i18n", () => {
   it("uses German for de locales", () => {
     assert.equal(resolveUiLanguage("de"), "de");
     assert.equal(resolveUiLanguage("de-DE"), "de");
-    assert.equal(getUiStrings("de-AT").lookUpLawTitle, "Deutsches Gesetz nachschlagen");
+    assert.equal(getUiStrings("de-AT").lookUpLawTitle, "Gesetz nachschlagen");
+    assert.equal(getUiStrings("de").commandName, "Gesetz nachschlagen");
+    assert.equal(
+      getUiStrings("de").germanOfficialText,
+      "Deutschsprachiger Gesetzestext",
+    );
     assert.equal(getUiStrings("de").supportedLaws, "Unterstützte Gesetze");
     assert.equal(
       getUiStrings("de").useEnglishTranslationWhenAvailable,
@@ -32,6 +37,11 @@ describe("ui i18n", () => {
     assert.equal(resolveUiLanguage("fr"), "en");
     assert.equal(resolveUiLanguage(undefined), "en");
     assert.equal(getUiStrings("en-GB").lookUpLawTitle, "Look up law");
+    assert.equal(getUiStrings("en").commandName, "Look up law");
+    assert.equal(
+      getUiStrings("en").germanOfficialText,
+      "German-language law text",
+    );
     assert.equal(getUiStrings("unknown").supportedLaws, "Supported laws");
     assert.equal(
       getUiStrings("en").englishTranslationUnavailableForCitation,

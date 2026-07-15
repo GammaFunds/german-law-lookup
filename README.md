@@ -1,74 +1,142 @@
 # German Law Lookup
 
-Look up German federal law references in Obsidian, preview German or published English law text, and insert the formatted result into the active note.
-
-## Demo
-
-![German Law Lookup demo](assets/german-law-lookup-demo.gif)
+Look up selected federal law references from Germany, Austria, and Switzerland in Obsidian, preview the retrieved provision, and insert formatted law text into the active note.
 
 ## Features
 
-- Look up supported German federal law references directly from Obsidian.
+- Select Germany, Austria, or Switzerland as the jurisdiction for a lookup.
+- Look up explicitly supported federal statutes and provisions.
 - Preview retrieved law text before inserting it.
 - Insert law text only after an explicit user action.
-- Optionally include source, law reference, retrieval date, and cache metadata in the inserted note.
-- Use German official law text as the default source.
-- Optionally use published English law text from Gesetze im Internet for explicitly supported laws.
-- Fall back to German official law text when English law text is unavailable or not configured.
+- Optionally include source, law reference, retrieval date, and cache metadata.
+- Use German-language law text by default.
+- Use a published English text only where an explicitly supported source provides one.
 - Follow the Obsidian interface language for plugin UI labels.
+- Cache successful lookups locally when caching is enabled.
+
+## Supported jurisdictions
+
+### Germany
+
+German federal provisions are retrieved through the configured German provider chain.
+
+Examples:
+
+- `§ 823 BGB`
+- `§ 242 StGB`
+- `SGB V § 1`
+- `Art. 1 GG`
+- `Art. 229 § 6 EGBGB`
+
+The complete list of explicitly supported German laws is available in the plugin settings.
+
+### Austria
+
+Austrian federal law is retrieved from RIS, the Austrian Legal Information System.
+
+Supported Austrian laws:
+
+- ABGB — Allgemeines bürgerliches Gesetzbuch
+- StGB — Strafgesetzbuch
+- B-VG — Bundes-Verfassungsgesetz
+- ZPO — Zivilprozessordnung
+- JN — Jurisdiktionsnorm
+- EO — Exekutionsordnung
+- UGB — Unternehmensgesetzbuch
+- StPO — Strafprozeßordnung 1975
+
+Examples:
+
+- `ABGB § 1295`
+- `StGB § 75`
+- `B-VG Art. 144`
+- `UGB § 1`
+
+RIS consolidated federal law is presented as an informational version and is legally non-binding. A published English B-VG text is available where explicitly supported and selected.
+
+### Switzerland
+
+Swiss federal law is retrieved from Fedlex.
+
+Supported Swiss laws:
+
+- BV — Bundesverfassung
+- ZGB — Zivilgesetzbuch
+- OR — Obligationenrecht
+- StGB — Schweizerisches Strafgesetzbuch
+- ZPO — Schweizerische Zivilprozessordnung
+- StPO — Schweizerische Strafprozessordnung
+- SchKG — Bundesgesetz über Schuldbetreibung und Konkurs
+- VwVG — Verwaltungsverfahrensgesetz
+- BGG — Bundesgerichtsgesetz
+- DSG — Datenschutzgesetz
+- IPRG — Bundesgesetz über das Internationale Privatrecht
+- DBG — Bundesgesetz über die direkte Bundessteuer
+- StHG — Steuerharmonisierungsgesetz
+- AHVG — Alters- und Hinterlassenenversicherungsgesetz
+- IVG — Invalidenversicherungsgesetz
+- ATSG — Allgemeiner Teil des Sozialversicherungsrechts
+- ArG — Arbeitsgesetz
+- SVG — Strassenverkehrsgesetz
+- AIG — Ausländer- und Integrationsgesetz
+- KG — Kartellgesetz
+- URG — Urheberrechtsgesetz
+- PatG — Patentgesetz
+- MSchG — Markenschutzgesetz
+
+Examples:
+
+- `BV Art. 8`
+- `ZGB Art. 1`
+- `OR Art. 1`
+- `StGB Art. 1`
+- `SchKG Art. 1`
 
 ## Important limitations
 
-- This plugin targets German federal law only.
-- It does not support state law, EU law, case law, legal commentary, or legal advice.
-- It never generates translations.
-- English law text is used only when explicitly enabled and only from published Gesetze im Internet sources.
-- German official law text remains the default source.
-- Unsupported references are not inferred or approximated.
-
-## Supported references
-
-The plugin supports common section-based references, for example:
-
-- `§ 823 BGB`
-- `BGB 823`
-- `823 BGB`
-- `§ 242 StGB`
-- `SGB V § 1`
-- `§ 1 FreizügG/EU`
-
-It also supports selected article references, for example:
-
-- `Art. 1 GG`
-- `GG Art. 1`
-- `Art. 1 EGBGB`
-- `Art. 229 § 6 EGBGB`
-
-The complete supported-law list is shown in the plugin settings.
+- The plugin supports selected federal law from Germany, Austria, and Switzerland; it does not provide complete statutory coverage.
+- This release does not support EU law.
+- It does not support German or Austrian state law, Swiss cantonal law, case law, legal commentary, or legal advice.
+- Unsupported laws and provisions are not inferred or approximated.
+- The plugin does not generate translations.
+- English law text is used only where an explicitly supported public source provides a published English version.
+- Users should verify retrieved text against the cited official source before relying on it.
 
 ## Sources
 
-The stable runtime provider uses published law text from [Gesetze im Internet](https://www.gesetze-im-internet.de/).
+German Law Lookup uses public legal-information systems:
 
-Gesetze im Internet HTML is the current validated provider path. Gesetze im Internet XML access has been technically validated, but XML extraction is optional future work and is not required for the current stable release.
+- Germany: Rechtsinformationen des Bundes during its NeuRIS test phase, with Gesetze im Internet as the established provider and fallback path.
+- Austria: RIS — Rechtsinformationssystem des Bundes.
+- Switzerland: Fedlex.
 
-NeuRIS is tracked as a future strategic provider once its public API, schema, and coverage are sufficiently stable.
+The German provider chain uses an exact NeuRIS match where available. Gesetze im Internet supplies the established German HTML path and explicitly supported published English texts.
+
+The plugin preserves source, retrieval, jurisdiction, and cache metadata. Jurisdiction-specific notices indicate where a consolidated text is informational rather than an authoritative promulgation.
 
 ## Privacy and network access
 
-German Law Lookup retrieves law text from external public legal-information websites when a lookup is executed.
+Network requests are made only for user-initiated lookups.
 
-- The current stable provider path uses Gesetze im Internet.
-- Network requests are made only for user-initiated lookups.
-- The plugin sends the requested law reference to the configured provider in order to retrieve the matching law text.
-- The plugin does not send note contents to external services.
-- The plugin does not use AI services and does not generate translations.
-- Optional English law text is retrieved only from published Gesetze im Internet sources where explicitly supported.
-- Retrieved law text may be cached locally in the Obsidian vault/plugin data, depending on the plugin settings.
+- The selected jurisdiction, law code, provision, and requested source variant are used to retrieve the matching text.
+- Requests are sent only to the applicable public legal-information provider.
+- Note contents are not sent to external services.
+- The plugin does not use AI services.
+- The plugin does not generate translations.
+- Retrieved law text may be cached locally in the Obsidian plugin data when caching is enabled.
 
 ## Installation
 
-For manual installation, copy the release files into:
+### Community plugin directory
+
+1. Open **Settings → Community plugins** in Obsidian.
+2. Select **Browse**.
+3. Search for **German Law Lookup**.
+4. Install and enable the plugin.
+
+### Manual installation
+
+Copy the release files into:
 
 ```text
 <your-vault>/.obsidian/plugins/german-law-lookup/
@@ -84,11 +152,18 @@ Then reload Obsidian and enable **German Law Lookup** under **Settings → Commu
 
 ## Usage
 
-1. Open the command palette in Obsidian.
-2. Run the law lookup command.
-3. Enter a supported law reference, such as `§ 823 BGB`.
-4. Review the preview.
-5. Insert the result into the active note.
+1. Open the command palette.
+2. Run **Look up law** or **Gesetz nachschlagen**.
+3. Select Germany, Austria, or Switzerland.
+4. Enter a supported reference.
+5. Review the preview.
+6. Insert the result into the active note.
+
+Examples:
+
+- Germany: `§ 823 BGB`
+- Austria: `ABGB § 1295`
+- Switzerland: `BV Art. 8`
 
 The plugin does not modify notes automatically.
 
@@ -114,15 +189,15 @@ npm run build
 
 ## Release files
 
-A manual release should include:
+A release should include:
 
 - `manifest.json`
 - `main.js`
 - `styles.css`
-- `versions.json` if publishing version compatibility metadata
+- `versions.json` when publishing version compatibility metadata
 
-Do not include `node_modules` in the release package.
+Do not include `node_modules`.
 
 ## Disclaimer
 
-This plugin is a research and productivity tool. It is not legal advice. Always verify legal texts against the official source before relying on them.
+This plugin is a research and productivity tool. It is not legal advice. Always verify legal texts against the cited official source before relying on them.

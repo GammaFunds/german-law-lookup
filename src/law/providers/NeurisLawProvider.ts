@@ -24,6 +24,10 @@ export class NeurisLawProvider implements LawProvider {
   ) {}
 
   async getSection(reference: LawReference): Promise<LawSection | null> {
+    if (reference.jurisdiction === "AT" || reference.jurisdiction === "CH") {
+      return null;
+    }
+
     if (reference.sourceVariant === "translation-en") {
       return null;
     }
