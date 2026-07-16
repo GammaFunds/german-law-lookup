@@ -1,9 +1,9 @@
 {
   "id": "german-law-lookup",
   "name": "German Law Lookup",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "minAppVersion": "1.8.0",
-  "description": "Look up German federal law references and insert formatted law text into notes.",
+  "description": "Look up selected German, Austrian, and Swiss laws plus multilingual GDPR articles, then insert formatted legal text into Obsidian notes.",
   "author": "GammaFunds",
   "authorUrl": "https://github.com/GammaFunds",
   "isDesktopOnly": false
