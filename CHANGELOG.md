@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to German Law Lookup are documented in this file.
+All notable changes to Law Lookup for Germany + Austria + Switzerland are documented in this file.
 
 ## [0.2.0] - 2026-07-16
 
@@ -17,6 +17,7 @@ All notable changes to German Law Lookup are documented in this file.
 
 ### Improved
 
+- The visible plugin title now reflects its German, Austrian, and Swiss legal scope.
 - Legal-text preview, source metadata, insertion controls, and keyboard-accessible jurisdiction tabs.
 - RIS extraction to exclude navigation, scripts, metadata chrome, and footer content.
 - Provider boundaries for colliding abbreviations such as StGB, DSG, and ZPO.

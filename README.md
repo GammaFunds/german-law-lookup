@@ -1,10 +1,10 @@
-# German Law Lookup
+# Law Lookup for Germany + Austria + Switzerland
 
-German Law Lookup is an Obsidian plugin for curated legal-reference lookup across German, Austrian, and Swiss law plus a multilingual GDPR/DSGVO pilot. It previews retrieved legal text and inserts the formatted result into the active note only after an explicit user action.
+Law Lookup for Germany + Austria + Switzerland is an Obsidian plugin for curated legal-reference lookup across German, Austrian, and Swiss law plus a multilingual GDPR/DSGVO pilot. It previews retrieved legal text and inserts the formatted result into the active note only after an explicit user action.
 
 ## Demo
 
-![German Law Lookup demo](assets/german-law-lookup-demo.gif)
+![Law Lookup for Germany + Austria + Switzerland demo](assets/german-law-lookup-demo.gif)
 
 ## Features
 
@@ -168,7 +168,7 @@ Copy exactly these release assets into it:
 - `main.js`
 - `styles.css`
 
-Reload Obsidian and enable **German Law Lookup** under **Settings → Community plugins**.
+Reload Obsidian and enable **Law Lookup for Germany + Austria + Switzerland** under **Settings → Community plugins**.
 
 ## Usage
 
