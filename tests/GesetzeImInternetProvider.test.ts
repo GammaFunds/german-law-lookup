@@ -2945,6 +2945,34 @@ describe("Gesetze im Internet Austrian jurisdiction gate", () => {
     assert.equal(calls, 0);
   });
 
+  it("returns null for explicit CH StGB without fetching", async () => {
+    let calls = 0;
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => {
+      calls += 1;
+      return textResponse(stgb242HtmlFixture);
+    });
+
+    assert.equal(
+      await provider.getSection({ lawCode: "STGB", section: "75", jurisdiction: "CH" }),
+      null,
+    );
+    assert.equal(calls, 0);
+  });
+
+  it("returns null for explicit EU StGB without fetching", async () => {
+    let calls = 0;
+    const provider = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => {
+      calls += 1;
+      return textResponse(stgb242HtmlFixture);
+    });
+
+    assert.equal(
+      await provider.getSection({ lawCode: "STGB", section: "75", jurisdiction: "EU" }),
+      null,
+    );
+    assert.equal(calls, 0);
+  });
+
   it("does not let Gesetze im Internet claim explicit AT StGB before RIS", async () => {
     let gesetzeCalls = 0;
     const gesetze = new GesetzeImInternetProvider("https://www.gesetze-im-internet.de", async () => {

@@ -7,6 +7,45 @@ interface AustrianLawConfig {
   lawTitle: string;
   displayLawCode: string;
   referenceType: "section" | "article";
+  exampleSection?: string;
+  exampleInputs?: readonly string[];
+}
+
+export interface SupportedRisLaw {
+  displayLawCode: string;
+  lawTitle: string;
+  referenceType: "section" | "article";
+  exampleInputs: readonly string[];
+}
+
+export function getSupportedRisLaws(): ReadonlyArray<SupportedRisLaw> {
+  return Object.entries(supportedAustrianLaws)
+    .map(([, law]) => {
+      const exampleSection = law.exampleSection ?? "1";
+      return {
+        displayLawCode: law.displayLawCode,
+        lawTitle: law.lawTitle,
+        referenceType: law.referenceType,
+        exampleInputs:
+          law.exampleInputs ??
+          (law.referenceType === "article"
+            ? [
+                `Art. ${exampleSection} ${law.displayLawCode}`,
+                `${law.displayLawCode} Art. ${exampleSection}`,
+                `Artikel ${exampleSection} ${law.displayLawCode}`,
+                `${law.displayLawCode} Artikel ${exampleSection}`,
+              ]
+            : [
+                `§ ${exampleSection} ${law.displayLawCode}`,
+                `${law.displayLawCode} § ${exampleSection}`,
+                `${exampleSection} ${law.displayLawCode}`,
+                `${law.displayLawCode} ${exampleSection}`,
+              ]),
+      };
+    })
+    .sort((left, right) =>
+      left.displayLawCode.localeCompare(right.displayLawCode, "de"),
+    );
 }
 
 const supportedAustrianLaws: Record<string, AustrianLawConfig> = {
@@ -15,6 +54,7 @@ const supportedAustrianLaws: Record<string, AustrianLawConfig> = {
     lawTitle: "Allgemeines bürgerliches Gesetzbuch",
     displayLawCode: "ABGB",
     referenceType: "section",
+    exampleSection: "1295",
   },
   STGB: {
     gesetzesnummer: "10002296",
@@ -27,6 +67,7 @@ const supportedAustrianLaws: Record<string, AustrianLawConfig> = {
     lawTitle: "Bundes-Verfassungsgesetz",
     displayLawCode: "B-VG",
     referenceType: "article",
+    exampleSection: "144",
   },
   ZPO: {
     gesetzesnummer: "10001699",
@@ -58,10 +99,110 @@ const supportedAustrianLaws: Record<string, AustrianLawConfig> = {
     displayLawCode: "StPO",
     referenceType: "section",
   },
+  AKTG: {
+    gesetzesnummer: "10002070",
+    lawTitle: "Aktiengesetz",
+    displayLawCode: "AktG",
+    referenceType: "section",
+  },
+  AVG: {
+    gesetzesnummer: "10005768",
+    lawTitle: "Allgemeines Verwaltungsverfahrensgesetz 1991",
+    displayLawCode: "AVG",
+    referenceType: "section",
+  },
+  BAO: {
+    gesetzesnummer: "10003940",
+    lawTitle: "Bundesabgabenordnung",
+    displayLawCode: "BAO",
+    referenceType: "section",
+  },
+  DSG: {
+    gesetzesnummer: "10001597",
+    lawTitle: "Datenschutzgesetz",
+    displayLawCode: "DSG",
+    referenceType: "section",
+  },
+  FBG: {
+    gesetzesnummer: "10002997",
+    lawTitle: "Firmenbuchgesetz",
+    displayLawCode: "FBG",
+    referenceType: "section",
+  },
+  GEWO: {
+    gesetzesnummer: "10007517",
+    lawTitle: "Gewerbeordnung 1994",
+    displayLawCode: "GewO",
+    referenceType: "section",
+  },
+  GMBHG: {
+    gesetzesnummer: "10001720",
+    lawTitle: "GmbH-Gesetz",
+    displayLawCode: "GmbHG",
+    referenceType: "section",
+  },
+  IO: {
+    gesetzesnummer: "10001736",
+    lawTitle: "Insolvenzordnung",
+    displayLawCode: "IO",
+    referenceType: "section",
+  },
+  KARTG: {
+    gesetzesnummer: "20004174",
+    lawTitle: "Kartellgesetz 2005",
+    displayLawCode: "KartG",
+    referenceType: "section",
+  },
+  KSCHG: {
+    gesetzesnummer: "10002462",
+    lawTitle: "Konsumentenschutzgesetz",
+    displayLawCode: "KSchG",
+    referenceType: "section",
+  },
+  SPG: {
+    gesetzesnummer: "10005792",
+    lawTitle: "Sicherheitspolizeigesetz",
+    displayLawCode: "SPG",
+    referenceType: "section",
+  },
+  VERSVG: {
+    gesetzesnummer: "10001979",
+    lawTitle: "Versicherungsvertragsgesetz",
+    displayLawCode: "VersVG",
+    referenceType: "section",
+  },
+  VFGG: {
+    gesetzesnummer: "10000245",
+    lawTitle: "Verfassungsgerichtshofgesetz 1953",
+    displayLawCode: "VfGG",
+    referenceType: "section",
+  },
+  VWGG: {
+    gesetzesnummer: "10000795",
+    lawTitle: "Verwaltungsgerichtshofgesetz 1985",
+    displayLawCode: "VwGG",
+    referenceType: "section",
+  },
+  VWGVG: {
+    gesetzesnummer: "20008255",
+    lawTitle: "Verwaltungsgerichtsverfahrensgesetz",
+    displayLawCode: "VwGVG",
+    referenceType: "section",
+  },
+  ZUSTG: {
+    gesetzesnummer: "10005522",
+    lawTitle: "Zustellgesetz",
+    displayLawCode: "ZustG",
+    referenceType: "section",
+  },
 };
 
 export const ERV_BVG_URL =
   "https://www.ris.bka.gv.at/Dokumente/Erv/ERV_1930_1/ERV_1930_1.html";
+
+function dsgArticleForSection(section: string): string {
+  return section === "1" ? "1" : "2";
+}
 
 export function buildRisSectionUrl(reference: LawReference): string | null {
   if (reference.jurisdiction !== "AT") {
@@ -87,6 +228,18 @@ export function buildRisSectionUrl(reference: LawReference): string | null {
     url.searchParams.set("Abfrage", "Bundesnormen");
     url.searchParams.set("Gesetzesnummer", law.gesetzesnummer);
     url.searchParams.set("Artikel", reference.section);
+    return url.toString();
+  }
+
+  if (law.gesetzesnummer === "10001597") {
+    const url = new URL("/NormDokument.wxe", BASE_URL);
+    url.searchParams.set("Abfrage", "Bundesnormen");
+    url.searchParams.set("Gesetzesnummer", law.gesetzesnummer);
+    url.searchParams.set(
+      "Artikel",
+      dsgArticleForSection(reference.section),
+    );
+    url.searchParams.set("Paragraf", reference.section);
     return url.toString();
   }
 

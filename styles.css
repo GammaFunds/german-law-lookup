@@ -160,3 +160,48 @@
     border-radius: 10px;
   }
 }
+
+.de-law-settings-jurisdiction-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.de-law-settings-jurisdiction-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--font-ui-medium);
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  user-select: none;
+  font-family: inherit;
+}
+
+.de-law-settings-jurisdiction-tab[aria-selected="true"] {
+  background: var(--background-primary);
+  border-color: var(--background-modifier-border);
+  color: var(--text-normal);
+  margin-bottom: -1px;
+}
+
+.de-law-settings-jurisdiction-tab:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: -2px;
+}
+
+.de-law-settings-jurisdiction-panel {
+  padding-top: 16px;
+}
+
+.de-law-settings-jurisdiction-panel[hidden] {
+  display: none;
+}
