@@ -5,6 +5,7 @@ import {
   buildFedlexQueryBody,
   convertFedlexHtmlToText,
   extractFedlexArticleFromResponse,
+  getSupportedFedlexLaws,
   mapFedlexReference,
   mapFedlexToLawSection,
   normalizeArticleId,
@@ -912,6 +913,43 @@ describe("Fedlex mapping helpers", () => {
     assert.equal(section.section, "1");
     assert.equal(section.heading, "Gegenstand");
     assert.equal(section.jurisdiction, "CH");
+  });
+
+  it("returns stable Swiss supported-law diagnostics metadata", () => {
+    const laws = getSupportedFedlexLaws();
+
+    assert.equal(laws.length, 23);
+
+    const sorted = [...laws].sort((a, b) =>
+      a.displayLawCode.localeCompare(b.displayLawCode, "de"),
+    );
+    for (let i = 0; i < laws.length; i++) {
+      assert.equal(laws[i], sorted[i]);
+    }
+
+    for (const law of laws) {
+      assert.equal(law.referenceType, "article");
+    }
+
+    const bv = laws.find((l) => l.displayLawCode === "BV")!;
+    assert.equal(bv.lawTitle, "Bundesverfassung der Schweizerischen Eidgenossenschaft");
+
+    const zgb = laws.find((l) => l.displayLawCode === "ZGB")!;
+    assert.equal(zgb.lawTitle, "Zivilgesetzbuch");
+
+    const or = laws.find((l) => l.displayLawCode === "OR")!;
+    assert.equal(or.lawTitle, "Obligationenrecht");
+
+    const stgb = laws.find((l) => l.displayLawCode === "StGB")!;
+    assert.equal(stgb.lawTitle, "Schweizerisches Strafgesetzbuch");
+
+    const mschg = laws.find((l) => l.displayLawCode === "MSchG")!;
+    assert.equal(mschg.lawTitle, "Bundesgesetz über den Schutz von Marken und Herkunftsangaben");
+
+    for (const law of laws) {
+      assert.ok(law.exampleInputs.includes(`Art. 1 ${law.displayLawCode}`));
+      assert.ok(law.exampleInputs.includes(`${law.displayLawCode} Art. 1`));
+    }
   });
 });
 

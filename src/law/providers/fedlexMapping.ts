@@ -6,6 +6,31 @@ interface SwissLawConfig {
   workUri: string;
   lawTitle: string;
   displayLawCode: string;
+  exampleInputs?: readonly string[];
+}
+
+export interface SupportedFedlexLaw {
+  displayLawCode: string;
+  lawTitle: string;
+  referenceType: "article";
+  exampleInputs: readonly string[];
+}
+
+export function getSupportedFedlexLaws(): ReadonlyArray<SupportedFedlexLaw> {
+  return Object.entries(supportedSwissLaws)
+    .map(([, law]) => ({
+      displayLawCode: law.displayLawCode,
+      lawTitle: law.lawTitle,
+      referenceType: "article" as const,
+      exampleInputs:
+        law.exampleInputs ?? [
+          `Art. 1 ${law.displayLawCode}`,
+          `${law.displayLawCode} Art. 1`,
+        ],
+    }))
+    .sort((left, right) =>
+      left.displayLawCode.localeCompare(right.displayLawCode, "de"),
+    );
 }
 
 const supportedSwissLaws: Record<string, SwissLawConfig> = {

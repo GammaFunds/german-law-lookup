@@ -9,8 +9,13 @@ import { createObsidianRequestUrlTransport } from "./law/httpTransport";
 import { buildLawProviders } from "./law/providerComposition";
 import {
   getSupportedGesetzeImInternetLaws,
-  type SupportedGesetzeImInternetLaw,
 } from "./law/providers/gesetzeImInternetMapping";
+import {
+  getSupportedRisLaws,
+} from "./law/providers/risMapping";
+import {
+  getSupportedFedlexLaws,
+} from "./law/providers/fedlexMapping";
 import type { LawSection, LawSourceVariant } from "./law/types";
 import {
   defaultLawSourceVariantForLanguage,
@@ -18,6 +23,13 @@ import {
   type UiStrings,
 } from "./ui/i18n";
 import { LawLookupModal } from "./ui/LawLookupModal";
+
+interface SupportedLaw {
+  displayLawCode: string;
+  lawTitle: string;
+  referenceType: "section" | "article";
+  exampleInputs: readonly string[];
+}
 
 interface DeLawPluginSettings {
   enableMockLawProvider: boolean;
@@ -207,29 +219,102 @@ class DeLawSettingsTab extends PluginSettingTab {
       text: ui.supportedLawsDescription,
     });
 
-    this.renderSupportedLawsGroup(containerEl, ui.sectionReferences, "section", ui);
-    this.renderSupportedLawsGroup(containerEl, ui.articleReferences, "article", ui);
+    const tabsContainer = containerEl.createDiv({ cls: "de-law-settings-jurisdiction-tabs" });
+    tabsContainer.setAttribute("role", "tablist");
 
-    const notes = containerEl.createDiv({ cls: "de-law-settings-supported-notes" });
-    notes.createEl("strong", { text: ui.intentionallyUnsupportedCandidates });
-    const noteList = notes.createEl("ul");
-    noteList.createEl("li", {
-      text: ui.ggArticleOnlyNote,
-    });
-    noteList.createEl("li", {
-      text: ui.unsupportedCandidatesNote,
+    const tabDefs = [
+      { label: ui.jurisdictionGermany, tabId: "de-law-jurisdiction-tab-germany", panelId: "de-law-jurisdiction-panel-germany" },
+      { label: ui.jurisdictionAustria, tabId: "de-law-jurisdiction-tab-austria", panelId: "de-law-jurisdiction-panel-austria" },
+      { label: ui.jurisdictionSwitzerland, tabId: "de-law-jurisdiction-tab-switzerland", panelId: "de-law-jurisdiction-panel-switzerland" },
+    ];
+
+    const tabs: HTMLButtonElement[] = [];
+    const panels: HTMLDivElement[] = [];
+
+    for (const [i, def] of tabDefs.entries()) {
+      const tab = tabsContainer.createEl("button", {
+        cls: "de-law-settings-jurisdiction-tab",
+        text: def.label,
+        attr: { type: "button" },
+      });
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", i === 0 ? "true" : "false");
+      tab.setAttribute("aria-controls", def.panelId);
+      tab.id = def.tabId;
+      tab.tabIndex = i === 0 ? 0 : -1;
+      tabs.push(tab);
+
+      const panel = containerEl.createDiv({ cls: "de-law-settings-jurisdiction-panel" });
+      panel.setAttribute("role", "tabpanel");
+      panel.id = def.panelId;
+      panel.setAttribute("aria-labelledby", def.tabId);
+      if (i !== 0) panel.setAttribute("hidden", "");
+      panels.push(panel);
+    }
+
+    const germanLaws = getSupportedGesetzeImInternetLaws();
+    this.renderSupportedLawsGroup(panels[0], ui.sectionReferences, germanLaws.filter((l) => l.referenceType === "section"), ui);
+    this.renderSupportedLawsGroup(panels[0], ui.articleReferences, germanLaws.filter((l) => l.referenceType === "article"), ui);
+
+    const germanNotes = panels[0].createDiv({ cls: "de-law-settings-supported-notes" });
+    germanNotes.createEl("strong", { text: ui.intentionallyUnsupportedCandidates });
+    const germanNoteList = germanNotes.createEl("ul");
+    germanNoteList.createEl("li", { text: ui.ggArticleOnlyNote });
+    germanNoteList.createEl("li", { text: ui.unsupportedCandidatesNote });
+
+    const austrianLaws = getSupportedRisLaws();
+    this.renderSupportedLawsGroup(panels[1], ui.sectionReferences, austrianLaws.filter((l) => l.referenceType === "section"), ui);
+    this.renderSupportedLawsGroup(panels[1], ui.articleReferences, austrianLaws.filter((l) => l.referenceType === "article"), ui);
+
+    const swissLaws = getSupportedFedlexLaws();
+    this.renderSupportedLawsGroup(panels[2], ui.articleReferences, swissLaws.filter((l) => l.referenceType === "article"), ui);
+
+    const allTabs = tabs;
+    const allPanels = panels;
+
+    function switchTab(activeIndex: number): void {
+      allTabs.forEach((tab, i) => {
+        const isActive = i === activeIndex;
+        tab.setAttribute("aria-selected", String(isActive));
+        tab.tabIndex = isActive ? 0 : -1;
+      });
+      allPanels.forEach((panel, i) => {
+        if (i === activeIndex) {
+          panel.removeAttribute("hidden");
+        } else {
+          panel.setAttribute("hidden", "");
+        }
+      });
+      allTabs[activeIndex].focus();
+    }
+
+    allTabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => switchTab(i));
+      tab.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          switchTab((i - 1 + allTabs.length) % allTabs.length);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          switchTab((i + 1) % allTabs.length);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          switchTab(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          switchTab(allTabs.length - 1);
+        }
+      });
     });
   }
 
   private renderSupportedLawsGroup(
     containerEl: HTMLElement,
     heading: string,
-    referenceType: SupportedGesetzeImInternetLaw["referenceType"],
+    laws: readonly SupportedLaw[],
     ui: UiStrings,
   ): void {
-    const laws = getSupportedGesetzeImInternetLaws().filter(
-      (law) => law.referenceType === referenceType,
-    );
+    if (laws.length === 0) return;
 
     new Setting(containerEl).setName(heading).setHeading();
     const table = containerEl.createDiv({ cls: "de-law-settings-supported-table" });

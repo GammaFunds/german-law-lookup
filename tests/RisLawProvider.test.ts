@@ -9,6 +9,7 @@ import {
   extractRisMetadata,
   extractRisErvArticleEnglish,
   extractRisErvHeading,
+  getSupportedRisLaws,
   mapRisErvToLawSection,
   mapRisToLawSection,
 } from "../src/law/providers/risMapping";
@@ -304,6 +305,79 @@ describe("RIS mapping helpers", () => {
     );
   });
 
+  describe("16 new Austrian law URLs", () => {
+    const lawUrls: Array<[string, string, string]> = [
+      ["AKTG", "10002070", "AktG"],
+      ["AVG", "10005768", "AVG"],
+      ["BAO", "10003940", "BAO"],
+      ["FBG", "10002997", "FBG"],
+      ["GEWO", "10007517", "GewO"],
+      ["GMBHG", "10001720", "GmbHG"],
+      ["IO", "10001736", "IO"],
+      ["KARTG", "20004174", "KartG"],
+      ["KSCHG", "10002462", "KSchG"],
+      ["SPG", "10005792", "SPG"],
+      ["VERSVG", "10001979", "VersVG"],
+      ["VFGG", "10000245", "VfGG"],
+      ["VWGG", "10000795", "VwGG"],
+      ["VWGVG", "20008255", "VwGVG"],
+      ["ZUSTG", "10005522", "ZustG"],
+    ];
+
+    for (const [lawCode, gesetzesnummer, displayCode] of lawUrls) {
+      it(`builds AT ${displayCode} § 1 URL`, () => {
+        assert.equal(
+          buildRisSectionUrl({ lawCode, section: "1", jurisdiction: "AT" }),
+          `https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=${gesetzesnummer}&Paragraf=1`,
+        );
+      });
+    }
+  });
+
+  describe("DSG composite Article/Paragraph URL rule", () => {
+    it("builds DSG § 1 URL with Artikel=1 and Paragraf=1", () => {
+      assert.equal(
+        buildRisSectionUrl({ lawCode: "DSG", section: "1", jurisdiction: "AT" }),
+        "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001597&Artikel=1&Paragraf=1",
+      );
+    });
+
+    it("builds DSG § 4 URL with Artikel=2 and Paragraf=4", () => {
+      assert.equal(
+        buildRisSectionUrl({ lawCode: "DSG", section: "4", jurisdiction: "AT" }),
+        "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001597&Artikel=2&Paragraf=4",
+      );
+    });
+
+    it("builds DSG § 35a URL with Artikel=2 and Paragraf=35a", () => {
+      assert.equal(
+        buildRisSectionUrl({ lawCode: "DSG", section: "35a", jurisdiction: "AT" }),
+        "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001597&Artikel=2&Paragraf=35a",
+      );
+    });
+
+    it("builds DSG § 70 URL with Artikel=2 and Paragraf=70", () => {
+      assert.equal(
+        buildRisSectionUrl({ lawCode: "DSG", section: "70", jurisdiction: "AT" }),
+        "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001597&Artikel=2&Paragraf=70",
+      );
+    });
+
+    it("builds DSG § 2 URL with Artikel=2 (will 404)", () => {
+      assert.equal(
+        buildRisSectionUrl({ lawCode: "DSG", section: "2", jurisdiction: "AT" }),
+        "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001597&Artikel=2&Paragraf=2",
+      );
+    });
+
+    it("builds DSG § 3 URL with Artikel=2 (will 404)", () => {
+      assert.equal(
+        buildRisSectionUrl({ lawCode: "DSG", section: "3", jurisdiction: "AT" }),
+        "https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001597&Artikel=2&Paragraf=3",
+      );
+    });
+  });
+
   it("extracts heading from ABGB HTML fixture", () => {
     assert.equal(extractRisHeading(abgb1295HtmlFixture), "Schadenersatz");
   });
@@ -574,6 +648,64 @@ Zuletzt aktualisiert am: 01.01.2026
     assert.equal(meta.dokumentnummer, "NOR12012345");
     assert.equal(meta.zuletztAktualisiert, "01.01.2026");
   });
+
+  it("returns stable Austrian supported-law diagnostics metadata", () => {
+    const laws = getSupportedRisLaws();
+
+    assert.equal(laws.length, 24);
+
+    const sorted = [...laws].sort((a, b) =>
+      a.displayLawCode.localeCompare(b.displayLawCode, "de"),
+    );
+    for (let i = 0; i < laws.length; i++) {
+      assert.equal(laws[i], sorted[i]);
+    }
+
+    const abgb = laws.find((l) => l.displayLawCode === "ABGB")!;
+    assert.equal(abgb.lawTitle, "Allgemeines bürgerliches Gesetzbuch");
+    assert.equal(abgb.referenceType, "section");
+    assert.ok(abgb.exampleInputs.includes("§ 1295 ABGB"));
+    assert.ok(abgb.exampleInputs.includes("ABGB § 1295"));
+
+    const bvg = laws.find((l) => l.displayLawCode === "B-VG")!;
+    assert.equal(bvg.lawTitle, "Bundes-Verfassungsgesetz");
+    assert.equal(bvg.referenceType, "article");
+    assert.ok(bvg.exampleInputs.includes("Art. 144 B-VG"));
+    assert.ok(bvg.exampleInputs.includes("B-VG Art. 144"));
+  });
+
+  it("includes all 16 new Austrian laws with correct metadata in getSupportedRisLaws", () => {
+    const laws = getSupportedRisLaws();
+    const byCode = new Map(laws.map((l) => [l.displayLawCode, l]));
+
+    const checks: Array<[string, string, string]> = [
+      ["AktG", "Aktiengesetz", "section"],
+      ["AVG", "Allgemeines Verwaltungsverfahrensgesetz 1991", "section"],
+      ["BAO", "Bundesabgabenordnung", "section"],
+      ["DSG", "Datenschutzgesetz", "section"],
+      ["FBG", "Firmenbuchgesetz", "section"],
+      ["GewO", "Gewerbeordnung 1994", "section"],
+      ["GmbHG", "GmbH-Gesetz", "section"],
+      ["IO", "Insolvenzordnung", "section"],
+      ["KartG", "Kartellgesetz 2005", "section"],
+      ["KSchG", "Konsumentenschutzgesetz", "section"],
+      ["SPG", "Sicherheitspolizeigesetz", "section"],
+      ["VersVG", "Versicherungsvertragsgesetz", "section"],
+      ["VfGG", "Verfassungsgerichtshofgesetz 1953", "section"],
+      ["VwGG", "Verwaltungsgerichtshofgesetz 1985", "section"],
+      ["VwGVG", "Verwaltungsgerichtsverfahrensgesetz", "section"],
+      ["ZustG", "Zustellgesetz", "section"],
+    ];
+
+    for (const [code, title, refType] of checks) {
+      const law = byCode.get(code);
+      assert.ok(law, `Missing law ${code} in supported laws`);
+      assert.equal(law!.lawTitle, title, `Wrong title for ${code}`);
+      assert.equal(law!.referenceType, refType, `Wrong referenceType for ${code}`);
+      assert.ok(law!.exampleInputs.includes(`§ 1 ${code}`), `Missing § 1 ${code} example`);
+      assert.ok(law!.exampleInputs.includes(`${code} § 1`), `Missing ${code} § 1 example`);
+    }
+  });
 });
 
 describe("RisLawProvider", () => {
@@ -696,6 +828,25 @@ describe("RisLawProvider", () => {
       await provider.getSection({ lawCode: "ABGB", section: "9999", jurisdiction: "AT" }),
       null,
     );
+  });
+
+  it("returns null for DSG § 2 on 404 (existing 404-to-null behavior)", async () => {
+    let dsgUrl: string | null = null;
+    const provider = new RisLawProvider("https://www.ris.bka.gv.at", async (url) => {
+      dsgUrl = url;
+      return {
+        ok: false,
+        status: 404,
+        text: async () => "not found",
+        json: async () => ({}),
+      };
+    });
+
+    assert.equal(
+      await provider.getSection({ lawCode: "DSG", section: "2", jurisdiction: "AT" }),
+      null,
+    );
+    assert.match(dsgUrl!, /Paragraf=2/);
   });
 
   it("throws provider failure on non-OK non-404 response", async () => {

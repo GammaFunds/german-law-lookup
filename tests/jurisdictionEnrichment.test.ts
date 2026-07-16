@@ -350,6 +350,92 @@ describe("jurisdiction enrichment", () => {
       );
     });
   });
+
+  it("adds AT for GmbHG when Österreich is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("GmbHG § 1", "AT"),
+      {
+        lawCode: "GMBHG",
+        section: "1",
+        jurisdiction: "AT",
+      },
+    );
+  });
+
+  it("preserves DE/default for GmbHG § 1 when Deutschland is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("GmbHG § 1", "DE"),
+      {
+        lawCode: "GMBHG",
+        section: "1",
+      },
+    );
+  });
+
+  it("adds AT for AktG when Österreich is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("AktG § 1", "AT"),
+      {
+        lawCode: "AKTG",
+        section: "1",
+        jurisdiction: "AT",
+      },
+    );
+  });
+
+  it("preserves DE/default for AktG § 1 when Deutschland is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("AktG § 1", "DE"),
+      {
+        lawCode: "AKTG",
+        section: "1",
+      },
+    );
+  });
+
+  it("adds AT for KSchG when Österreich is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("KSchG § 1", "AT"),
+      {
+        lawCode: "KSCHG",
+        section: "1",
+        jurisdiction: "AT",
+      },
+    );
+  });
+
+  it("preserves DE/default for KSchG § 1 when Deutschland is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("KSchG § 1", "DE"),
+      {
+        lawCode: "KSCHG",
+        section: "1",
+      },
+    );
+  });
+
+  it("adds AT for DSG § 1 when Österreich is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("DSG § 1", "AT"),
+      {
+        lawCode: "DSG",
+        section: "1",
+        jurisdiction: "AT",
+      },
+    );
+  });
+
+  it("preserves CH DSG Art. 1 when Switzerland is selected", () => {
+    assert.deepEqual(
+      parseLawReferenceWithSelectedJurisdiction("DSG Art. 1", "CH"),
+      {
+        lawCode: "DSG",
+        section: "1",
+        referenceType: "article",
+        jurisdiction: "CH",
+      },
+    );
+  });
 });
 
 describe("CH Phase 1C exact contract matrix", () => {
