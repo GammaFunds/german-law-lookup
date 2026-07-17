@@ -2,6 +2,12 @@
 
 All notable changes to Law Lookup for Germany + Austria + Switzerland are documented in this file.
 
+## [0.2.1] - 2026-07-17
+
+### Fixed
+
+- Removed the redundant product name from the plugin description to satisfy the community-plugin manifest review.
+
 ## [0.2.0] - 2026-07-16
 
 ### Added
