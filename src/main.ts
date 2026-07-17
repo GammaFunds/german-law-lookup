@@ -25,6 +25,7 @@ import {
   type UiStrings,
 } from "./ui/i18n";
 import { LawLookupModal } from "./ui/LawLookupModal";
+import { persistCacheToggleAndRefresh } from "./settingsRefresh";
 
 interface SupportedLaw {
   displayLawCode: string;
@@ -184,8 +185,13 @@ class DeLawSettingsTab extends PluginSettingTab {
         toggle
           .setValue(settings.enableLawSectionCache)
           .onChange(async (value) => {
-            await this.plugin.updateSettings({ enableLawSectionCache: value });
-            this.display();
+            await persistCacheToggleAndRefresh({
+              enabled: value,
+              target: this,
+              updateSettings: async (patch) => {
+                await this.plugin.updateSettings(patch);
+              },
+            });
           });
       });
 
@@ -325,6 +331,97 @@ class DeLawSettingsTab extends PluginSettingTab {
     });
   }
 
+  getSettingDefinitions() {
+    const ui = this.plugin.getUiStrings();
+
+    return [
+      {
+        name: ui.enableLocalLawTextCache,
+        desc: ui.enableLocalLawTextCacheDescription,
+        render: (containerEl: HTMLElement) => {
+          new Setting(containerEl)
+            .setName(ui.enableLocalLawTextCache)
+            .setDesc(ui.enableLocalLawTextCacheDescription)
+            .addToggle((toggle) => {
+              toggle
+                .setValue(this.plugin.getSettings().enableLawSectionCache)
+                .onChange(async (value) => {
+                  await persistCacheToggleAndRefresh({
+                    enabled: value,
+                    target: this,
+                    updateSettings: async (patch) => {
+                      await this.plugin.updateSettings(patch);
+                    },
+                  });
+                });
+            });
+        },
+      },
+      {
+        name: ui.defaultEuTextLanguage,
+        desc: ui.defaultEuTextLanguageDescription,
+        render: (containerEl: HTMLElement) => {
+          new Setting(containerEl)
+            .setName(ui.defaultEuTextLanguage)
+            .setDesc(ui.defaultEuTextLanguageDescription)
+            .addDropdown((dropdown) => {
+              for (const language of EU_LANGUAGES) {
+                dropdown.addOption(language.code, language.nativeName);
+              }
+              dropdown
+                .setValue(this.plugin.getSettings().defaultEuLawLanguage)
+                .onChange(async (value) => {
+                  await this.plugin.updateSettings({
+                    defaultEuLawLanguage: defaultEuLawLanguage(undefined, value),
+                  });
+                });
+            });
+        },
+      },
+      {
+        name: ui.defaultLawTextSource,
+        render: (containerEl: HTMLElement) => {
+          new Setting(containerEl)
+            .setName(ui.defaultLawTextSource)
+            .addDropdown((dropdown) => {
+              dropdown
+                .addOption("official-de", ui.germanOfficialText)
+                .addOption("translation-en", ui.englishTranslationWhenAvailable)
+                .setValue(this.plugin.getSettings().defaultLawSourceVariant)
+                .onChange(async (value) => {
+                  await this.plugin.updateSettings({
+                    defaultLawSourceVariant:
+                      value === "translation-en" ? "translation-en" : "official-de",
+                  });
+                });
+            });
+        },
+      },
+      {
+        name: ui.cacheExpirationInDays,
+        desc: ui.cacheExpirationInDaysDescription,
+        render: (containerEl: HTMLElement) => {
+          const settings = this.plugin.getSettings();
+          new Setting(containerEl)
+            .setName(ui.cacheExpirationInDays)
+            .setDesc(ui.cacheExpirationInDaysDescription)
+            .addText((text) => {
+              text.inputEl.type = "number";
+              text
+                .setDisabled(!settings.enableLawSectionCache)
+                .setPlaceholder(ui.noExpirationPlaceholder)
+                .setValue(settings.lawSectionCacheTtlDays == null ? "" : String(settings.lawSectionCacheTtlDays))
+                .onChange(async (value) => {
+                  await this.plugin.updateSettings({
+                    lawSectionCacheTtlDays: normalizeTtlDays(value),
+                  });
+                });
+            });
+        },
+      },
+    ];
+  }
+
   private renderSupportedLawsGroup(
     containerEl: HTMLElement,
     heading: string,
@@ -338,19 +435,19 @@ class DeLawSettingsTab extends PluginSettingTab {
     const headerRow = table.createDiv({
       cls: "de-law-settings-supported-row de-law-settings-supported-row-header",
     });
-    headerRow.createEl("div", { text: ui.code });
-    headerRow.createEl("div", { text: ui.law });
-    headerRow.createEl("div", { text: ui.referenceType });
-    headerRow.createEl("div", { text: ui.examples });
+    headerRow.createDiv({ text: ui.code });
+    headerRow.createDiv({ text: ui.law });
+    headerRow.createDiv({ text: ui.referenceType });
+    headerRow.createDiv({ text: ui.examples });
 
     for (const law of laws) {
       const row = table.createDiv({ cls: "de-law-settings-supported-row" });
-      row.createEl("div", { text: law.displayLawCode });
-      row.createEl("div", { text: law.lawTitle });
-      row.createEl("div", { text: law.referenceType === "article" ? "Art." : "§" });
+      row.createDiv({ text: law.displayLawCode });
+      row.createDiv({ text: law.lawTitle });
+      row.createDiv({ text: law.referenceType === "article" ? "Art." : "§" });
       const examples = row.createDiv({ cls: "de-law-settings-supported-example-list" });
       for (const exampleInput of law.exampleInputs) {
-        examples.createEl("span", {
+        examples.createSpan({
           cls: "de-law-settings-supported-example",
           text: exampleInput,
         });

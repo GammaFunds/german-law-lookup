@@ -774,8 +774,12 @@ function findElementContentsByClass(html: string, className: string): string[] {
   const contents: string[] = [];
   const openingTagPattern = /<([a-z][\w:-]*)\b[^>]*>/gi;
 
-  for (const match of html.matchAll(openingTagPattern)) {
+  let match: RegExpExecArray | null;
+  while ((match = openingTagPattern.exec(html)) !== null) {
     const tag = match[1];
+    if (tag === undefined) {
+      continue;
+    }
     const openingTag = match[0];
     const classAttribute = openingTag.match(/\bclass\s*=\s*(["'])(.*?)\1/i)?.[2];
     if (!classAttribute?.split(/\s+/).includes(className)) {
@@ -832,7 +836,7 @@ function normalizeText(value: string): string {
 }
 
 function decodeHtmlEntities(value: string): string {
-  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (entity, code: string) => {
+  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (entity: string, code: string) => {
     if (code.startsWith("#x")) {
       return String.fromCodePoint(Number.parseInt(code.slice(2), 16));
     }

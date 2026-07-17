@@ -294,7 +294,7 @@ export function extractRisPlainText(html: string): string {
   return text.join("\n");
 }
 
-export function canMapRisReference(reference: LawReference, html: string): boolean {
+export function canMapRisReference(reference: LawReference, _html: string): boolean {
   if (reference.jurisdiction !== "AT") {
     return false;
   }
@@ -364,7 +364,7 @@ function findErvEnglishHeadings(cleaned: string): ErvEnglishHeading[] {
 
   while ((match = headingRe.exec(cleaned)) !== null) {
     const text = stripTags(match[1])
-      .replace(/ /g, " ")
+      .replace(/\u00a0/g, " ")
       .replace(/\s+/g, " ")
       .trim();
     const parsed = text.match(/^Article\s+(\d+[a-z]?)\.?$/i);
@@ -401,11 +401,27 @@ export function extractRisErvArticleEnglish(html: string, article: string): stri
     : cleaned.length;
 
   const region = cleaned.slice(startTrIndex < 0 ? 0 : startTrIndex, endTrIndex);
-  const rows = [...region.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)].map((m) => m[1]);
+  const rows: string[] = [];
+  const rowPattern = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
+  let rowMatch: RegExpExecArray | null;
+  while ((rowMatch = rowPattern.exec(region)) !== null) {
+    const row = rowMatch[1];
+    if (row !== undefined) {
+      rows.push(row);
+    }
+  }
 
   const cells: string[] = [];
   for (const row of rows) {
-    const tds = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => m[1]);
+    const tds: string[] = [];
+    const cellPattern = /<td\b[^>]*>([\s\S]*?)<\/td>/gi;
+    let cellMatch: RegExpExecArray | null;
+    while ((cellMatch = cellPattern.exec(row)) !== null) {
+      const cell = cellMatch[1];
+      if (cell !== undefined) {
+        tds.push(cell);
+      }
+    }
     cells.push(tds[1] ?? "");
   }
 
@@ -665,7 +681,7 @@ function isGenericRisPageHeading(line: string): boolean {
 }
 
 function decodeHtmlEntities(value: string): string {
-  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (entity, token) => {
+  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (entity: string, token: string) => {
     if (token.startsWith("#x")) {
       return String.fromCodePoint(Number.parseInt(token.slice(2), 16));
     }

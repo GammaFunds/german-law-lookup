@@ -226,7 +226,7 @@ export class LawLookupModal extends Modal {
 
     this.resultEl.empty();
 
-    this.resultEl.createEl("div", {
+    this.resultEl.createDiv({
       cls: "de-law-lookup-preview-title",
       text: preview.title,
     });
@@ -245,7 +245,7 @@ export class LawLookupModal extends Modal {
       });
 
       for (const line of preview.metadataLines) {
-        metadataEl.createEl("div", {
+        metadataEl.createDiv({
           cls: "de-law-lookup-preview-metadata-line",
           text: line,
         });
@@ -255,7 +255,7 @@ export class LawLookupModal extends Modal {
 
   private renderResultMessage(message: string) {
     this.resultEl.empty();
-    this.resultEl.createEl("div", {
+    this.resultEl.createDiv({
       cls: "de-law-lookup-result-message",
       text: message,
     });

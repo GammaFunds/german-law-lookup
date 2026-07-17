@@ -1030,6 +1030,15 @@ describe("GesetzeImInternet mapping helpers", () => {
     assert.doesNotMatch(text, /<div/);
   });
 
+  it("handles unmatched opening tags and optional class captures safely", () => {
+    assert.equal(
+      extractGesetzeImInternetPlainText(
+        `<div><div class="jnhtml"><p>One paragraph.</p><div>Two.</div>`,
+      ),
+      "One paragraph.\nTwo.",
+    );
+  });
+
   it("excludes Gesetze im Internet navigation, footer, and script artifacts", () => {
     const text = extractGesetzeImInternetPlainText(bgb823HtmlFixture);
 

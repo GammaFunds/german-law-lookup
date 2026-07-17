@@ -1,0 +1,121 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]*.[0-9]*.[0-9]*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      # actions/checkout v4.2.2
+      - name: Check out pushed tag
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+
+      # actions/setup-node v4.4.0
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Verify release tag and manifest version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_REF: ${{ github.ref }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          case "$RELEASE_TAG" in
+            v*) echo "Release tags must not use a v prefix" >&2; exit 1 ;;
+          esac
+          [[ "$RELEASE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$RELEASE_REF" = "refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          test "$(git tag --points-at HEAD --list "$RELEASE_TAG")" = "$RELEASE_TAG"
+          node -e 'const fs = require("node:fs"); const tag = process.argv[1]; const manifest = JSON.parse(fs.readFileSync("manifest.json", "utf8")); if (manifest.version !== tag) { throw new Error(`manifest version ${manifest.version} does not equal tag ${tag}`); }' "$RELEASE_TAG"
+
+      - name: Fail if release already exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          response_file="$(mktemp)"
+          stderr_file="$(mktemp)"
+          set +e
+          gh api -i "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" >"$response_file" 2>"$stderr_file"
+          gh_status=$?
+          set -e
+          if [ "$gh_status" -eq 0 ]; then
+            echo "A release for $RELEASE_TAG already exists" >&2
+            cat "$response_file" >&2
+            cat "$stderr_file" >&2
+            exit 1
+          fi
+          first_line="$(sed -n '1p' "$response_file")"
+          case "$first_line" in
+            HTTP/*" 404 "*)
+              if [ -s "$stderr_file" ]; then
+                cat "$stderr_file" >&2
+              fi
+              ;;
+            *)
+              echo "Unexpected gh api result while checking release existence for $RELEASE_TAG" >&2
+              cat "$response_file" >&2
+              cat "$stderr_file" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build release bundle
+        run: |
+          set -euo pipefail
+          npm run build
+          test -s main.js
+          test -s manifest.json
+          test -s styles.css
+          cmp <(git show HEAD:main.js) main.js
+          cmp <(git show HEAD:manifest.json) manifest.json
+          cmp <(git show HEAD:styles.css) styles.css
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git ls-files --others --exclude-standard)"
+
+      # actions/attest v4
+      - name: Attest main.js
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6
+        with:
+          subject-path: main.js
+
+      # actions/attest v4
+      - name: Attest styles.css
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6
+        with:
+          subject-path: styles.css
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" --verify-tag --generate-notes --title "Law Lookup for Germany + Austria + Switzerland $RELEASE_TAG" main.js manifest.json styles.css

@@ -2,6 +2,21 @@
 
 All notable changes to Law Lookup for Germany + Austria + Switzerland are documented in this file.
 
+## [0.2.2] - 2026-07-17
+
+### Fixed
+
+- Removed type-aware scanner warnings from provider parsing and replaced the remaining generic Obsidian element helpers with specialized helpers.
+- Added declarative settings search support with the legacy `display()` fallback for Obsidian versions below 1.13.0.
+- Removed irregular whitespace and unused constants.
+- Resolved the reported `prefer-create-el` findings in source; no plugin-owned TypeScript `document.createElement` calls were present.
+- Added GitHub artifact attestations for release bundles.
+
+### Scope and safety
+
+- No provider, parsing, lookup, cache, formatting, legal-source, network-domain, or insertion behavior changed.
+- Existing network disclosures remain accurate.
+
 ## [0.2.1] - 2026-07-17
 
 ### Fixed

@@ -1,12 +1,13 @@
 {
   "name": "german-law-lookup",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Look up selected German, Austrian, and Swiss laws plus multilingual GDPR articles, then insert formatted legal text into your notes.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-    "test": "tsc -p tsconfig.test.json && node --test \"test-dist/**/*.test.js\""
+    "test": "tsc -p tsconfig.test.json && node --test \"test-dist/**/*.test.js\"",
+    "lint": "eslint src"
   },
   "keywords": [
     "obsidian",
@@ -16,7 +17,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.13.5",
+    "@typescript-eslint/eslint-plugin": "8.37.0",
+    "@typescript-eslint/parser": "8.37.0",
     "esbuild": "^0.25.0",
+    "eslint": "9.31.0",
+    "eslint-plugin-obsidianmd": "0.4.1",
     "obsidian": "^1.8.7",
     "typescript": "^5.7.3"
   }

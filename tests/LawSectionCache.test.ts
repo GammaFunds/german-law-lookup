@@ -10,8 +10,60 @@ import {
 import { buildCachedLawProviders } from "../src/law/cachedProviderComposition";
 import { LawProviderUnavailableError } from "../src/law/errors";
 import type { LawReference, LawSection } from "../src/law/types";
+import { persistCacheToggleAndRefresh } from "../src/settingsRefresh";
 
 describe("lawSectionCacheKey", () => {
+  it("refreshes settings declaratively when available and falls back to display otherwise", async () => {
+    const updateEvents: string[] = [];
+    const updateState = { enableLawSectionCache: true };
+    const updateSettings = async (patch: { enableLawSectionCache: boolean }) => {
+      updateEvents.push(`persist:${patch.enableLawSectionCache}`);
+      updateState.enableLawSectionCache = patch.enableLawSectionCache;
+    };
+
+    const updateTarget = {
+      display() {
+        updateEvents.push("display");
+      },
+      update() {
+        updateEvents.push("update");
+      },
+    };
+
+    const updateResult = await persistCacheToggleAndRefresh({
+      enabled: false,
+      target: updateTarget,
+      updateSettings,
+    });
+
+    assert.deepEqual(updateEvents, ["persist:false", "update"]);
+    assert.equal(updateState.enableLawSectionCache, false);
+    assert.equal(updateResult.enableLawSectionCache, false);
+    assert.equal(updateResult.ttlDisabled, true);
+    assert.equal(updateResult.refreshedVia, "update");
+
+    const fallbackEvents: string[] = [];
+    const fallbackState = { enableLawSectionCache: true };
+    const fallbackResult = await persistCacheToggleAndRefresh({
+      enabled: true,
+      target: {
+        display() {
+          fallbackEvents.push("display");
+        },
+      },
+      updateSettings: async (patch: { enableLawSectionCache: boolean }) => {
+        fallbackEvents.push(`persist:${patch.enableLawSectionCache}`);
+        fallbackState.enableLawSectionCache = patch.enableLawSectionCache;
+      },
+    });
+
+    assert.deepEqual(fallbackEvents, ["persist:true", "display"]);
+    assert.equal(fallbackState.enableLawSectionCache, true);
+    assert.equal(fallbackResult.enableLawSectionCache, true);
+    assert.equal(fallbackResult.ttlDisabled, false);
+    assert.equal(fallbackResult.refreshedVia, "display");
+  });
+
   it("isolates EU official language cache keys without legacy fallback", async () => {
     const de = { lawCode: "DSGVO", section: "6", referenceType: "article" as const, jurisdiction: "EU" as const, language: "de" as const };
     const en = { ...de, language: "en" as const };

@@ -1,7 +1,5 @@
 import type { LawReference, LawSection } from "../types";
 
-const FEDLEX_BASE_URL = "https://www.fedlex.admin.ch";
-
 interface SwissLawConfig {
   workUri: string;
   lawTitle: string;

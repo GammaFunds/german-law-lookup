@@ -522,6 +522,22 @@ Zuletzt aktualisiert am: 01.01.2026
     assert.doesNotMatch(text, /Absatz eins,/);
   });
 
+  it("preserves ordered RIS rows and safely handles unmatched HTML", () => {
+    const html = `<table>
+      <tr><td>Deutsch</td><td><h3>Article 144.</h3>First English paragraph.</td></tr>
+      <tr><td>Deutsch</td><td>Second English paragraph.</td></tr>
+      <tr><td>Only one cell</td></tr>
+      <tr><td>Deutsch</td><td><h3>Article 145.</h3>Next article.</td></tr>
+    </table>`;
+
+    assert.equal(
+      extractRisErvArticleEnglish(html, "144"),
+      "First English paragraph.\nSecond English paragraph.",
+    );
+    assert.equal(extractRisErvArticleEnglish("<tr><td>unclosed", "144"), "");
+    assert.equal(extractRisErvArticleEnglish("<table>no matching heading</table>", "144"), "");
+  });
+
   it("extracts English heading from ERV B-VG fixture", () => {
     assert.equal(extractRisErvHeading(ervBvgHtmlFixture, "144"), "Article 144.");
   });

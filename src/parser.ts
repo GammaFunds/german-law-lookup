@@ -2,7 +2,6 @@ import type { LawJurisdiction, LawReference } from "./law/types";
 
 export type ParsedLawReference = LawReference;
 
-const jurisdictionPattern = String.raw`(?:AT|DE)`;
 const lawCodePattern = String.raw`[A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß0-9-]*`;
 const sectionPattern = String.raw`\d+[A-Za-z]?`;
 const articleMarkerPattern = String.raw`(?:Art\.?|Artikel)`;
